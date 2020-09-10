@@ -10,16 +10,16 @@ class LFU_cache
 {
 private:
   size_t _size;
-  struct list_elem
-  {
-    type elem;
-    size_t counter;
+  std::list<type> _cache;
 
-    list_elem( void ) : elem(), counter(0)
-    {}
+  // service struct for LFU algorithm
+  struct map_elem
+  {
+    typename std::list<type>::iterator list_it;
+    size_t counter;
   };
-  std::list<list_elem> _cache;
-  std::unordered_map<key_type, typename std::list<list_elem>::iterator> hash_table;
+
+  std::unordered_map<key_type, map_elem> hash_table;
 public:
 
   // class constructor
