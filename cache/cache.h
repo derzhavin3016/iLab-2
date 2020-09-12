@@ -14,9 +14,6 @@ class LFU_cache
 private:
   size_t _capacity;
 
-  // pointer to hash_func
-  key_type (*hash_func)( const byte *bytes, size_t size );
-
   // service struct for LFU algorithm
   struct lst_elem
   {
@@ -24,8 +21,11 @@ private:
     size_t counter;
   };
   std::list<lst_elem> _cache;
+
   using List_it = typename std::list<type>::iterator;
-  std::unordered_map<key_type, std::list<List_it>> hash_table;
+  using Hash_tbl = std::unordered_map<key_type, std::list<List_it>>;
+  using Map_it = typename Hash_tbl::iterator;
+  Hash_tbl _hash_table;
 
 public:
 
@@ -35,9 +35,26 @@ public:
   {
   }
 
-  const type & find( const type &val )
+  const type & Request( const type &val )
   {
+    // get a hash
+    key_t val_hash = _Hash(val) % _capacity;
 
+    auto val_lst = _hash_table.find(val_hash);
+    if (val_lst != _hash_table.end())
+    {
+      auto val_cache = _CacheFind(val, val_lst);
+      if (val_cache != val_lst->end())
+      {
+        val_cache->counter++;
+        return val_cache->value;
+      }
+
+      val_lst->push_back(_CacheAdd(val, val_hash));
+      return val;
+    }
+
+    _hash_table.insert(val_hash, std::list<List_it>{_CacheAdd(val, val_hash)});
   }
 
   // class destructor
@@ -49,9 +66,36 @@ public:
 private:
 
   template <typename T>
-  static T hash( T val )
+  static T _Hash( T val )
   {
     return val;
+  }
+
+  void _CacheAdd( const type &val, key_t hash )
+  {
+
+
+  }
+
+  List_it _FindMin( void )
+  {
+    size_t min = _hash_table.begin()->beign()->counter;
+    List_it it_min = _hash_table.begin()->beign();
+
+    for (auto &mp : _hash_table)
+      for (auto &lst : mp)
+      {
+        if (lst->counter < min)
+          min =
+      }
+  }
+  List_it _CacheFind( const type &value, const Map_it & mit )
+  {
+    for (auto &lst : *mit)
+      if (lst->value == value)
+        return lst;
+
+    return mit->end();
   }
 };
 

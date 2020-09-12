@@ -4,15 +4,8 @@
 
 int main( void )
 {
-  std::unordered_map<int, std::list<int>> map;
-
-
-
-  map[2].push_back(228);
-
-  std::cout << map[2];
+  return 0;
 }
-
 /* TODO:
  * 1. create dummy hash especial for int type (template)
  * 2. add counter to every element
