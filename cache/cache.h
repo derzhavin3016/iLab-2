@@ -5,25 +5,37 @@
 #include <list>
 #include <iterator>
 
+typedef unsigned char byte;
+
+
 template <typename type, typename key_type = unsigned long long>
 class LFU_cache
 {
 private:
-  size_t _size;
-  std::list<type> _cache;
+  size_t _capacity;
+
+  // pointer to hash_func
+  key_type (*hash_func)( const byte *bytes, size_t size );
 
   // service struct for LFU algorithm
-  struct map_elem
+  struct lst_elem
   {
-    typename std::list<type>::iterator list_it;
+    type value;
     size_t counter;
   };
+  std::list<lst_elem> _cache;
+  using List_it = typename std::list<type>::iterator;
+  std::unordered_map<key_type, std::list<List_it>> hash_table;
 
-  std::unordered_map<key_type, map_elem> hash_table;
 public:
 
   // class constructor
-  LFU_cache( void )
+  explicit LFU_cache( size_t capacity = 0 ) : _capacity(capacity),
+                                              _cache(capacity)
+  {
+  }
+
+  const type & find( const type &val )
   {
 
   }
@@ -33,6 +45,16 @@ public:
   {
 
   }
+
+private:
+
+  template <typename T>
+  static T hash( T val )
+  {
+    return val;
+  }
 };
+
+
 
 #endif //CACHE_CACHE_H
