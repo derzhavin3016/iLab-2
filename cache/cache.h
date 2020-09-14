@@ -7,6 +7,17 @@
 
 typedef unsigned char byte;
 
+template<typename type>
+struct lst_elem
+{
+  type value;
+  size_t counter;
+
+  lst_elem( type value = 0, size_t counter = 0 ) : value(value),
+                                                   counter(counter)
+  {}
+};
+
 
 template <typename type, typename key_type = unsigned long long>
 class LFU_cache
@@ -14,71 +25,53 @@ class LFU_cache
 private:
   size_t _capacity;
 
-  // service struct for LFU algorithm
-  struct lst_elem
-  {
-    type value;
-    size_t counter;
-  };
-  std::list<lst_elem> _cache;
+  // service struct for LFU algorith
+  std::list<lst_elem<type>> _cache;
 
-  using List_it = typename std::list<type>::iterator;
-  using Hash_tbl = std::unordered_map<key_type, std::list<List_it>>;
-  using Map_it = typename Hash_tbl::iterator;
-  using Map_lst_it = typename std::list<List_it>::iterator;
+  using List_it = typename std::list<lst_elem<type>>::iterator;
+  using Hash_tbl = std::unordered_map<key_type, List_it>;
+  using Hash_it = typename Hash_tbl::iterator;
+
   Hash_tbl _hash_table;
 
 public:
 
   // class constructor
   explicit LFU_cache( size_t capacity = 0 ) : _capacity(capacity),
-                                              _cache(capacity)
+                                              _cache(),
+                                              _hash_table()
   {
   }
 
-  const type & Request( const type &val )
+  bool Request( const type &val )
   {
     // get a hash
-    key_t val_hash = _Hash(val) % _capacity;
-
+    key_t val_hash = _Hash(val);
     // find in map by hash value
     auto val_lst = _hash_table.find(val_hash);
+
     if (val_lst != _hash_table.end())
     {
-      // list with this hash exist
-      auto val_cache = _CacheFind(val, val_lst);
-      if (val_cache != val_lst->end())
-      {
-        // this value exist in cache
-        val_cache->counter++;
-        return val_cache->value;
-      }
-      // value doesn't exist in list, but it's hash exist
-
-      if (_cache.size() >= _capacity)
-      {
-        auto Min_lst = _FindMin();
-        Min_lst->counter = 1;
-        Min_lst->value = val;
-        return val;
-      }
-
-      _cache.push_back(lst_elem{val, 1});
-      val_lst->push_back(_cache.back());
-
-      return val;
+      // this hash exist
+      val_lst->second->counter++;
+      return true;
     }
     // value is fully new to cache
     if (_cache.size() >= _capacity)
     {
       auto Min_lst = _FindMin();
-      Min_lst->counter = 1;
-      Min_lst->value = val;
-      Min_lst
-      return val;
+
+      List_it lst_it = Min_lst->second;
+      _hash_table.erase(Min_lst);
     }
-    _hash_table.insert(val_hash, std::list<List_it>{_CacheAdd(val, val_hash)});
+    _cache.push_front({val, 1});
+    _hash_table[val_hash] = _cache.begin();
+
+    return false;
   }
+  template <typename tpe>
+  friend std::ostream & operator <<( std::ostream &ost, const LFU_cache<tpe> &lfu );
+
 
   // class destructor
   ~LFU_cache( void )
@@ -94,36 +87,31 @@ private:
     return val;
   }
 
-  Map_lst_it _CacheAdd( const type &val, bool IsNew )
+  auto _FindMin( void )
   {
-    if (_cache.size() >= _capacity)
-      auto Min_lst = _FindMin();
+    auto Min_lst = _hash_table.begin();
 
-  }
-
-  Map_lst_it _FindMin( void )
-  {
-    auto Min_lst = _hash_table.begin()->begin();
-
-    for (auto &mp : _hash_table)
-      for (auto &lst : mp)
-      {
-        if (lst->counter < Min_lst->counter)
-          Min_lst = lst;
-      }
+    for (auto it = _hash_table.begin(); it != _hash_table.end(); ++it)
+    {
+      if (it->second->counter < Min_lst->second->counter)
+        Min_lst = it;
+    }
 
     return Min_lst;
   }
-  List_it _CacheFind( const type &value, const Map_it & mit )
-  {
-    for (auto &lst : *mit)
-      if (lst->value == value)
-        return lst;
-
-    return mit->end();
-  }
 };
 
+template <typename type>
+std::ostream & operator <<( std::ostream &ost, const LFU_cache<type> &lfu )
+{
+  int counter = 0;
+  for (auto &ls : lfu._cache)
+  {
+    ost << "Elem #" << counter++ << "\n{\n  value = " << ls.value;
+    ost << "\n  counter = " << ls.counter << "\n}\n";
+  }
 
+  return ost;
+}
 
 #endif //CACHE_CACHE_H

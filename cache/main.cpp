@@ -1,9 +1,36 @@
 #include <iostream>
+#include <string>
 #include "cache.h"
+
 
 
 int main( void )
 {
+  int hits = 0, capacity = 0, calls_amount = 0;
+
+  std::cout << "Input maximum capacity of cache:\n";
+
+  std::cin >> capacity;
+
+  std::cout << "Input amount of calls:\n";
+
+  std::cin >> calls_amount;
+
+  LFU_cache<int> lfu(capacity);
+
+  for (int i = 0; i < calls_amount; ++i)
+  {
+    int request = 0;
+    std::cout << "Input request #" << i << "\n";
+    std::cin >> request;
+
+    if (lfu.Request(request))
+      ++hits;
+  }
+
+  std::cout << "Total amounts of hits = " << hits << "\n";
+  std::cout << "------------LIST DUMP-----------------------\n";
+  std::cout << lfu << "\n";
   return 0;
 }
 /* TODO:
