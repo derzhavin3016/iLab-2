@@ -5,8 +5,6 @@
 #include <list>
 #include <iterator>
 
-typedef unsigned char byte;
-
 template<typename type>
 struct lst_elem
 {

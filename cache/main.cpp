@@ -25,7 +25,12 @@ int main( void )
     std::cin >> request;
 
     if (lfu.Request(request))
+    {
+      std::cout << "*******Hits in cache!*******\n";
       ++hits;
+    }
+    else
+      std::cout << "*******No hit        *******\n";
   }
 
   std::cout << "Total amounts of hits = " << hits << "\n";
