@@ -59,11 +59,10 @@ public:
     // value is fully new to cache
     if (_cache.size() >= _capacity)
     {
-      auto Min_lst = _FindMin();
-
-      List_it lst_it = Min_lst->second;
-      _hash_table.erase(Min_lst);
+      _Emplace(val, val_hash);
+      return false;
     }
+
     _cache.push_front({val, 1});
     _hash_table[val_hash] = _cache.begin();
 
@@ -85,6 +84,17 @@ private:
   static T _Hash( T val )
   {
     return val;
+  }
+
+  void _Emplace( const type &value, key_t hash )
+  {
+    auto Min_lst = _FindMin();
+
+    List_it lst_it = Min_lst->second;
+    _hash_table.erase(Min_lst);
+    _hash_table[hash] = lst_it;
+    lst_it->counter = 1;
+    lst_it->value = value;
   }
 
   auto _FindMin( void )
