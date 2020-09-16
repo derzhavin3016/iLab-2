@@ -7,8 +7,6 @@ int main( int argc, char *argv[] )
 #if 0
   LFU_cache<int> LFU(2);
   LFU.Request(2);
-  LFU.Request(2);
-  LFU.Request(3);
   std::cout << LFU;
 #endif
 #if 1
@@ -29,9 +27,11 @@ int main( int argc, char *argv[] )
 
   LFU_cache<int> LFU(capacity);
 
-  std::cout << "Hits: " << LFU.Test(requests) << "\n";
+  int hits = LFU.Test(requests);
+  std::cout << "Hits: " << hits << "\n";
   std::cout << "-------------LIST DUMP---------------------\n";
   std::cout << LFU << "\n";
+  std::cout << "Hits: " << hits << "\n";
 #endif
 
 

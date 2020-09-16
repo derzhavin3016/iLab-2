@@ -118,8 +118,10 @@ private:
       Freq_list_.erase((var));
 
     Freq_it<type> n_head = n_it->Head;
+    Freq_it<type> n_head_p1 = ++n_head;
+    --n_head;
 
-    if (n_it->Head->hits + 1 == (++n_head)->hits)
+    if (n_head_p1 != Freq_list_.end() && n_head->hits + 1 == n_head_p1->hits)
     {
       n_head->Node_list.push_front(Node_elem(n_it->value, n_head));
       (--n_head)->Node_list.erase(n_it);
@@ -158,8 +160,8 @@ private:
 
   void AddFreq_( type value )
   {
-    if (Freq_list_.front().hits != 1)
-      Freq_list_.push_front(Freq_elem<type>(1));
+    if (Freq_list_.empty() || Freq_list_.front().hits != 0)
+      Freq_list_.push_front(Freq_elem<type>(0));
 
     Freq_list_.front().Node_list.push_front(Node_elem(value, Freq_list_.begin()));
   }
