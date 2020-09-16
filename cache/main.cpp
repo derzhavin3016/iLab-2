@@ -4,10 +4,18 @@ int GetTestsFromFile( const std::string &filename, std::vector<int> &tests );
 
 int main( int argc, char *argv[] )
 {
+#if 0
+  LFU_cache<int> LFU(2);
+  LFU.Request(2);
+  LFU.Request(2);
+  LFU.Request(3);
+  std::cout << LFU;
+#endif
+#if 1
   std::vector<int> requests;
 
   std::string filename;
-  if (argc == 2)
+  if (argc == 1)
   {
     std::cout << "Input name of a file with test\n(FORMAT: capacity calls_amount data...)\n";
     std::cin >> filename;
@@ -24,7 +32,7 @@ int main( int argc, char *argv[] )
   std::cout << "Hits: " << LFU.Test(requests) << "\n";
   std::cout << "-------------LIST DUMP---------------------\n";
   std::cout << LFU << "\n";
-
+#endif
 
 
   return 0;

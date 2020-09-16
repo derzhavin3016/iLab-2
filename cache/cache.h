@@ -9,6 +9,8 @@
 #include <list>
 #include <iterator>
 
+#define OK std::cout << "\n!!!OK!!!\n";
+
 template <typename type>
 struct Freq_elem;
 
@@ -25,8 +27,8 @@ struct Node_elem
                                                      Head(head)
   {}
 
-  Node_elem( const Node_elem &n_elem ) : value(n_elem.val),
-                                         Head(n_elem.head)
+  Node_elem( const Node_elem &n_elem ) : value(n_elem.value),
+                                         Head(n_elem.Head)
   {}
 };
 
@@ -52,7 +54,7 @@ private:
   std::list<Freq_elem<type>> Freq_list_;
 
   using Node_it = typename std::list<Node_elem<type>>::iterator;
-  using Hash_tbl = std::unordered_map<key_type, Freq_it<type>>;
+  using Hash_tbl = std::unordered_map<key_type, Node_it>;
   using Hash_it = typename Hash_tbl::iterator;
 
   Hash_tbl hash_table_;
@@ -60,7 +62,7 @@ private:
 public:
 
   // class constructor
-  explicit LFU_cache( size_t capacity = 0 ) : capacity_(capacity),
+  explicit LFU_cache( size_t capacity ) : capacity_(capacity),
                                               hash_table_()
   {
   }
@@ -79,9 +81,8 @@ public:
       return true;
     }
     // value is fully new to cache
-
+    AddCache_(val);
     return false;
-
   }
   template <typename tpe>
   friend std::ostream & operator <<( std::ostream &ost, const LFU_cache<tpe> &lfu );
@@ -118,15 +119,15 @@ private:
 
     Freq_it<type> n_head = n_it->Head;
 
-    if ((n_head)->hits + 1 == (++n_head)->hits)
+    if (n_it->Head->hits + 1 == (++n_head)->hits)
     {
-      n_head->Freq_list.push_front(Node_elem(n_it->value, n_head));
+      n_head->Node_list.push_front(Node_elem(n_it->value, n_head));
       (--n_head)->Node_list.erase(n_it);
       DEL_IS_EM(n_head);
       return;
     }
     // add list with new hits amount
-    Freq_it<type> new_head = Freq_list_.insert(Freq_elem((--n_head)->hits + 1));
+    Freq_it<type> new_head = Freq_list_.insert(n_it->Head, Freq_elem<type>((--n_head)->hits + 1));
     // push node to new freq list
     new_head->Node_list.push_front(Node_elem(n_it->value, new_head));
     (--new_head)->Node_list.erase(n_it);
@@ -135,28 +136,32 @@ private:
 #undef DEL_IS_EM
   }
 
-  void Emplace_( const type &value, key_t hash )
-  {
-    auto Min_lst = FindMin_();
 
-    List_it lst_it = Min_lst->second;
-    hash_table_.erase(Min_lst);
-    hash_table_[hash] = lst_it;
-    lst_it->counter = 1;
-    lst_it->value = value;
+  void AddCache_( type value )
+  {
+    if (hash_table_.size() >= capacity_)
+      DelMin_();
+    AddFreq_(value);
+
+    hash_table_[value] = Freq_list_.front().Node_list.begin();
   }
 
-  auto FindMin_( void )
+  void DelMin_( void )
   {
-    auto Min_lst = hash_table_.begin();
+    hash_table_.erase(Freq_list_.front().Node_list.front().value);
+    Freq_list_.front().Node_list.pop_front();
 
-    for (auto it = hash_table_.begin(); it != hash_table_.end(); ++it)
-    {
-      if (it->second->counter < Min_lst->second->counter)
-        Min_lst = it;
-    }
 
-    return Min_lst;
+    if (Freq_list_.front().Node_list.empty())
+      Freq_list_.pop_front();
+  }
+
+  void AddFreq_( type value )
+  {
+    if (Freq_list_.front().hits != 1)
+      Freq_list_.push_front(Freq_elem<type>(1));
+
+    Freq_list_.front().Node_list.push_front(Node_elem(value, Freq_list_.begin()));
   }
 };
 
@@ -164,10 +169,13 @@ template <typename type>
 std::ostream & operator <<( std::ostream &ost, const LFU_cache<type> &lfu )
 {
   int counter = 0;
-  for (auto &ls : lfu.cache_)
+  for (auto &lf : lfu.Freq_list_)
   {
-    ost << "Elem #" << counter++ << "\n{\n  value = " << ls.value;
-    ost << "\n  counter = " << ls.counter << "\n}\n";
+    for (auto &ln : lf.Node_list)
+    {
+      ost << "Elem #" << counter++ << "\n{\n  value = " << ln.value;
+      ost << "\n  counter = " << lf.hits << "\n}\n";
+    }
   }
 
   return ost;
