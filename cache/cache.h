@@ -34,10 +34,10 @@ class LFU_cache
 private:
   size_t capacity_;
 
-  // service struct for LFU algorith
+  // service struct for LFU algorithm
   std::list<Freq_elem<type>> Freq_list_;
 
-  using List_it = typename std::list<Freq_elem<type>>::iterator;
+  using List_it = typename std::list<Node_elem<type>>::iterator;
   using Hash_tbl = std::unordered_map<key_type, List_it>;
   //using Hash_it = typename Hash_tbl::iterator;
 
@@ -61,7 +61,7 @@ public:
     if (val_lst != hash_table_.end())
     {
       // this hash exist
-      val_lst->second->counter++;
+
       return true;
     }
     // value is fully new to cache
@@ -75,6 +75,7 @@ public:
     hash_table_[val_hash] = cache_.begin();
 
     return false;
+
   }
   template <typename tpe>
   friend std::ostream & operator <<( std::ostream &ost, const LFU_cache<tpe> &lfu );
