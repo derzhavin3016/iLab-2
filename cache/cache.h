@@ -174,7 +174,7 @@ std::ostream & operator <<( std::ostream &ost, const LFU_cache<type> &lfu )
     for (auto &ln : lf.Node_list)
     {
       ost << "Elem #" << counter++ << "\n{\n  value = " << ln.value;
-      ost << "\n  counter = " << lf.hits << "\n}\n";
+      ost << "\n  hits = " << lf.hits << "\n}\n";
     }
   }
 
