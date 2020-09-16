@@ -10,20 +10,34 @@
 #include <iterator>
 
 template <typename type>
+struct Freq_elem;
+
+template <typename type>
+using Freq_it = typename std::list<Freq_elem<type>>::iterator;
+
+template <typename type>
 struct Node_elem
 {
   type value;
-  typename std::list<Node_elem<type>>::iterator Head;
+  Freq_it<type> Head;
+
+  Node_elem( type val, const Freq_it<type> &head ) : value(val),
+                                                     Head(head)
+  {}
+
+  Node_elem( const Node_elem &n_elem ) : value(n_elem.val),
+                                         Head(n_elem.head)
+  {}
 };
 
 template<typename type>
 struct Freq_elem
 {
   std::list<Node_elem<type>> Node_list;
-  const size_t counter;
+  const size_t hits;
 
-  Freq_elem( size_t counter = 0 ) : Node_list(),
-                                    counter(counter)
+  Freq_elem( size_t hts ) : Node_list(),
+                            hits(hts)
   {}
 };
 
@@ -37,9 +51,9 @@ private:
   // service struct for LFU algorithm
   std::list<Freq_elem<type>> Freq_list_;
 
-  using List_it = typename std::list<Node_elem<type>>::iterator;
-  using Hash_tbl = std::unordered_map<key_type, List_it>;
-  //using Hash_it = typename Hash_tbl::iterator;
+  using Node_it = typename std::list<Node_elem<type>>::iterator;
+  using Hash_tbl = std::unordered_map<key_type, Freq_it<type>>;
+  using Hash_it = typename Hash_tbl::iterator;
 
   Hash_tbl hash_table_;
 
@@ -61,18 +75,10 @@ public:
     if (val_lst != hash_table_.end())
     {
       // this hash exist
-
+      Increment_(val_lst->second);
       return true;
     }
     // value is fully new to cache
-    if (cache_.size() >= capacity_)
-    {
-      Emplace_(val, val_hash);
-      return false;
-    }
-
-    cache_.push_front({val, 1});
-    hash_table_[val_hash] = cache_.begin();
 
     return false;
 
@@ -102,6 +108,31 @@ private:
   static T Hash_( T val )
   {
     return val;
+  }
+
+  void Increment_( Node_it &n_it )
+  {
+#define DEL_IS_EM(var) \
+    if ((var)->Node_list.empty()) \
+      Freq_list_.erase((var));
+
+    Freq_it<type> n_head = n_it->Head;
+
+    if ((n_head)->hits + 1 == (++n_head)->hits)
+    {
+      n_head->Freq_list.push_front(Node_elem(n_it->value, n_head));
+      (--n_head)->Node_list.erase(n_it);
+      DEL_IS_EM(n_head);
+      return;
+    }
+    // add list with new hits amount
+    Freq_it<type> new_head = Freq_list_.insert(Freq_elem((--n_head)->hits + 1));
+    // push node to new freq list
+    new_head->Node_list.push_front(Node_elem(n_it->value, new_head));
+    (--new_head)->Node_list.erase(n_it);
+    DEL_IS_EM(new_head);
+
+#undef DEL_IS_EM
   }
 
   void Emplace_( const type &value, key_t hash )
