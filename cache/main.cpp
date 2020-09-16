@@ -7,7 +7,7 @@ int main( int argc, char *argv[] )
   std::vector<int> requests;
 
   std::string filename;
-  if (argc == 2)
+  if (argc == 1)
   {
     std::cout << "Input name of a file with test\n(FORMAT: capacity calls_amount data...)\n";
     std::cin >> filename;
