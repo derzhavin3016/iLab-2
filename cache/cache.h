@@ -9,14 +9,21 @@
 #include <list>
 #include <iterator>
 
-template<typename type>
-struct lst_elem
+template <typename type>
+struct Node_elem
 {
   type value;
-  size_t counter;
+  typename std::list<Node_elem<type>>::iterator Head;
+};
 
-  lst_elem( type value = 0, size_t counter = 0 ) : value(value),
-                                                   counter(counter)
+template<typename type>
+struct Freq_elem
+{
+  std::list<Node_elem<type>> Node_list;
+  const size_t counter;
+
+  Freq_elem( size_t counter = 0 ) : Node_list(),
+                                    counter(counter)
   {}
 };
 
@@ -28,11 +35,11 @@ private:
   size_t capacity_;
 
   // service struct for LFU algorith
-  std::list<lst_elem<type>> cache_;
+  std::list<Freq_elem<type>> Freq_list_;
 
-  using List_it = typename std::list<lst_elem<type>>::iterator;
+  using List_it = typename std::list<Freq_elem<type>>::iterator;
   using Hash_tbl = std::unordered_map<key_type, List_it>;
-  using Hash_it = typename Hash_tbl::iterator;
+  //using Hash_it = typename Hash_tbl::iterator;
 
   Hash_tbl hash_table_;
 
@@ -40,7 +47,6 @@ public:
 
   // class constructor
   explicit LFU_cache( size_t capacity = 0 ) : capacity_(capacity),
-                                              cache_(),
                                               hash_table_()
   {
   }
