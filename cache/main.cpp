@@ -1,43 +1,58 @@
-#include <iostream>
-#include <string>
 #include "cache.h"
 
+int GetTestsFromFile( const std::string &filename, std::vector<int> &tests );
 
-
-int main( void )
+int main( int argc, char *argv[] )
 {
-  int hits = 0, capacity = 0, calls_amount = 0;
+  std::vector<int> requests;
 
-  std::cout << "Input maximum capacity of cache:\n";
-
-  std::cin >> capacity;
-
-  std::cout << "Input amount of calls:\n";
-
-  std::cin >> calls_amount;
-
-  LFU_cache<int> lfu(capacity);
-
-  for (int i = 0; i < calls_amount; ++i)
+  std::string filename;
+  if (argc == 2)
   {
-    int request = 0;
-    std::cout << "Input request #" << i << "\n";
-    std::cin >> request;
-
-    if (lfu.Request(request))
-    {
-      std::cout << "*******Hits in cache!*******\n";
-      ++hits;
-    }
-    else
-      std::cout << "*******No hit        *******\n";
+    std::cout << "Input name of a file with test\n(FORMAT: capacity calls_amount data...)\n";
+    std::cin >> filename;
   }
+  else
+    filename = argv[1];
 
-  std::cout << "Total amounts of hits = " << hits << "\n";
-  std::cout << "------------LIST DUMP-----------------------\n";
-  std::cout << lfu << "\n";
+  int capacity = GetTestsFromFile(filename, requests);
+  if (capacity == 0)
+    return 1;
+
+  LFU_cache<int> LFU(capacity);
+
+  std::cout << "Hits: " << LFU.Test(requests) << "\n";
+  std::cout << "-------------LIST DUMP---------------------\n";
+  std::cout << LFU << "\n";
+
+
+
   return 0;
 }
+
+int GetTestsFromFile( const std::string &filename, std::vector<int> &tests )
+{
+  std::ifstream test_file(filename);
+
+  if (!test_file.is_open())
+  {
+    std::cout << "Error with opening file " << filename << "\n";
+    return 0;
+  }
+
+  int capacity = 0, calls_amount = 0;
+  test_file >> capacity >> calls_amount;
+
+  tests.resize(calls_amount);
+
+  for (int i = 0; i < calls_amount; ++i)
+    test_file >> tests[i];
+
+  test_file.close();
+
+  return capacity;
+}
+
 /* TODO:
  * 1. create dummy hash especial for int type (template)
  * 2. add counter to every element

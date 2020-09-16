@@ -1,6 +1,10 @@
 #ifndef CACHE_CACHE_H
 #define CACHE_CACHE_H
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
 #include <unordered_map>
 #include <list>
 #include <iterator>
@@ -21,85 +25,94 @@ template <typename type, typename key_type = unsigned long long>
 class LFU_cache
 {
 private:
-  size_t _capacity;
+  size_t capacity_;
 
   // service struct for LFU algorith
-  std::list<lst_elem<type>> _cache;
+  std::list<lst_elem<type>> cache_;
 
   using List_it = typename std::list<lst_elem<type>>::iterator;
   using Hash_tbl = std::unordered_map<key_type, List_it>;
   using Hash_it = typename Hash_tbl::iterator;
 
-  Hash_tbl _hash_table;
+  Hash_tbl hash_table_;
 
 public:
 
   // class constructor
-  explicit LFU_cache( size_t capacity = 0 ) : _capacity(capacity),
-                                              _cache(),
-                                              _hash_table()
+  explicit LFU_cache( size_t capacity = 0 ) : capacity_(capacity),
+                                              cache_(),
+                                              hash_table_()
   {
   }
 
   bool Request( const type &val )
   {
     // get a hash
-    key_t val_hash = _Hash(val);
+    key_t val_hash = Hash_(val);
     // find in map by hash value
-    auto val_lst = _hash_table.find(val_hash);
+    auto val_lst = hash_table_.find(val_hash);
 
-    if (val_lst != _hash_table.end())
+    if (val_lst != hash_table_.end())
     {
       // this hash exist
       val_lst->second->counter++;
       return true;
     }
     // value is fully new to cache
-    if (_cache.size() >= _capacity)
+    if (cache_.size() >= capacity_)
     {
-      _Emplace(val, val_hash);
+      Emplace_(val, val_hash);
       return false;
     }
 
-    _cache.push_front({val, 1});
-    _hash_table[val_hash] = _cache.begin();
+    cache_.push_front({val, 1});
+    hash_table_[val_hash] = cache_.begin();
 
     return false;
   }
   template <typename tpe>
   friend std::ostream & operator <<( std::ostream &ost, const LFU_cache<tpe> &lfu );
 
+  int Test( std::vector<int> &tests )
+  {
+    int hits = 0;
+
+    for (auto &tst : tests)
+      if (Request(tst))
+        ++hits;
+
+    return hits;
+  }
 
   // class destructor
   ~LFU_cache( void )
   {
-
   }
 
 private:
 
   template <typename T>
-  static T _Hash( T val )
+  static T Hash_( T val )
   {
     return val;
   }
 
-  void _Emplace( const type &value, key_t hash )
+  void Emplace_( const type &value, key_t hash )
   {
-    auto Min_lst = _FindMin();
+    auto Min_lst = FindMin_();
 
     List_it lst_it = Min_lst->second;
-    _hash_table.erase(Min_lst);
-    _hash_table[hash] = lst_it;
+    hash_table_.erase(Min_lst);
+    hash_table_[hash] = lst_it;
     lst_it->counter = 1;
     lst_it->value = value;
   }
 
-  auto _FindMin( void )
+  auto FindMin_( void )
   {
-    auto Min_lst = _hash_table.begin();
+    auto Min_lst = hash_table_.begin();
 
-    for (auto it = _hash_table.begin(); it != _hash_table.end(); ++it)
+    for (auto it = hash_table_.begin(); it != hash_table_.end(); ++it)
     {
       if (it->second->counter < Min_lst->second->counter)
         Min_lst = it;
@@ -113,7 +126,7 @@ template <typename type>
 std::ostream & operator <<( std::ostream &ost, const LFU_cache<type> &lfu )
 {
   int counter = 0;
-  for (auto &ls : lfu._cache)
+  for (auto &ls : lfu.cache_)
   {
     ost << "Elem #" << counter++ << "\n{\n  value = " << ls.value;
     ost << "\n  counter = " << ls.counter << "\n}\n";
