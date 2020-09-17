@@ -42,8 +42,13 @@ struct Freq_elem
   {}
 };
 /* HOW IT WORKS:
- * FREQ_list -->
- *
+ * FREQ_list --> [hits: 0] --> [hits: 1] --> ...
+ *                  ^              ^
+ *                  |              |
+ *              Node_list       Node_list
+ *                  ^              ^
+ *                  |              |
+ *                 [val:2]        [val:3]   -- request values
  * */
 
 template <typename type, typename key_type = unsigned long long>
@@ -69,7 +74,11 @@ public:
                                           Freq_list_()
   {
   }
-
+  /**
+   * @brief Cache request function
+   * @param val reference to request value
+   * @return true if the hits has happened, false otherwise
+   */
   bool Request( const type &val )
   {
     // get a hash
@@ -86,8 +95,15 @@ public:
     // value is fully new to cache
     AddCache_(val);
     return false;
-  }
+  } /* End of 'Request' function */
 
+  /**
+   * @brief Reload << operator to dump list via std::cout
+   * @tparam tpe  - type of a LFU_cache template
+   * @param ost - osrteam
+   * @param lfu -LFU cache reference
+   * @return reference to ostream (for multiple '<<')
+   */
   template <typename tpe>
   friend std::ostream & operator <<( std::ostream &ost, const LFU_cache<tpe> &lfu );
 
@@ -100,7 +116,7 @@ public:
         ++hits;
 
     return hits;
-  }
+  } /* End of 'operator <<' function */
 
 private:
 
@@ -110,6 +126,10 @@ private:
     return val;
   }
 
+  /**
+   * @brief Increment amount of hits in value function
+   * @param n_it
+   */
   void Increment_( Node_it n_it )
   {
 #define DEL_IS_EM(old_it, new_it) \
@@ -140,8 +160,14 @@ private:
 
 
 #undef DEL_IS_EM
-  }
+  } /* End of 'Increment_' function */
 
+  /**
+   * @brief Retie a node function
+   * @param node reference to node iterator for retie
+   * @param src reference to iterator to element of Freq_list, where node is located
+   * @param dst reference to iterator to element of Freq_list, where node will be located
+   */
   void ReTie_( Node_it &node, Freq_it<type> &src, Freq_it<type> &dst )
   {
     hash_table_.erase(node->value);
@@ -149,9 +175,12 @@ private:
     src->Node_list.erase(node);
     if (src->Node_list.empty())
       Freq_list_.erase(src);
-  }
+  } /* End of 'ReTie_' function */
 
-
+  /**
+   * @brief Add new value to cache function
+   * @param value
+   */
   void AddCache_( type value )
   {
     if (hash_table_.size() >= capacity_)
@@ -159,8 +188,11 @@ private:
     AddFreq_(value);
 
     hash_table_[value] = Freq_list_.front().Node_list.begin();
-  }
+  } /* End of 'AddCache_' function */
 
+  /**
+   * @brief Delete least used node function
+   */
   void DelMin_( void )
   {
     hash_table_.erase(Freq_list_.front().Node_list.front().value);
@@ -168,15 +200,19 @@ private:
 
     if (Freq_list_.front().Node_list.empty())
       Freq_list_.pop_front();
-  }
+  } /* End of 'DelMin_' function*/
 
+  /**
+   * @brief Add new Frequency to Freq_list function
+   * @param value
+   */
   void AddFreq_( type value )
   {
     if (Freq_list_.empty() || Freq_list_.front().hits != 0)
       Freq_list_.push_front(Freq_elem<type>(0));
 
     Freq_list_.front().Node_list.push_front(Node_elem(value, Freq_list_.begin()));
-  }
+  } /* End of 'AddFreq_' function */
 };
 
 template <typename type>
