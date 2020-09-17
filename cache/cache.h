@@ -164,6 +164,7 @@ private:
   void DelMin_( void )
   {
     hash_table_.erase(Freq_list_.front().Node_list.front().value);
+    Freq_list_.front().Node_list.pop_front();
 
     if (Freq_list_.front().Node_list.empty())
       Freq_list_.pop_front();
@@ -190,7 +191,6 @@ std::ostream & operator <<( std::ostream &ost, const LFU_cache<type> &lfu )
       ost << "\n  hits = " << lf.hits << "\n}\n";
     }
   }
-
   return ost;
 }
 
