@@ -9,29 +9,28 @@
 #include <list>
 #include <iterator>
 
-#define OK std::cout << "\n!!!OK!!!\n";
+#define OK(var) std::cout << "\n!!!OK" << var << "!!!\n";
 
 template <typename type>
 struct Freq_elem;
 
+
 template <typename type>
 using Freq_it = typename std::list<Freq_elem<type>>::iterator;
 
+// structure which stored in node list
 template <typename type>
 struct Node_elem
 {
   type value;
   Freq_it<type> Head;
 
-  Node_elem( type val, const Freq_it<type> &head ) : value(val),
+  Node_elem( type val, Freq_it<type> head ) : value(val),
                                                      Head(head)
-  {}
-
-  Node_elem( const Node_elem &n_elem ) : value(n_elem.value),
-                                         Head(n_elem.Head)
   {}
 };
 
+// structure which stored in freq list
 template<typename type>
 struct Freq_elem
 {
@@ -42,7 +41,10 @@ struct Freq_elem
                             hits(hts)
   {}
 };
-
+/* HOW IT WORKS:
+ * FREQ_list -->
+ *
+ * */
 
 template <typename type, typename key_type = unsigned long long>
 class LFU_cache
@@ -63,7 +65,8 @@ public:
 
   // class constructor
   explicit LFU_cache( size_t capacity ) : capacity_(capacity),
-                                              hash_table_()
+                                          hash_table_(),
+                                          Freq_list_()
   {
   }
 
@@ -84,6 +87,7 @@ public:
     AddCache_(val);
     return false;
   }
+
   template <typename tpe>
   friend std::ostream & operator <<( std::ostream &ost, const LFU_cache<tpe> &lfu );
 
@@ -98,11 +102,6 @@ public:
     return hits;
   }
 
-  // class destructor
-  ~LFU_cache( void )
-  {
-  }
-
 private:
 
   template <typename T>
@@ -111,31 +110,45 @@ private:
     return val;
   }
 
-  void Increment_( Node_it &n_it )
+  void Increment_( Node_it n_it )
   {
-#define DEL_IS_EM(var) \
-    if ((var)->Node_list.empty()) \
-      Freq_list_.erase((var));
+#define DEL_IS_EM(old_it, new_it) \
+    hash_table_.erase(n_it->value); \
+    hash_table_[n_it->value] = (new_it)->Node_list.begin(); \
+    (old_it)->Node_list.erase(n_it);   \
+    if ((old_it)->Node_list.empty())         \
+      Freq_list_.erase(old_it);
 
-    Freq_it<type> n_head = n_it->Head;
-    Freq_it<type> n_head_p1 = ++n_head;
+
+    Freq_it<type> n_head(n_it->Head);
+    Freq_it<type> n_head_p1(++n_head);
     --n_head;
 
     if (n_head_p1 != Freq_list_.end() && n_head->hits + 1 == n_head_p1->hits)
     {
-      n_head->Node_list.push_front(Node_elem(n_it->value, n_head));
-      (--n_head)->Node_list.erase(n_it);
-      DEL_IS_EM(n_head);
+      n_head_p1->Node_list.push_front(Node_elem(n_it->value, n_head_p1));
+
+      ReTie_(n_it, n_head, n_head_p1);
       return;
     }
+
     // add list with new hits amount
-    Freq_it<type> new_head = Freq_list_.insert(n_it->Head, Freq_elem<type>((--n_head)->hits + 1));
+    Freq_it<type> new_head = Freq_list_.insert(n_head_p1, Freq_elem<type>(n_head->hits + 1));
     // push node to new freq list
     new_head->Node_list.push_front(Node_elem(n_it->value, new_head));
-    (--new_head)->Node_list.erase(n_it);
-    DEL_IS_EM(new_head);
+    ReTie_(n_it, n_head, new_head);
+
 
 #undef DEL_IS_EM
+  }
+
+  void ReTie_( Node_it &node, Freq_it<type> &src, Freq_it<type> &dst )
+  {
+    hash_table_.erase(node->value);
+    hash_table_[node->value] = dst->Node_list.begin();
+    src->Node_list.erase(node);
+    if (src->Node_list.empty())
+      Freq_list_.erase(src);
   }
 
 
@@ -151,8 +164,6 @@ private:
   void DelMin_( void )
   {
     hash_table_.erase(Freq_list_.front().Node_list.front().value);
-    Freq_list_.front().Node_list.pop_front();
-
 
     if (Freq_list_.front().Node_list.empty())
       Freq_list_.pop_front();
