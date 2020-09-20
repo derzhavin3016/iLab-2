@@ -132,14 +132,6 @@ private:
    */
   void Increment_( Node_it n_it )
   {
-#define DEL_IS_EM(old_it, new_it) \
-    hash_table_.erase(n_it->value); \
-    hash_table_[n_it->value] = (new_it)->Node_list.begin(); \
-    (old_it)->Node_list.erase(n_it);   \
-    if ((old_it)->Node_list.empty())         \
-      Freq_list_.erase(old_it);
-
-
     Freq_it<type> n_head(n_it->Head);
     Freq_it<type> n_head_p1(++n_head);
     --n_head;
@@ -157,9 +149,6 @@ private:
     // push node to new freq list
     new_head->Node_list.push_front(Node_elem(n_it->value, new_head));
     ReTie_(n_it, n_head, new_head);
-
-
-#undef DEL_IS_EM
   } /* End of 'Increment_' function */
 
   /**
