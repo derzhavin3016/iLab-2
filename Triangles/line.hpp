@@ -6,6 +6,7 @@
 #define TRIANGLES_LINE_HPP
 
 #include "vec.hpp"
+#include "plane.hpp"
 
 class Line
 {
@@ -25,6 +26,8 @@ public:
                              Dir_(line.Dir_)
   {
   }
+
+  friend bool Intersect( const Plane &plane, Line &line );
 
   // For Debug
   friend std::ostream & operator <<( std::ostream &ost, const Line &line )

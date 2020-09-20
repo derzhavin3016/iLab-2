@@ -6,7 +6,6 @@
 #define TRIANGLES_TRIAN_HPP
 
 #include "plane.hpp"
-#include "line.hpp"
 
 class Trian
 {
@@ -21,6 +20,26 @@ public:
   {
   }
 
+  Trian( const Trian &trian ) : v1_(trian.v1_),
+                                v2_(trian.v2_),
+                                v3_(trian.v3_)
+  {
+  }
+
+  bool IsIntersect( const Trian &trian )
+  {
+    Plane p1(v1_, v2_, v3_), p2(trian.v1_, trian.v2_, trian.v3_);
+    Line line_intr(Vec(0), 0);
+    if (!p1.Intersect(p2, line_intr))
+      return false;
+    Vec V00(line_intr.Dir_ & (v1_ - line_intr.Org_)),
+        V01(line_intr.Dir_ & (v2_ - line_intr.Org_)),
+        V02(line_intr.Dir_ & (v3_ - line_intr.Org_));
+    double t00 = V00 +
+
+
+    return true;
+  }
 };
 
 #endif //TRIANGLES_TRIAN_HPP
