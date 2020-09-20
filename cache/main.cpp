@@ -2,8 +2,21 @@
 
 int GetTestsFromFile( const std::string &filename, std::vector<int> &tests );
 
+//#define DEBUG
+
 int main( int argc, char *argv[] )
 {
+#ifdef DEBUG
+  LFU_cache<int> LFU(1);
+  LFU.Request(4);
+  LFU.Request(4);
+  LFU.Request(3);
+  LFU.Request(3);
+  LFU.Request(3);
+  LFU.Request(3);
+  std::cout << LFU;
+#endif
+#ifndef DEBUG
   std::vector<int> requests;
 
   std::string filename;
@@ -21,10 +34,12 @@ int main( int argc, char *argv[] )
 
   LFU_cache<int> LFU(capacity);
 
-  std::cout << "Hits: " << LFU.Test(requests) << "\n";
+  int hits = LFU.Test(requests);
+  std::cout << "Hits: " << hits << "\n";
   std::cout << "-------------LIST DUMP---------------------\n";
   std::cout << LFU << "\n";
-
+  std::cout << "Hits: " << hits << "\n";
+#endif
 
 
   return 0;
