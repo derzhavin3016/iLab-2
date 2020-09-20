@@ -205,6 +205,16 @@ public:
   {
     return !(*this - V);
   }
+
+  // FOR DEBUG
+  friend std::ostream & operator <<( std::ostream &ost, const Vec &vec )
+  {
+    ost << "x = " << vec.x_ << "\n";
+    ost << "y = " << vec.y_ << "\n";
+    ost << "z = " << vec.z_ << "\n";
+
+    return ost;
+  }
 };
 
 #endif //TRIANGLES_VEC_HPP
