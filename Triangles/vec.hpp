@@ -8,11 +8,14 @@
 #include <iostream>
 #include <cmath>
 
+
+const double VEC_THRESHOLD = 1e-11;
+
 class Vec
 {
 private:
   double x_, y_, z_;
-
+  double threshold = VEC_THRESHOLD;
 public:
 
   /* Vector constructor method */
@@ -204,6 +207,23 @@ public:
   double Distance( const Vec&V )
   {
     return !(*this - V);
+  }
+
+  bool operator ==( const Vec &V )
+  {
+    return (std::abs(x_ - V.x_) < threshold &&
+            std::abs(y_ - V.y_) < threshold &&
+            std::abs(y_ - V.y_) < threshold);
+  }
+
+  void SetThreshold( double new_threshold )
+  {
+    threshold = new_threshold;
+  }
+
+  void SetDefThres( void )
+  {
+    threshold = VEC_THRESHOLD;
   }
 
   // FOR DEBUG

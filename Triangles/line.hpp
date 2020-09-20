@@ -10,22 +10,30 @@
 class Line
 {
 private:
-  Vec Org, Dir; // Origin and direction of the line
+  Vec Org_, Dir_; // Origin and direction of the line
 
 public:
 
   // Constructor by points
-  Line( const Vec &pt1, const Vec &pt2 ) : Org(pt1),
-                                           Dir((pt2 - pt1).Normalize())
+  Line( const Vec &pt1, const Vec &pt2 ) : Org_(pt1),
+                                           Dir_((pt2 - pt1).Normalize())
   {
   }
 
   // Copy constructor
-  Line( const Line &line ) : Org(line.Org),
-                             Dir(line.Dir)
+  Line( const Line &line ) : Org_(line.Org_),
+                             Dir_(line.Dir_)
   {
   }
 
+  // For Debug
+  friend std::ostream & operator <<( std::ostream &ost, const Line &line )
+  {
+    ost << "Org:\n" << line.Org_;
+    ost << "Dir:\n" << line.Dir_;
+
+    return ost;
+  }
 };
 
 #endif //TRIANGLES_LINE_HPP
