@@ -13,6 +13,23 @@ int sgn( T value )
   return (T(0) < value) - (T(0) > value);
 }
 
+
+template <typename T>
+T Max( T a, T b, T c )
+{
+  T max = 0;
+
+  if (a > b)
+    max = a;
+  else
+    max = b;
+
+  if (max < c)
+    max = c;
+
+  return max;
+}
+
 /**
    * @brief Intersect two planes function.
    * @param[in] plane -reference to plane
@@ -39,6 +56,55 @@ bool IsIntersect( const Plane &plane1, const Plane &plane2, Line &line, bool IsM
     b = (s1 * n1n2dot - s2 * n1sqr) / bottom;
 
   line.Org_ = plane1.Normal_ * a + plane2.Normal_ * b;
+  return true;
+}
+
+int NumOfMax( double a, double b, double c )
+{
+  int num = 0;
+  double max;
+
+  if (a > b)
+    num = 1, max = a;
+  else
+    num = 2, max = b;
+
+  if (max < c)
+    num = 3;
+
+  return num;
+}
+
+bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 )
+{
+  double OXY = Norm & Vec(0, 0, 1),
+         OXZ = Norm & Vec(0, 1, 0),
+         OYZ = Norm & Vec(1, 0, 0);
+
+  size_t maxind = NumOfMax(OYZ, OXZ, OXY);
+  --maxind;
+
+  Vec tr1[3] = {0, 0, 0};
+  Vec tr2[3] = {0, 0, 0};
+
+  size_t j = 0;
+  for (size_t i = 0; i < 2; ++i)
+  {
+   if (i == maxind)
+     continue;
+
+    tr1[0][j] = trian1.v1_[i];
+    tr2[0][j] = trian2.v1_[i];
+    tr1[1][j] = trian1.v2_[i];
+    tr2[1][j] = trian2.v2_[i];
+    tr1[2][j] = trian1.v3_[i];
+    tr2[2][j] = trian2.v3_[i];
+    ++j;
+  }
+
+
+
+
   return true;
 }
 

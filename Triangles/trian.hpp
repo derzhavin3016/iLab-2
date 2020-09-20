@@ -26,6 +26,8 @@ public:
   {
   }
 
+  friend bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 );
+
   friend bool IsIntersect( const Trian &trian1, const Trian &trian2 );
 };
 

@@ -8,6 +8,13 @@
 #include <iostream>
 #include <cmath>
 
+class Trian;
+
+template <typename T>
+T Clamp( T val, T a, T b )
+{
+  return val < a ? a : (a > b ? b : val);
+}
 
 const double VEC_THRESHOLD = 1e-11;
 
@@ -206,7 +213,7 @@ public:
     return x_ * x_ + y_ * y_ + z_ * z_;
   }
 
-  double Distance( const Vec&V )
+  double Distance( const Vec&V ) const
   {
     return !(*this - V);
   }
@@ -228,7 +235,7 @@ public:
     threshold = VEC_THRESHOLD;
   }
 
-  static double GetThreshold( void )
+  static double GetThreshold( void ) const
   {
     return threshold;
   }
@@ -242,7 +249,22 @@ public:
 
     return ost;
   }
+
+  friend bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 );
+
+  double operator []( size_t index ) const
+  {
+    return *(&x_ + Clamp(index, (size_t)0, (size_t)2));
+  }
+
+private:
+
+  double & operator []( size_t index )
+  {
+    return *(&x_ + Clamp(index, (size_t)0, (size_t)2));
+  }
 };
+
 
 double Vec::threshold = VEC_THRESHOLD;
 
