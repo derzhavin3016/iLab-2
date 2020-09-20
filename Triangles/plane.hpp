@@ -5,7 +5,6 @@
 #ifndef TRIANGLES_PLANE_HPP
 #define TRIANGLES_PLANE_HPP
 
-#include "vec.hpp"
 #include "line.hpp"
 
 class Plane
@@ -33,31 +32,23 @@ public:
   {
   }
 
+  double GetDist( void )
+  {
+    return Dist_;
+  }
+
+  double SgnDist( const Vec &vec )
+  {
+    return (vec & Normal_) + Dist_;
+  }
+
   /**
    * @brief Intersect two planes function.
    * @param[in] plane -reference to plane
    * @param [in, out] - reference to intersect line
    * @return true if planes intersect by line, false otherwise
    */
-  bool Intersect( const Plane &plane, Line &line )
-  {
-    Vec linedir(plane.Normal_ % Normal_);
-    if (linedir.Length2() == 0)
-      return false;
-
-    line.Dir_ = linedir;
-    double s1 = Dist_, s2 = plane.Dist_,
-           n1n2dot = Normal_ & plane.Normal_,
-           n1sqr   = Normal_.Length2(),
-           n2sqr   = plane.Normal_.Length2(),
-           bottom  = n1n2dot * n1n2dot - n1sqr * n2sqr,
-           a = (s2 * n1n2dot - s1 * n2sqr) / bottom,
-           b = (s1 * n1n2dot - s2 * n1sqr) / bottom;
-
-    line.Org_ = Normal_ * a + plane.Normal_ * b;
-    return true;
-  }
-
+  friend bool Intersect( const Plane &plane1, const Plane &plane2, Line &line );
 };
 
 #endif //TRIANGLES_PLANE_HPP

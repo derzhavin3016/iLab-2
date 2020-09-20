@@ -1,10 +1,10 @@
 #include <iostream>
-#include "vec.h"
+#include "line.hpp"
 
 int main( void )
 {
-  Vec a(1, 0, 0), b(0, 1, 0);
-
-  std::cout << (a + b);
+  Vec a(0), b(5);
+  Vec c((a - b).Normalize());
+  std::cout << c;
   return 0;
 }
