@@ -42,13 +42,18 @@ public:
     return (vec & Normal_) + Dist_;
   }
 
+  const Vec & GetNorm( void )
+  {
+    return Normal_;
+  }
+
   /**
    * @brief Intersect two planes function.
    * @param[in] plane -reference to plane
    * @param [in, out] - reference to intersect line
    * @return true if planes intersect by line, false otherwise
    */
-  friend bool Intersect( const Plane &plane1, const Plane &plane2, Line &line );
+  friend bool IsIntersect( const Plane &plane1, const Plane &plane2, Line &line, bool IsMayPar /* = true */ );
 };
 
 #endif //TRIANGLES_PLANE_HPP

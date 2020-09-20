@@ -28,7 +28,17 @@ public:
   {
   }
 
-  friend bool Intersect( const Plane &plane1, const Plane &plane2, Line &line );
+  const Vec & GetOrg( void )
+  {
+    return Org_;
+  }
+
+  const Vec & GetDir( void )
+  {
+    return Dir_;
+  }
+
+  friend bool IsIntersect( const Plane &plane1, const Plane &plane2, Line &line, bool IsMayPar /*= true */ );
 
   // For Debug
   friend std::ostream & operator <<( std::ostream &ost, const Line &line )

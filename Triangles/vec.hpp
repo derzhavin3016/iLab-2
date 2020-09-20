@@ -15,7 +15,7 @@ class Vec
 {
 private:
   double x_, y_, z_;
-  double threshold = VEC_THRESHOLD;
+  static double threshold;
 public:
 
   friend class Plane;
@@ -211,21 +211,26 @@ public:
     return !(*this - V);
   }
 
-  bool operator ==( const Vec &V )
+  friend bool operator ==( const Vec &V1, const Vec &V2 )
   {
-    return (std::abs(x_ - V.x_) < threshold &&
-            std::abs(y_ - V.y_) < threshold &&
-            std::abs(y_ - V.y_) < threshold);
+    return (std::abs(V1.x_ - V2.x_) < threshold &&
+            std::abs(V1.y_ - V2.y_) < threshold &&
+            std::abs(V1.z_ - V2.z_) < threshold);
   }
 
-  void SetThreshold( double new_threshold )
+  static void SetThreshold( double new_threshold )
   {
     threshold = new_threshold;
   }
 
-  void SetDefThres( void )
+  static void SetDefThres( void )
   {
     threshold = VEC_THRESHOLD;
+  }
+
+  static double GetThreshold( void )
+  {
+    return threshold;
   }
 
   // FOR DEBUG
@@ -238,5 +243,7 @@ public:
     return ost;
   }
 };
+
+double Vec::threshold = VEC_THRESHOLD;
 
 #endif //TRIANGLES_VEC_HPP
