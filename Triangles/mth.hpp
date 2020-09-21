@@ -75,6 +75,50 @@ int NumOfMax( double a, double b, double c )
   return num;
 }
 
+int GetMidInd( int i0, int i1, int N )
+{
+  if (i0 < i1)
+    return (i0 + i1) / 2;
+  else
+    return (i0 + i1 + N) / 2 % N;
+}
+
+int GetExtrInd( const Trian &trian, const Vec &point )
+{
+  int i0 = 0, i1 = 0;
+  while (1)
+  {
+    int mid = GetMidInd(i0, i1, 3);
+    int next = (mid + 1) % 3;
+    Vec E(trian[next] - trian[mid]);
+    if ((point & E) > 0)
+    {
+      if (mid == i0)
+        return i1;
+      i0 = mid;
+    }
+    else
+    {
+      int prev = (mid + 3 - 1) % 3;
+      E = trian[mid] - trian[prev];
+      if ((point & E) < 0)
+        i1 = mid;
+      else
+        return mid;
+    }
+  }
+}
+
+bool TestIntr( const Trian &trian1, const Trian &trian2 )
+{
+  int i0 = 0, i1 = 2;
+
+  for (; i0 < 3; i1 = i0, ++i0)
+  {
+
+  }
+}
+
 bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 )
 {
   double OXY = Norm & Vec(0, 0, 1),
