@@ -31,8 +31,6 @@ public:
     return *(&v1_ + Clamp(index, 0, 2));
   }
 
-  friend int GetExtrInd( const Trian &trian, const Vec &point );
-
   friend bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 );
 
   friend bool IsIntersect( const Trian &trian1, const Trian &trian2 );

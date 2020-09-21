@@ -32,17 +32,17 @@ public:
   {
   }
 
-  double GetDist( void )
+  double GetDist( void ) const
   {
     return Dist_;
   }
 
-  double SgnDist( const Vec &vec )
+  double SgnDist( const Vec &vec ) const
   {
     return (vec & Normal_) + Dist_;
   }
 
-  const Vec & GetNorm( void )
+  const Vec & GetNorm( void ) const
   {
     return Normal_;
   }

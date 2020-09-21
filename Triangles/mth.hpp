@@ -142,8 +142,8 @@ bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 )
   size_t maxind = NumOfMax(OYZ, OXZ, OXY);
   --maxind;
 
-  Vec tr1[3] = {0, 0, 0};
-  Vec tr2[3] = {0, 0, 0};
+  Vec tr1[3];
+  Vec tr2[3];
 
   size_t j = 0;
   for (size_t i = 0; i < 2; ++i)

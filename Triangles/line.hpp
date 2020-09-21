@@ -28,26 +28,26 @@ public:
   {
   }
 
-  const Vec & GetOrg( void )
+  const Vec & GetOrg( void ) const
   {
     return Org_;
   }
 
-  const Vec & GetDir( void )
+  const Vec & GetDir( void ) const
   {
     return Dir_;
   }
 
   friend bool IsIntersect( const Plane &plane1, const Plane &plane2, Line &line, bool IsMayPar /*= true */ );
-
-  // For Debug
-  friend std::ostream & operator <<( std::ostream &ost, const Line &line )
-  {
-    ost << "Org:\n" << line.Org_;
-    ost << "Dir:\n" << line.Dir_;
-
-    return ost;
-  }
 };
+
+// For Debug
+std::ostream & operator <<( std::ostream &ost, const Line &line )
+{
+  ost << "Org:\n" << line.GetOrg();
+  ost << "Dir:\n" << line.GetDir();
+
+  return ost;
+}
 
 #endif //TRIANGLES_LINE_HPP

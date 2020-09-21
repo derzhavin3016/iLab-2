@@ -34,15 +34,15 @@ public:
   {}
 
   /* Vector constructor method with similar coordinates */
-  Vec( double a ) : x_(a),
-                         y_(a),
-                         z_(a)
+  explicit Vec( double a = 0 ) : x_(a),
+                                 y_(a),
+                                 z_(a)
   {}
 
   /* Vector copy constructor */
   Vec( const Vec&V ) : x_(V.x_),
-                            y_(V.y_),
-                            z_(V.z_)
+                       y_(V.y_),
+                       z_(V.z_)
   {}
 
   /**
@@ -240,16 +240,6 @@ public:
     return threshold;
   }
 
-  // FOR DEBUG
-  friend std::ostream & operator <<( std::ostream &ost, const Vec &vec )
-  {
-    ost << "x = " << vec.x_ << "\n";
-    ost << "y = " << vec.y_ << "\n";
-    ost << "z = " << vec.z_ << "\n";
-
-    return ost;
-  }
-
   Vec Perp2D( void ) const
   {
     return Vec(y_, -x_, 0);
@@ -271,5 +261,15 @@ private:
 };
 
 double Vec::threshold = VEC_THRESHOLD;
+
+// FOR DEBUG
+std::ostream & operator <<( std::ostream &ost, const Vec &vec )
+{
+  ost << "x = " << vec.getX() << "\n";
+  ost << "y = " << vec.getY() << "\n";
+  ost << "z = " << vec.getZ() << "\n";
+
+  return ost;
+}
 
 #endif //TRIANGLES_VEC_HPP
