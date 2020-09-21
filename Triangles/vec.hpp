@@ -210,7 +210,7 @@ public:
 
   double Length2( void ) const
   {
-    return x_ * x_ + y_ * y_ + z_ * z_;
+    return *this & *this;
   }
 
   double Distance( const Vec&V ) const
