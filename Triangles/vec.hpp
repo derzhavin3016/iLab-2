@@ -25,12 +25,12 @@ private:
   static double threshold;
 public:
 
-  friend class Plane;
+  //friend class Plane;
 
   /* Vector constructor method */
   Vec( double a, double b, double c ) : x_(a),
-                                             y_(b),
-                                             z_(c)
+                                        y_(b),
+                                        z_(c)
   {}
 
   /* Vector constructor method with similar coordinates */
@@ -105,7 +105,7 @@ public:
    * @brief Get x coordinate function.
    * @return x - coordinate
    */
-  double getX( void )
+  double getX( void ) const
   {
     return x_;
   }
@@ -114,7 +114,7 @@ public:
    * @brief Get y coordinate function.
    * @return y - coordinate
    */
-  double getY( void )
+  double getY( void ) const
   {
     return y_;
   }
@@ -123,7 +123,7 @@ public:
    * @brief Get z coordinate function.
    * @return z - coordinate
    */
-  double getZ( void )
+  double getZ( void ) const
   {
     return z_;
   }
@@ -235,7 +235,7 @@ public:
     threshold = VEC_THRESHOLD;
   }
 
-  static double GetThreshold( void ) const
+  static double GetThreshold( void )
   {
     return threshold;
   }
@@ -248,6 +248,11 @@ public:
     ost << "z = " << vec.z_ << "\n";
 
     return ost;
+  }
+
+  Vec Perp2D( void ) const
+  {
+    return Vec(y_, -x_, 0);
   }
 
   friend bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 );
@@ -264,7 +269,6 @@ private:
     return *(&x_ + Clamp(index, (size_t)0, (size_t)2));
   }
 };
-
 
 double Vec::threshold = VEC_THRESHOLD;
 

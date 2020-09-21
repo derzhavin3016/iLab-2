@@ -1,10 +1,11 @@
 #include <iostream>
-#include "line.hpp"
+#include "mth.hpp"
 
 int main( void )
 {
-  Vec a(0), b(5);
-  Vec c((a - b).Normalize());
-  std::cout << c;
+  Trian tr1(Vec(0), Vec(1, 0, 0), Vec(0, 1, 0)),
+        tr2(Vec(0, 0, 1), Vec(1, 0, 1), Vec(0, 1, 1));
+
+  std::cout << IsIntersect(tr1, tr2) << "\n";
   return 0;
 }

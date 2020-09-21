@@ -115,8 +115,22 @@ bool TestIntr( const Trian &trian1, const Trian &trian2 )
 
   for (; i0 < 3; i1 = i0, ++i0)
   {
+    Vec D1((trian1[i0] - trian1[i1]).Perp2D()),
+        D2((trian2[i0] - trian2[i1]).Perp2D());
 
+    int min1 = GetExtrInd(trian2, -D1),
+        min2 = GetExtrInd(trian1, -D2);
+    Vec diff1(trian2[min1] - trian1[i0]),
+        diff2(trian1[min2] - trian2[i0]);
+
+    if ((D1 & diff1) > 0)
+      return false;
+
+    if ((D2 & diff2) > 0)
+      return false;
   }
+
+  return true;
 }
 
 bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 )
@@ -145,11 +159,8 @@ bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 )
     tr2[2][j] = trian2.v3_[i];
     ++j;
   }
-
-
-
-
-  return true;
+  return TestIntr(Trian(tr1[0], tr1[1], tr1[2]),
+                  Trian(tr2[0], tr2[1], tr2[2]));
 }
 
 bool IsIntersect( const Trian &trian1, const Trian &trian2 )
@@ -169,6 +180,7 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
     if (std::abs(p1.GetDist() - p2.GetDist()) < Vec::GetThreshold())
     {
       // intersect 2-d triangles
+      return Is2DIntersect(trian1, p1.GetNorm(), trian2);
     }
     else
       return false;
