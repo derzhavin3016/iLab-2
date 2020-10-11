@@ -21,8 +21,8 @@ public:
   }
 
   // constructor by normal & point on plane
-  Plane( const Vec &Normal, const Vec &point ) : Normal_(Normal_.Normalizing()),
-                                                 Dist_(point & Normal_)
+  Plane( const Vec &Normal, const Vec &point ) : Normal_(Normal.Normalizing()),
+                                                 Dist_(point & Normal)
   {
   }
 

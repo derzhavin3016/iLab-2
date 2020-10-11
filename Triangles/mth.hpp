@@ -5,7 +5,11 @@
 #ifndef TRIANGLES_MTH_HPP
 #define TRIANGLES_MTH_HPP
 
+#define HI std::cerr <<"hi\n";
+
 #include "trian.hpp"
+#include <iostream>
+
 
 template <typename T>
 int sgn( T value )
@@ -133,11 +137,12 @@ bool TestIntr( const Trian &trian1, const Trian &trian2 )
   return true;
 }
 
+
 bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 )
 {
-  double OXY = Norm & Vec(0, 0, 1),
-         OXZ = Norm & Vec(0, 1, 0),
-         OYZ = Norm & Vec(1, 0, 0);
+  double OXY = std::abs(Norm & Vec(0, 0, 1)),
+         OXZ = std::abs(Norm & Vec(0, 1, 0)),
+         OYZ = std::abs(Norm & Vec(1, 0, 0));
 
   size_t maxind = NumOfMax(OYZ, OXZ, OXY);
   --maxind;
@@ -169,10 +174,6 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
   double dist21 = p1.SgnDist(trian2.v1_),
          dist22 = p1.SgnDist(trian2.v2_),
          dist23 = p1.SgnDist(trian2.v3_);
-
-  if (sgn(dist21) == sgn(dist22) && sgn(dist22) == sgn(dist23))
-    return false;
-
   Plane p2(trian2.v1_, trian2.v2_, trian2.v3_);
 
   if ((p1.GetNorm() % p2.GetNorm()) == Vec(0))
@@ -185,6 +186,9 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
     else
       return false;
   }
+  if (sgn(dist21) == sgn(dist22) && sgn(dist22) == sgn(dist23))
+    return false;
+
 
   double dist11 = p2.SgnDist(trian1.v1_),
          dist12 = p2.SgnDist(trian1.v2_),
