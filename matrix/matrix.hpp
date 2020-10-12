@@ -4,6 +4,12 @@
 #include <cmath>
 
 template <typename T>
+T Clamp( T val, T min, T max )
+{
+  return val > max ? max : val < min ? min : val;
+}
+
+template <typename T>
 class Matrix
 {
 private:
@@ -21,12 +27,18 @@ public:
 
   template <typename It>
   Matrix( int cols, int rows, It begin, It end ) : matr_(nullptr),
-                                                   cols_(cols),
-                                                   rows_(rows)
+                                                   rows_(rows),
+                                                   cols_(cols)
   {
     Alloc();
-    for (It it = begin; it != end; ++it)
+    size_t i = 0, size = rows_ * cols_;
+    for (It it = begin; it != end &&  i < size; ++it, ++i)
+      matr_[i / rows_][i % rows_] = *it;
+  }
 
+  const T *operator []( size_t i ) const
+  {
+    return matr_[i >= rows_ ? rows_ - 1 : i];
   }
 
   ~Matrix( void )
@@ -36,6 +48,17 @@ public:
 
     delete[] matr_;
     matr_ = nullptr;
+  }
+
+  void Dump( std::ostream &ost ) const
+  {
+    for (size_t i = 0; i < rows_; ++i)
+    {
+      ost << "|| ";
+      for (size_t j = 0; j < rows_; ++j)
+        ost << matr_[i][j] << (j == rows_ - 1 ? "" : ", ");
+      ost << " ||\n";
+    }
   }
 
 private:
@@ -55,6 +78,12 @@ private:
   }
 };
 
+template <typename T>
+std::ostream & operator << ( std::ostream &ost, const Matrix<T> &matr )
+{
+  matr.Dump(ost);
 
+  return ost;
+}
 
 #endif //MATRIX_MATRIX_HPP
