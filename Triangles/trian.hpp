@@ -34,6 +34,13 @@ public:
   friend bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 );
 
   friend bool IsIntersect( const Trian &trian1, const Trian &trian2 );
+
+  friend std::istream & operator >>( std::istream &ist, const Trian &trian )
+  {
+    ist >> trian.v1_ >> trian.v2_ >> trian.v3_;
+
+    return ist;
+  }
 };
 
 #endif //TRIANGLES_TRIAN_HPP

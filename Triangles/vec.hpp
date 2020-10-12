@@ -5,7 +5,8 @@
 #ifndef TRIANGLES_VEC_HPP
 #define TRIANGLES_VEC_HPP
 
-#include <iostream>
+#include
+<iostream>
 #include <cmath>
 
 class Trian;
@@ -221,6 +222,8 @@ public:
     return *(&x_ + Clamp(index, (size_t)0, (size_t)2));
   }
 
+  friend std::istream & operator >>( std::istream &ist, const Vec &vec );
+
 private:
 
   double & operator []( size_t index )
@@ -239,6 +242,13 @@ std::ostream & operator <<( std::ostream &ost, const Vec &vec )
   ost << "z = " << vec.getZ() << "\n";
 
   return ost;
+}
+
+std::istream & operator >>( std::istream &ist, const Vec &vec )
+{
+  ist >> vec.x_ >> vec.y_ >> vec.z_;
+
+  return ist;
 }
 
 /**
