@@ -5,19 +5,27 @@
 #include "mth.hpp"
 
 
-size_t Intersect( std::vector<Trian> &trians )
+void Intersect( std::vector<Trian> &trians )
 {
-  size_t num_of_intr = 0,
-         size_tr = trians.size();
+  size_t size_tr = trians.size();
+
+  bool IsIPrint = false;
 
   for (size_t i = 0; i < size_tr; ++i)
+  {
+    IsIPrint = false;
     for (size_t j = i + 1; j < size_tr; ++j)
-      num_of_intr += IsIntersect(trians[i], trians[j]);
-
-  return num_of_intr;
+      if (IsIntersect(trians[i], trians[j]))
+      {
+        std::cout << j << "\n";
+        IsIPrint = true;
+      }
+    if (IsIPrint)
+      std::cout << i << "\n";
+  }
 }
 
-int RunTests( std::istream &src )
+void RunTests( std::istream &src )
 {
   size_t N = 0;
 
@@ -28,7 +36,7 @@ int RunTests( std::istream &src )
   for (size_t i = 0; i < N; ++i)
     src >> trians[i];
 
-  return Intersect(trians);
+  Intersect(trians);
 }
 
 int main( void )
@@ -55,18 +63,16 @@ int main( void )
       return 1;
     }
 
-    num_of_intr = RunTests(fin);
+    RunTests(fin);
     fin.close();
     break;
   case 's':
-    num_of_intr = RunTests(std::cin);
+    RunTests(std::cin);
     break;
   default:
     std::cout << "Invalid option: '" << key << "'\n";
     return 1;
   }
-
-  std::cout << "Amount of intersections: " << num_of_intr << "\n";
 
   return 0;
 }
