@@ -170,11 +170,8 @@ bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 )
 
 bool IsIntersect( const Trian &trian1, const Trian &trian2 )
 {
-  Plane p1(trian1.v1_, trian1.v2_, trian1.v3_);
-  double dist21 = p1.SgnDist(trian2.v1_),
-         dist22 = p1.SgnDist(trian2.v2_),
-         dist23 = p1.SgnDist(trian2.v3_);
-  Plane p2(trian2.v1_, trian2.v2_, trian2.v3_);
+  Plane p1(trian1.v1_, trian1.v2_, trian1.v3_),
+        p2(trian2.v1_, trian2.v2_, trian2.v3_);
 
   if ((p1.GetNorm() % p2.GetNorm()) == Vec(0))
   {
@@ -186,6 +183,10 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
     else
       return false;
   }
+  double dist21 = p1.SgnDist(trian2.v1_),
+         dist22 = p1.SgnDist(trian2.v2_),
+         dist23 = p1.SgnDist(trian2.v3_);
+
   if (sgn(dist21) == sgn(dist22) && sgn(dist22) == sgn(dist23))
     return false;
 

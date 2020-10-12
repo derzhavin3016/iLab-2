@@ -46,26 +46,6 @@ public:
   {}
 
   /**
-   * @brief Vector add vector (reload +) function
-   * @param[in] V - link to vector.
-   * @return result vector;
-   */
-  Vec operator +( const Vec&V ) const
-  {
-    return Vec(x_ + V.x_, y_ + V.y_, z_ + V.z_);
-  } /* End of 'operator+' function */
-
-  /**
-   * @brief Vector subtraction vector (reload -) function
-   * @param - link to vector:
-   * @return result vector;
-   */
-  Vec operator -( const Vec&V ) const
-  {
-    return Vec(x_ - V.x_, y_ - V.y_, z_ - V.z_);
-  } /* End of 'operator-' function */
-
-  /**
    * @brief Vector negate (reload -) function
    * @return result vector;
    */
@@ -81,6 +61,9 @@ public:
    */
   Vec & operator =( const Vec&V )
   {
+    if (this == &V)
+      return *this;
+
     x_ = V.x_;
     y_ = V.y_;
     z_ = V.z_;
@@ -98,6 +81,7 @@ public:
     x_ += V.x_;
     y_ += V.y_;
     z_ += V.z_;
+
     return *this;
   } /* End of 'operator+=' function */
 
@@ -149,16 +133,6 @@ public:
   double operator!( void ) const
   {
     return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_);
-  }
-
-  double operator &( const Vec&V ) const
-  {
-    return x_ * V.x_ + y_ * V.y_ + z_ * V.z_;
-  }
-
-  Vec operator %( const Vec&V ) const
-  {
-    return Vec(y_ * V.z_ - z_ * V.y_, z_ * V.x_ - x_ * V.z_, x_ * V.y_ - y_ * V.x_);
   }
 
   Vec operator *( double number ) const
@@ -213,11 +187,6 @@ public:
     return *this & *this;
   }
 
-  double Distance( const Vec&V ) const
-  {
-    return !(*this - V);
-  }
-
   friend bool operator ==( const Vec &V1, const Vec &V2 )
   {
     return (std::abs(V1.x_ - V2.x_) < threshold &&
@@ -270,6 +239,52 @@ std::ostream & operator <<( std::ostream &ost, const Vec &vec )
   ost << "z = " << vec.getZ() << "\n";
 
   return ost;
+}
+
+/**
+   * @brief Vector add vector (reload +) function
+   * @param[in] V - link to vector.
+   * @return result vector;
+   */
+Vec operator +( const Vec &lhs, const Vec &rhs )
+{
+  Vec ans(lhs);
+
+  ans += rhs;
+
+  return ans;
+} /* End of 'operator+' function */
+
+/**
+   * @brief Vector subtraction vector (reload -) function
+   * @param - link to vector:
+   * @return result vector;
+   */
+Vec operator -( const Vec &lhs, const Vec &rhs )
+{
+  Vec ans(lhs);
+
+  ans -= rhs;
+
+  return ans;
+} /* End of 'operator-' function */
+
+double Distance( const Vec &from, const Vec &to )
+{
+  return !(from - to);
+}
+
+
+double operator &( const Vec &lhs, const Vec &rhs )
+{
+  return lhs.getX() * rhs.getX() + lhs.getY() * rhs.getY() + lhs.getZ() * rhs.getZ();
+}
+
+Vec operator %( const Vec &lhs, const Vec &rhs )
+{
+  return Vec(lhs.getY() * rhs.getZ() - lhs.getZ() * rhs.getY(),
+             lhs.getZ() * rhs.getX() - lhs.getX() * rhs.getZ(),
+             lhs.getX() * rhs.getY() - lhs.getY() * rhs.getX());
 }
 
 #endif //TRIANGLES_VEC_HPP
