@@ -5,8 +5,7 @@
 #ifndef TRIANGLES_VEC_HPP
 #define TRIANGLES_VEC_HPP
 
-#include
-<iostream>
+#include <iostream>
 #include <cmath>
 
 class Trian;
@@ -18,6 +17,10 @@ T Clamp( T val, T a, T b )
 }
 
 const double VEC_THRESHOLD = 1e-11;
+
+class Vec;
+
+double operator &( const Vec &lhs, const Vec &rhs );
 
 class Vec
 {
@@ -222,7 +225,7 @@ public:
     return *(&x_ + Clamp(index, (size_t)0, (size_t)2));
   }
 
-  friend std::istream & operator >>( std::istream &ist, const Vec &vec );
+  friend std::istream & operator >>( std::istream &ist, Vec &vec );
 
 private:
 
@@ -244,7 +247,7 @@ std::ostream & operator <<( std::ostream &ost, const Vec &vec )
   return ost;
 }
 
-std::istream & operator >>( std::istream &ist, const Vec &vec )
+std::istream & operator >>( std::istream &ist, Vec &vec )
 {
   ist >> vec.x_ >> vec.y_ >> vec.z_;
 

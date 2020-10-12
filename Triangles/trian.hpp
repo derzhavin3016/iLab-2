@@ -13,6 +13,12 @@ private:
   Vec v1_, v2_, v3_;
 public:
 
+  Trian( void ) : v1_(0),
+                  v2_(0),
+                  v3_(0)
+  {
+  }
+
   // constructor by 3 points
   Trian( const Vec &v1, const Vec &v2, const Vec &v3 ) : v1_(v1),
                                                          v2_(v2),
@@ -35,7 +41,7 @@ public:
 
   friend bool IsIntersect( const Trian &trian1, const Trian &trian2 );
 
-  friend std::istream & operator >>( std::istream &ist, const Trian &trian )
+  friend std::istream & operator >>( std::istream &ist, Trian &trian )
   {
     ist >> trian.v1_ >> trian.v2_ >> trian.v3_;
 

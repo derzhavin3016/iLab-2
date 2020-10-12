@@ -38,6 +38,7 @@ int main( void )
   char key = 0;
   std::cin >> key;
 
+  std::ifstream fin;
   std::string filename;
 
   switch (key)
@@ -46,7 +47,7 @@ int main( void )
     std::cout << "Input filename:\n";
     std::cin >> filename;
 
-    std::ifstream fin(filename);
+    fin.open(filename);
 
     if (!fin.is_open())
     {
