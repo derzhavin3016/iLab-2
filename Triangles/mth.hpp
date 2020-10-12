@@ -213,7 +213,13 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
          t21 = V21 + (V23 - V21) * dist21 / (dist21 - dist23),
          t22 = V22 + (V23 - V22) * dist22 / (dist22 - dist23);
 
-  if ((t11 < t21 && t12 < t22) || (t11 > t21  && t12 > t22))
+  if (t11 > t12)
+    std::swap(t11, t12);
+
+  if (t21 > t22)
+    std::swap(t21, t22);
+
+  if (t12 < t21 || t11 > t22)
     return false;
 
   return true;
