@@ -231,9 +231,6 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
   if (t21 > t22)
     std::swap(t21, t22);
 
-  std::cout << t11 << " " << t12 << "\n";
-  std::cout << t21 << " " << t22 << "\n";
-
   if (t12 < t21 || t11 > t22)
     return false;
 
