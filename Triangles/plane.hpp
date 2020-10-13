@@ -12,11 +12,12 @@ class Plane
 private:
   Vec Normal_;
   double Dist_;
+  // Plane equation: Normal_ & V = Dist_
 public:
 
   // constructor by normal and distance
   Plane( const Vec &Normal, double dist ) : Normal_(Normal.Normalizing()),
-                                            Dist_(dist)
+                                            Dist_(dist / Normal.Length())
   {
   }
 

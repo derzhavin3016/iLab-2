@@ -65,9 +65,6 @@ public:
    */
   Vec & operator =( const Vec&V )
   {
-    if (this == &V)
-      return *this;
-
     x_ = V.x_;
     y_ = V.y_;
     z_ = V.z_;
@@ -220,18 +217,18 @@ public:
 
   friend bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 );
 
-  double operator []( size_t index ) const
+  double operator []( int index ) const
   {
-    return *(&x_ + Clamp(index, (size_t)0, (size_t)2));
+    return *(&x_ + Clamp(index, 0, 2));
   }
 
   friend std::istream & operator >>( std::istream &ist, Vec &vec );
 
 private:
 
-  double & operator []( size_t index )
+  double & operator []( int index )
   {
-    return *(&x_ + Clamp(index, (size_t)0, (size_t)2));
+    return *(&x_ + Clamp(index, 0, 2));
   }
 };
 
