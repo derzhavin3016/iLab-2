@@ -8,9 +8,6 @@
 void Intersect( std::vector<Trian> &trians )
 {
   size_t size_tr = trians.size();
-  size_t cnt = 0;
-
-
   bool IsIPrint = false;
 
   for (size_t i = 0; i < size_tr; ++i)
@@ -20,14 +17,11 @@ void Intersect( std::vector<Trian> &trians )
       if (IsIntersect(trians[i], trians[j]))
       {
         std::cout << j << "\n";
-        cnt++;
         IsIPrint = true;
       }
     if (IsIPrint)
       std::cout << i << "\n";
   }
-
-  std::cout << "intersections: " << cnt << "\n";
 }
 
 void RunTests( std::istream &src )
