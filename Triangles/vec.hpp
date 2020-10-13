@@ -134,9 +134,9 @@ public:
    * @brief Calculate the length of a vector function
    * @return length of a vector
    */
-  double operator!( void ) const
+  double Length( void ) const
   {
-    return std::sqrt(x_ * x_ + y_ * y_ + z_ * z_);
+    return std::sqrt(Length2());
   }
 
   Vec operator *( double number ) const
@@ -169,7 +169,7 @@ public:
 
   Vec Normalizing( void ) const
   {
-    double len= !(*this);
+    double len = Length();
     Vec V = *this;
     if (len == 0 || len == 1)
       return V;
@@ -179,7 +179,7 @@ public:
 
   Vec& Normalize( void )
   {
-    double len= !(*this);
+    double len = Length();
     if (len == 0 || len == 1)
       return *this;
     *this /= len;
@@ -284,7 +284,7 @@ Vec operator -( const Vec &lhs, const Vec &rhs )
 
 double Distance( const Vec &from, const Vec &to )
 {
-  return !(from - to);
+  return (from - to).Length();
 }
 
 

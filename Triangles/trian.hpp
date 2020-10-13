@@ -49,4 +49,11 @@ public:
   }
 };
 
+std::ostream & operator <<( std::ostream &ost, const Trian &trian )
+{
+  ost << "V1:\n" << trian[0] << "V2:\n" << trian[1] << "V3:\n" << trian[2];
+
+  return ost;
+}
+
 #endif //TRIANGLES_TRIAN_HPP

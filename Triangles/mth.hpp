@@ -14,7 +14,7 @@
 template <typename T>
 int sgn( T value )
 {
-  return (T(0) < value) - (T(0) > value);
+  return (T(0) <= value) - (T(0) > value);
 }
 
 
@@ -168,6 +168,15 @@ bool Is2DIntersect( const Trian &trian1, const Vec &Norm, const Trian &trian2 )
                   Trian(tr2[0], tr2[1], tr2[2]));
 }
 
+void CmpNSwap( double *dst, double *V )
+{
+  if (sgn(dst[1]) == sgn(dst[2]))
+    std::swap(dst[2], dst[0]), std::swap(V[2], V[0]);
+  else if (sgn(dst[0]) == sgn(dst[2]))
+    std::swap(dst[2], dst[1]), std::swap(V[2], V[1]);
+}
+
+
 bool IsIntersect( const Trian &trian1, const Trian &trian2 )
 {
   Plane p1(trian1.v1_, trian1.v2_, trian1.v3_),
@@ -183,35 +192,39 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
     else
       return false;
   }
-  double dist21 = p1.SgnDist(trian2.v1_),
-         dist22 = p1.SgnDist(trian2.v2_),
-         dist23 = p1.SgnDist(trian2.v3_);
+  double dist2[] = {p1.SgnDist(trian2.v1_),
+                    p1.SgnDist(trian2.v2_),
+                    p1.SgnDist(trian2.v3_)};
 
-  if (sgn(dist21) == sgn(dist22) && sgn(dist22) == sgn(dist23))
+  if (sgn(dist2[0]) == sgn(dist2[1]) && sgn(dist2[1]) == sgn(dist2[2]))
     return false;
 
 
-  double dist11 = p2.SgnDist(trian1.v1_),
-         dist12 = p2.SgnDist(trian1.v2_),
-         dist13 = p2.SgnDist(trian1.v3_);
+  double dist1[] = {p2.SgnDist(trian1.v1_),
+                    p2.SgnDist(trian1.v2_),
+                    p2.SgnDist(trian1.v3_)};
 
-  if (sgn(dist11) == sgn(dist12) && sgn(dist12) == sgn(dist13))
+  if (sgn(dist1[0]) == sgn(dist1[1]) && sgn(dist1[1]) == sgn(dist1[2]))
     return false;
 
   Line intr_line(Vec(0), Vec(0));
   IsIntersect(p1, p2, intr_line, false);
 
-  double V11 = intr_line.GetDir() & (trian1.v1_ - intr_line.GetOrg()),
-         V12 = intr_line.GetDir() & (trian1.v2_ - intr_line.GetOrg()),
-         V13 = intr_line.GetDir() & (trian1.v3_ - intr_line.GetOrg()),
-         V21 = intr_line.GetDir() & (trian2.v1_ - intr_line.GetOrg()),
-         V22 = intr_line.GetDir() & (trian2.v2_ - intr_line.GetOrg()),
-         V23 = intr_line.GetDir() & (trian2.v3_ - intr_line.GetOrg());
+  double V1[] = {intr_line.GetDir() & (trian1.v1_ - intr_line.GetOrg()),
+                 intr_line.GetDir() & (trian1.v2_ - intr_line.GetOrg()),
+                 intr_line.GetDir() & (trian1.v3_ - intr_line.GetOrg())};
+  double V2[] = {intr_line.GetDir() & (trian2.v1_ - intr_line.GetOrg()),
+                 intr_line.GetDir() & (trian2.v2_ - intr_line.GetOrg()),
+                 intr_line.GetDir() & (trian2.v3_ - intr_line.GetOrg())};
 
-  double t11 = V11 + (V13 - V11) * dist11 / (dist11 - dist13),
-         t12 = V12 + (V13 - V12) * dist12 / (dist12 - dist13),
-         t21 = V21 + (V23 - V21) * dist21 / (dist21 - dist23),
-         t22 = V22 + (V23 - V22) * dist22 / (dist22 - dist23);
+
+  CmpNSwap(dist1, V1);
+  CmpNSwap(dist2, V2);
+
+  double t11 = V1[0] + (V1[2] - V1[0]) * dist1[0] / (dist1[0] - dist1[2]),
+         t12 = V1[1] + (V1[2] - V1[1]) * dist1[1] / (dist1[1] - dist1[2]),
+         t21 = V2[0] + (V2[2] - V2[0]) * dist2[0] / (dist2[0] - dist2[2]),
+         t22 = V2[1] + (V2[2] - V2[1]) * dist2[1] / (dist2[1] - dist2[2]);
 
   if (t11 > t12)
     std::swap(t11, t12);

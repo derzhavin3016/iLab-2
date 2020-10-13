@@ -8,6 +8,8 @@
 void Intersect( std::vector<Trian> &trians )
 {
   size_t size_tr = trians.size();
+  size_t cnt = 0;
+
 
   bool IsIPrint = false;
 
@@ -18,11 +20,14 @@ void Intersect( std::vector<Trian> &trians )
       if (IsIntersect(trians[i], trians[j]))
       {
         std::cout << j << "\n";
+        cnt++;
         IsIPrint = true;
       }
     if (IsIPrint)
       std::cout << i << "\n";
   }
+
+  std::cout << "intersections: " << cnt << "\n";
 }
 
 void RunTests( std::istream &src )
@@ -41,38 +46,6 @@ void RunTests( std::istream &src )
 
 int main( void )
 {
-  size_t num_of_intr = 0;
-  std::cout << "File - print f, stdin - print s\n";
-  char key = 0;
-  std::cin >> key;
-
-  std::ifstream fin;
-  std::string filename;
-
-  switch (key)
-  {
-  case 'f':
-    std::cout << "Input filename:\n";
-    std::cin >> filename;
-
-    fin.open(filename);
-
-    if (!fin.is_open())
-    {
-      std::cout << "Cannot open file " << filename << "\n";
-      return 1;
-    }
-
-    RunTests(fin);
-    fin.close();
-    break;
-  case 's':
-    RunTests(std::cin);
-    break;
-  default:
-    std::cout << "Invalid option: '" << key << "'\n";
-    return 1;
-  }
-
+  RunTests(std::cin);
   return 0;
 }
