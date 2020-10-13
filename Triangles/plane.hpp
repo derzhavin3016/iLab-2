@@ -39,7 +39,7 @@ public:
 
   double SgnDist( const Vec &vec ) const
   {
-    return (vec & Normal_) + Dist_;
+    return (vec & Normal_) - Dist_;
   }
 
   const Vec & GetNorm( void ) const
@@ -55,5 +55,12 @@ public:
    */
   friend bool IsIntersect( const Plane &plane1, const Plane &plane2, Line &line, bool IsMayPar /* = true */ );
 };
+
+std::ostream & operator << ( std::ostream &ost, const Plane &plane )
+{
+  ost << "Normal:\n" << plane.GetNorm() << "Dist: " << plane.GetDist() << "\n";
+
+  return ost;
+}
 
 #endif //TRIANGLES_PLANE_HPP

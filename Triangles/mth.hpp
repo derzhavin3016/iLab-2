@@ -192,13 +192,16 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
     else
       return false;
   }
+  std::cout << p1 << p2;
+
   double dist2[] = {p1.SgnDist(trian2.v1_),
                     p1.SgnDist(trian2.v2_),
                     p1.SgnDist(trian2.v3_)};
 
+  for (auto i : dist2)
+    std::cout << i << "\n";
   if (sgn(dist2[0]) == sgn(dist2[1]) && sgn(dist2[1]) == sgn(dist2[2]))
     return false;
-
 
   double dist1[] = {p2.SgnDist(trian1.v1_),
                     p2.SgnDist(trian1.v2_),
@@ -231,6 +234,9 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
 
   if (t21 > t22)
     std::swap(t21, t22);
+
+  std::cout << t11 << " " << t12 << "\n";
+  std::cout << t21 << " " << t22 << "\n";
 
   if (t12 < t21 || t11 > t22)
     return false;
