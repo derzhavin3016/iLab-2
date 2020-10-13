@@ -29,8 +29,6 @@ private:
   static double threshold;
 public:
 
-  //friend class Plane;
-
   /* Vector constructor method */
   Vec( double a, double b, double c ) : x_(a),
                                         y_(b),
