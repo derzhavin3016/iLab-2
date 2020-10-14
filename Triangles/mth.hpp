@@ -216,7 +216,6 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
                  intr_line.GetDir() & (trian2.v2_ - intr_line.GetOrg()),
                  intr_line.GetDir() & (trian2.v3_ - intr_line.GetOrg())};
 
-
   CmpNSwap(dist1, V1);
   CmpNSwap(dist2, V2);
 
@@ -230,6 +229,7 @@ bool IsIntersect( const Trian &trian1, const Trian &trian2 )
 
   if (t21 > t22)
     std::swap(t21, t22);
+
 
   if (t12 < t21 || t11 > t22)
     return false;

@@ -17,17 +17,16 @@ if (!(cond))                                    \
 }
 
 
-class Error : public std::runtime_error
+struct Error : public std::runtime_error
 {
-private:
   int line_;
   const char* descr_, *file_, *function_;
-public:
+
 
   Error( const char* descr, int line,
          const char *file, const char* func ) : std::runtime_error(descr),
-                                                descr_(descr),
                                                 line_(line),
+                                                descr_(descr),
                                                 file_(file),
                                                 function_(func)
   {
@@ -38,5 +37,15 @@ public:
     return descr_;
   }
 };
+
+std::ostream & operator << ( std::ostream &ost, const Error &err )
+{
+  ost << "!!!!\n!! ERROR: " << err.descr_ <<
+         "\n!! In file: " << err.file_ <<
+         "\n!! Function: " << err.function_ <<
+         "\n!! Line: " << err.line_ << "\n!!!!\n";
+
+  return ost;
+}
 
 #endif //MATRIX_ERRORS_HPP

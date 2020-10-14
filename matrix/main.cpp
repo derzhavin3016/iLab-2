@@ -5,11 +5,23 @@
 
 int main( void )
 {
-  std::vector<int> v = {0, 10, 1, 0};
-  Matrix<int> m1{2, 2, v.begin(), v.end()};
+  try
+  {
+    Matrix<int> m1{4, 4, 5};
 
-  m1 = Matrix<int>::Identity(4, 4);
-  std::cout << m1;
+    m1 *= 2;
+    //m1.Transpose();
+
+    std::cout << m1;
+  }
+  catch ( const Error &err )
+  {
+    std::cout << err;
+  }
+  catch (...)
+  {
+    std::cout << "Uncaught throw.\n";
+  }
 
   return 0;
 }
