@@ -22,7 +22,7 @@ ad6::Matrix<T>::Matrix( int rows, int cols, const It &begin, const It &end ) : m
 
 template <typename T>
 template <typename empl_func>
-ad6::Matrix<T>::Matrix( int rows, int cols, empl_func fnc ) : matr_(nullptr),
+ad6::Matrix<T>::Matrix( empl_func fnc, int rows, int cols ) : matr_(nullptr),
                                                               rows_(rows),
                                                               cols_(cols)
 {
@@ -121,10 +121,31 @@ ad6::Matrix<T> &ad6::Matrix<T>::Transpose( void )
 {
   if (rows_ == cols_)
     return Transpose_Quad();
+
+  Matrix<T> temp{cols_, rows_, [*this](int i, int j){ return this->matr_[j][i]; }};
+
+  Swap(*this, temp);
+
   return *this;
 }
 
-// TODO: emplacer-func constructor
+template <typename T>
+ad6::Matrix<T> ad6::Matrix<T>::Transposing( void ) const
+{
+  return Matrix<T>(cols_, rows_, [*this](int i, int j){ return this->matr_[j][i]; });
+}
+
+template <typename T>
+ad6::ldbl ad6::Matrix<T>::Det( void ) const
+{
+  // check if the type is valid
+  static_cast<ldbl>(matr_[0][0]);
+
+
+
+  return 228;
+}
+
 template <typename T>
 ad6::Matrix<T> ad6::Matrix<T>::Identity( int rows )
 {
@@ -215,7 +236,7 @@ ad6::Matrix<T> ad6::operator +( const Matrix<T> &lhs, const Matrix<T> &rhs )
   Matrix<T> temp{lhs};
   temp += rhs;
 
-  return std::move(temp);
+  return temp;
 }
 
 template <typename T>
@@ -224,7 +245,7 @@ ad6::Matrix<T> ad6::operator -( const Matrix<T> &lhs, const Matrix<T> &rhs )
   Matrix<T> temp{lhs};
   temp -= rhs;
 
-  return std::move(temp);
+  return temp;
 }
 
 template <typename T>
@@ -233,7 +254,7 @@ ad6::Matrix<T> ad6::operator *( const Matrix<T> &lhs, T val )
   Matrix<T> temp{lhs};
   temp *= val;
 
-  return std::move(temp);
+  return temp;
 }
 
 template <typename T>
@@ -248,4 +269,20 @@ std::ostream & ad6::operator <<( std::ostream &ost, const ad6::Matrix<T> &matr )
   matr.Dump(ost);
 
   return ost;
+}
+
+template <typename T>
+std::istream &ad6::operator >>( std::istream &ist, Matrix<T> &matr )
+{
+  int rows = 0, cols = 0;
+  ist >> rows >> cols;
+
+  matr = Matrix<T>{[&]( int i, int j )
+                   {
+                     T val{};
+                     ist >> val;
+                     return val;
+                   }, rows, cols};
+
+  return ist;
 }

@@ -15,6 +15,8 @@ T Clamp( T val, T min, T max )
 
 namespace ad6
 {
+  using ldbl = long double;
+
   template <typename T>
   class Matrix
   {
@@ -54,7 +56,7 @@ namespace ad6
     Matrix( int rows, int cols, const It &begin, const It &end );
 
     template <typename empl_func>
-    Matrix( int rows, int cols, empl_func fnc );
+    Matrix( empl_func fnc, int rows, int cols );
 
     // copy constructors
     Matrix( const Matrix &matr );
@@ -71,6 +73,10 @@ namespace ad6
     Matrix &operator *=( T val );
 
     Matrix &Transpose( void );
+
+    Matrix Transposing( void ) const;
+
+    ldbl Det( void ) const;
 
     size_t getCols( void ) const { return cols_; }
     size_t getRows( void ) const { return rows_; }
@@ -118,6 +124,9 @@ namespace ad6
 
   template<typename T>
   std::ostream &operator <<( std::ostream &ost, const Matrix<T> &matr );
+
+  template <typename T>
+  std::istream &operator >>( std::istream &ist, Matrix<T> &matr );
 }
 
 
