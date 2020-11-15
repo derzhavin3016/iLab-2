@@ -1,3 +1,4 @@
+
 template <typename T>
 ad6::Matrix<T>::Matrix( int rows, int cols, T val /* = T{} */ ) : matr_(nullptr),
                                                                   rows_(rows),
@@ -27,16 +28,16 @@ ad6::Matrix<T>::Matrix( empl_func fnc, int rows, int cols ) : matr_(nullptr),
                                                               cols_(cols)
 {
   Alloc();
-  EmplbFun(fnc);
+  Walker(fnc);
 }
 
 template <typename T>
-template <typename empl_func>
-void ad6::Matrix<T>::EmplbFun( empl_func func )
+template <typename walk_func>
+void ad6::Matrix<T>::Walker( walk_func walk )
 {
   for (size_t i = 0; i < rows_; ++i)
     for (size_t j = 0; j < cols_; ++j)
-      matr_[i][j] = func(i, j);
+      matr_[i][j] = walk(i, j);
 }
 
 template <typename T>
@@ -92,7 +93,7 @@ ad6::Matrix<T> &ad6::Matrix<T>::operator +=( const ad6::Matrix<T> &matr )
   assert(matr.rows_ == rows_ && matr.cols_ == cols_);
 
   auto add_fnc = [this, matr]( int i, int j )->T {return this->matr_[i][j] + matr.matr_[i][j];};
-  EmplbFun(add_fnc);
+  Walker(add_fnc);
   
   return *this;
 }
@@ -102,7 +103,7 @@ ad6::Matrix<T> &ad6::Matrix<T>::operator -=( const ad6::Matrix<T> &matr )
 {
   assert(matr.rows_ == rows_ && matr.cols_ == cols_);
   auto add_fnc = [this, matr]( int i, int j )->T {return this->matr_[i][j] - matr.matr_[i][j];};
-  EmplbFun(add_fnc);
+  Walker(add_fnc);
 
   return *this;
 }
@@ -111,7 +112,7 @@ template <typename T>
 ad6::Matrix<T> &ad6::Matrix<T>::operator *=( T val )
 {
   auto mul_fnc = [this, val]( int i, int j )-> T { return this->matr_[i][j] * val; };
-  EmplbFun(mul_fnc);
+  Walker(mul_fnc);
 
   return *this;
 }
@@ -135,15 +136,57 @@ ad6::Matrix<T> ad6::Matrix<T>::Transposing( void ) const
   return Matrix<T>(cols_, rows_, [*this](int i, int j){ return this->matr_[j][i]; });
 }
 
+bool IsZero( ad6::ldbl val, ad6::ldbl thres = 1e-10 )
+{
+  return std::abs(val) < thres;
+}
+
 template <typename T>
-ad6::ldbl ad6::Matrix<T>::Det( void ) const
+int ad6::Matrix<T>::FindNonZero( int st_col )
+{
+  for (size_t i = st_col + 1; i < cols_; ++i)
+    if (!IsZero(matr_[i][st_col]))
+      return i;
+
+  return -1;
+}
+
+template <typename T>
+ad6::ldbl ad6::Matrix<T>::Det( ldbl threshold /* = 1e-10 */ ) const
 {
   // check if the type is valid
   static_cast<ldbl>(matr_[0][0]);
 
+  Matrix<T> tmp{*this};
 
 
-  return 228;
+  for (size_t i = 0; i < rows_ - 1; ++i)
+  {
+    if (IsZero(tmp.matr_[i][i]))
+    {
+      int non_z_line = tmp.FindNonZero(i);
+      if (non_z_line == -1)
+        return 0;
+
+      tmp.SwapLines(non_z_line, i);
+      continue;
+    }
+
+    std::cout << tmp;
+
+    std::cout << tmp;
+
+    for (size_t j = i + 1; j < rows_; ++j)
+      tmp.AddLineMVal(j, i, -static_cast<ldbl>(tmp.matr_[j][i]) / tmp.matr_[i][i]);
+
+    std::cout << tmp;
+  }
+
+  ldbl det = 1;
+  for (size_t i = 0; i < rows_; ++i)
+    det *= tmp.matr_[i][i];
+
+  return det;
 }
 
 template <typename T>
@@ -160,6 +203,45 @@ const T &ad6::Matrix<T>::At( int i, int j ) const
       new_j = Clamp(j, 0, static_cast<int>(cols_ - 1));
 
   return matr_[new_i][new_j];
+}
+
+template <typename T>
+void ad6::Matrix<T>::SwapLines( int lhs, int rhs )
+{
+  lhs = Clamp(lhs, 0, static_cast<int>(rows_ - 1));
+  rhs = Clamp(rhs, 0, static_cast<int>(rows_ - 1));
+
+  for (int i = 0; i < cols_; ++i)
+    std::swap(matr_[lhs][i], matr_[rhs][i]);
+}
+
+template <typename T>
+void ad6::Matrix<T>::AddLine( int dest_ind, int src_ind )
+{
+  dest_ind = Clamp(dest_ind, 0, static_cast<int>(rows_ - 1));
+  src_ind = Clamp(src_ind, 0, static_cast<int>(rows_ - 1));
+
+  for (int i = 0; i < cols_; ++i)
+    matr_[dest_ind][i] += matr_[src_ind][i];
+}
+
+template <typename T>
+void ad6::Matrix<T>::AddLineMVal( int dest_ind, int src_ind, ldbl val )
+{
+  dest_ind = Clamp(dest_ind, 0, static_cast<int>(rows_ - 1));
+  src_ind = Clamp(src_ind, 0, static_cast<int>(rows_ - 1));
+
+  for (int i = 0; i < cols_; ++i)
+    matr_[dest_ind][i] += val * matr_[src_ind][i];
+}
+
+template <typename T>
+void ad6::Matrix<T>::MulLine( int line, ldbl val )
+{
+  line = Clamp(line, 0, static_cast<int>(rows_ - 1));
+
+  for (int i = 0; i < cols_; ++i)
+    matr_[line][i] *= val;
 }
 
 template <typename T>

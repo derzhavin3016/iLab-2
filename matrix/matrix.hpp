@@ -30,7 +30,7 @@ namespace ad6
     struct Row_matr
     {
       size_t m_cols;
-      const T *const m_row;
+      T *m_row;
 
       Row_matr( size_t cols, const T *const row ) : m_cols(cols),
                                                     m_row(row)
@@ -43,9 +43,7 @@ namespace ad6
 
       Row_matr( const Row_matr &row_m ) = default;
 
-      Row_matr &operator =( const Row_matr &row_m ) = delete;
-
-
+      Row_matr &operator =( const Row_matr &row_m ) = default;
     };
 
   public:
@@ -76,7 +74,7 @@ namespace ad6
 
     Matrix Transposing( void ) const;
 
-    ldbl Det( void ) const;
+    ldbl Det( ldbl threshold = 1e-10 ) const;
 
     size_t getCols( void ) const { return cols_; }
     size_t getRows( void ) const { return rows_; }
@@ -106,8 +104,18 @@ namespace ad6
     /* copy matrix with idnetical sizes function */
     static void Copy( Matrix &dst, const Matrix &src );
 
-    template <typename empl_func>
-    void EmplbFun( empl_func func );
+    void SwapLines( int lhs, int rhs );
+
+    void AddLine( int dest_ind, int src_ind );
+
+    void AddLineMVal( int dest_ind, int src_ind, ldbl val );
+
+    void MulLine( int line, ldbl val );
+
+    int FindNonZero( int st_col );
+
+    template <typename walk_func>
+    void Walker( walk_func walk );
   };
 
   template <typename T>
@@ -132,7 +140,7 @@ namespace ad6
 
 
 // add functions realizations
-#include "matrix.inl"
+#include "matrix.ii"
 
 
 #endif //MATRIX_MATRIX_HPP
