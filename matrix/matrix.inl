@@ -209,6 +209,39 @@ void ad6::Matrix<T>::Copy( ad6::Matrix<T> &dst, const ad6::Matrix<T> &src )
 }
 
 
+template <typename T>
+ad6::Matrix<T> ad6::operator +( const Matrix<T> &lhs, const Matrix<T> &rhs )
+{
+  Matrix<T> temp{lhs};
+  temp += rhs;
+
+  return std::move(temp);
+}
+
+template <typename T>
+ad6::Matrix<T> ad6::operator -( const Matrix<T> &lhs, const Matrix<T> &rhs )
+{
+  Matrix<T> temp{lhs};
+  temp -= rhs;
+
+  return std::move(temp);
+}
+
+template <typename T>
+ad6::Matrix<T> ad6::operator *( const Matrix<T> &lhs, T val )
+{
+  Matrix<T> temp{lhs};
+  temp *= val;
+
+  return std::move(temp);
+}
+
+template <typename T>
+ad6::Matrix<T> ad6::operator *( T val, const Matrix<T> &rhs )
+{
+  return rhs * val;
+}
+
 template<typename T>
 std::ostream & ad6::operator <<( std::ostream &ost, const ad6::Matrix<T> &matr )
 {

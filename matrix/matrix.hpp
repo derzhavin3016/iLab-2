@@ -66,7 +66,6 @@ namespace ad6
     // move
     Matrix &operator =( Matrix &&matr );
 
-
     Matrix &operator +=( const Matrix &matr );
     Matrix &operator -=( const Matrix &matr );
     Matrix &operator *=( T val );
@@ -105,9 +104,23 @@ namespace ad6
     void EmplbFun( empl_func func );
   };
 
+  template <typename T>
+  Matrix<T> operator +( const Matrix<T> &lhs, const Matrix<T> &rhs );
+
+  template <typename T>
+  Matrix<T> operator -( const Matrix<T> &lhs, const Matrix<T> &rhs );
+
+  template <typename T>
+  Matrix<T> operator *( const Matrix<T> &lhs, T val );
+
+  template <typename T>
+  Matrix<T> operator *( T val, const Matrix<T> &lhs );
+
   template<typename T>
   std::ostream &operator <<( std::ostream &ost, const Matrix<T> &matr );
 }
+
+
 
 // add functions realizations
 #include "matrix.inl"
