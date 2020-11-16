@@ -1,6 +1,13 @@
 #include "Tree.hpp"
 
 template <typename T>
-ad6::Tree<T>::Tree( void )
+ad6::Tree<T>::Tree( void ) : root_(nullptr)
 {
+}
+
+template <typename T>
+ad6::Tree<T>::~Tree( void )
+{
+  delete root_;
+  root_ = nullptr;
 }

@@ -1,1 +1,60 @@
 #include "Node.hpp"
+
+template <typename T>
+ad6::Node<T>::Node( void ) : key_(),
+                             depth_(1),
+                             left_(nullptr),
+                             right_(nullptr)
+{
+}
+
+template <typename T>
+ad6::Node<T>::Node( T key, int depth, Node *l, Node *r ) : key_(key),
+                                                           depth_(depth),
+                                                           left_(l),
+                                                           right_(r)
+{
+}
+
+template <typename T>
+int ad6::Node<T>::GetLDepth( void ) const
+{
+  if (left_ == nullptr)
+    return 0;
+
+  return left_->depth_;
+}
+
+template <typename T>
+int ad6::Node<T>::GetRDepth( void ) const
+{
+  if (right_ == nullptr)
+    return 0;
+
+  return right_->depth_;
+}
+
+template <typename T>
+int ad6::Node<T>::GetBFact( void ) const
+{
+  return GetRDepth() - GetLDepth();
+}
+
+template <typename T>
+void ad6::Node<T>::UpdDepth( void )
+{
+  int ldepth = GetLDepth();
+  int rdepth = GetRDepth();
+
+  depth_ = std::max(ldepth, rdepth) + 1;
+}
+
+template <typename T>
+ad6::Node<T>::~Node( void )
+{
+  delete right_;
+  right_ = nullptr;
+
+  delete left_;
+  left_ = nullptr;
+}
