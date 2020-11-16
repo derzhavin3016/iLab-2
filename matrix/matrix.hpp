@@ -17,13 +17,14 @@ namespace ad6
 {
   using ldbl = long double;
 
+  const ldbl MAT_THRESHOLD = 1e-10;
   template <typename T>
   class Matrix
   {
   private:
     T **matr_;
     size_t rows_, cols_;
-
+    static ldbl threshold;
     // emplace function type
     //using empl_func = T (*)( int, int );
 
@@ -32,11 +33,16 @@ namespace ad6
       size_t m_cols;
       T *m_row;
 
-      Row_matr( size_t cols, const T *const row ) : m_cols(cols),
-                                                    m_row(row)
+      Row_matr( size_t cols, T *row ) : m_cols(cols),
+                                        m_row(row)
       {}
 
       const T &operator []( int i ) const
+      {
+        return m_row[Clamp(i, 0, static_cast<int>(m_cols - 1))];
+      }
+
+      T &operator []( int i )
       {
         return m_row[Clamp(i, 0, static_cast<int>(m_cols - 1))];
       }
@@ -48,13 +54,13 @@ namespace ad6
 
   public:
 
-    Matrix( int rows, int cols, T val = T{} );
+    Matrix( int rows, int cols );
 
     template <typename It>
     Matrix( int rows, int cols, const It &begin, const It &end );
 
     template <typename empl_func>
-    Matrix( empl_func fnc, int rows, int cols );
+    Matrix( int rows, int cols, empl_func fnc );
 
     // copy constructors
     Matrix( const Matrix &matr );
@@ -74,7 +80,7 @@ namespace ad6
 
     Matrix Transposing( void ) const;
 
-    ldbl Det( ldbl threshold = 1e-10 ) const;
+    ldbl Det( void ) const;
 
     size_t getCols( void ) const { return cols_; }
     size_t getRows( void ) const { return rows_; }
@@ -88,9 +94,20 @@ namespace ad6
       return Row_matr{cols_, matr_[Clamp(i, 0, static_cast<int>(rows_ - 1))]};
     }
 
+    Row_matr operator []( int i )
+    {
+      return Row_matr{cols_, matr_[Clamp(i, 0, static_cast<int>(rows_ - 1))]};
+    }
+
     ~Matrix( void );
 
     void Dump( std::ostream &ost ) const;
+
+    void AddLineMVal( int dest_ind, int src_ind, ldbl val );
+
+    static void SetThreshold( ldbl new_thres ) { threshold = new_thres; }
+    static void SetDefThres ( void )           { threshold = MAT_THRESHOLD; }
+    static ldbl GetThreshold( void )           { return threshold; }
 
   private:
     void Fill( T val );
@@ -107,8 +124,6 @@ namespace ad6
     void SwapLines( int lhs, int rhs );
 
     void AddLine( int dest_ind, int src_ind );
-
-    void AddLineMVal( int dest_ind, int src_ind, ldbl val );
 
     void MulLine( int line, ldbl val );
 

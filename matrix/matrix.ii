@@ -1,11 +1,14 @@
 
 template <typename T>
-ad6::Matrix<T>::Matrix( int rows, int cols, T val /* = T{} */ ) : matr_(nullptr),
-                                                                  rows_(rows),
-                                                                  cols_(cols)
+ad6::ldbl ad6::Matrix<T>::threshold = ad6::MAT_THRESHOLD;
+
+template <typename T>
+ad6::Matrix<T>::Matrix( int rows, int cols ) : matr_(nullptr),
+                                               rows_(rows),
+                                               cols_(cols)
 {
   Alloc();
-  Fill(val);
+  Fill(T{});
 }
 
 template <typename T>
@@ -23,7 +26,7 @@ ad6::Matrix<T>::Matrix( int rows, int cols, const It &begin, const It &end ) : m
 
 template <typename T>
 template <typename empl_func>
-ad6::Matrix<T>::Matrix( empl_func fnc, int rows, int cols ) : matr_(nullptr),
+ad6::Matrix<T>::Matrix( int rows, int cols, empl_func fnc ) : matr_(nullptr),
                                                               rows_(rows),
                                                               cols_(cols)
 {
@@ -136,7 +139,7 @@ ad6::Matrix<T> ad6::Matrix<T>::Transposing( void ) const
   return Matrix<T>(cols_, rows_, [*this](int i, int j){ return this->matr_[j][i]; });
 }
 
-bool IsZero( ad6::ldbl val, ad6::ldbl thres = 1e-10 )
+bool IsZero( ad6::ldbl val, ad6::ldbl thres )
 {
   return std::abs(val) < thres;
 }
@@ -145,15 +148,18 @@ template <typename T>
 int ad6::Matrix<T>::FindNonZero( int st_col )
 {
   for (size_t i = st_col + 1; i < cols_; ++i)
-    if (!IsZero(matr_[i][st_col]))
+    if (!IsZero(matr_[i][st_col], threshold))
       return i;
 
   return -1;
 }
 
 template <typename T>
-ad6::ldbl ad6::Matrix<T>::Det( ldbl threshold /* = 1e-10 */ ) const
+ad6::ldbl ad6::Matrix<T>::Det( void ) const
 {
+  if (rows_ != cols_)
+    return 0;
+
   // check if the type is valid
   static_cast<ldbl>(matr_[0][0]);
 
@@ -162,7 +168,7 @@ ad6::ldbl ad6::Matrix<T>::Det( ldbl threshold /* = 1e-10 */ ) const
 
   for (size_t i = 0; i < rows_ - 1; ++i)
   {
-    if (IsZero(tmp.matr_[i][i]))
+    if (IsZero(tmp.matr_[i][i], threshold))
     {
       int non_z_line = tmp.FindNonZero(i);
       if (non_z_line == -1)
@@ -172,14 +178,8 @@ ad6::ldbl ad6::Matrix<T>::Det( ldbl threshold /* = 1e-10 */ ) const
       continue;
     }
 
-    std::cout << tmp;
-
-    std::cout << tmp;
-
     for (size_t j = i + 1; j < rows_; ++j)
       tmp.AddLineMVal(j, i, -static_cast<ldbl>(tmp.matr_[j][i]) / tmp.matr_[i][i]);
-
-    std::cout << tmp;
   }
 
   ldbl det = 1;
@@ -231,7 +231,7 @@ void ad6::Matrix<T>::AddLineMVal( int dest_ind, int src_ind, ldbl val )
   dest_ind = Clamp(dest_ind, 0, static_cast<int>(rows_ - 1));
   src_ind = Clamp(src_ind, 0, static_cast<int>(rows_ - 1));
 
-  for (int i = 0; i < cols_; ++i)
+  for (size_t i = 0; i < cols_; ++i)
     matr_[dest_ind][i] += val * matr_[src_ind][i];
 }
 
@@ -359,12 +359,12 @@ std::istream &ad6::operator >>( std::istream &ist, Matrix<T> &matr )
   int rows = 0, cols = 0;
   ist >> rows >> cols;
 
-  matr = Matrix<T>{[&]( int i, int j )
-                   {
-                     T val{};
-                     ist >> val;
-                     return val;
-                   }, rows, cols};
+  matr = Matrix<T>{rows, cols, [&]( int i, int j )
+                                   {
+                                     T val{};
+                                     ist >> val;
+                                     return val;
+                                   }};
 
   return ist;
 }
