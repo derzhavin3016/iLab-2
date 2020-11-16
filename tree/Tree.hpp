@@ -7,10 +7,7 @@ namespace ad6
   class Tree final
   {
   private:
-    struct Node
-    {
 
-    };
 
   public:
 
