@@ -1,0 +1,6 @@
+#include "Tree.hpp"
+
+template <typename T>
+ad6::Tree<T>::Tree( void )
+{
+}
