@@ -15,6 +15,15 @@ namespace ad6
     Tree( void );
 
     ~Tree( void );
+  private:
+
+    // Nodes rotation functions
+    Node<T> *RotR( Node<T> *nd );
+    Node<T> *RotL( Node<T> *nd );
+
+    Node<T> *Balance( Node<T> *nd );
+
+    Node<T> *Indert( Node<T> *nd );
   };
 }
 

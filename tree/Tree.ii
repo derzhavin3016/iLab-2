@@ -11,3 +11,48 @@ ad6::Tree<T>::~Tree( void )
   delete root_;
   root_ = nullptr;
 }
+
+template <typename T>
+ad6::Node<T> *ad6::Tree<T>::RotR( Node<T> *nd )
+{
+  Node<T> *lnd = nd->left_;
+  nd->left_ = lnd->right_;
+  lnd->right_ = nd;
+  nd->UpdDepth();
+  lnd->UpdDepth();
+
+  return lnd;
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Tree<T>::RotL( Node<T> *nd )
+{
+  Node<T> *rnd = nd->right_;
+  nd->right_ = rnd->left_;
+  rnd->left_ = nd;
+  nd->UpdDepth();
+  rnd->UpdDepth();
+
+  return rnd;
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Tree<T>::Balance( Node<T> *nd )
+{
+  nd->UpdDepth();
+  int bfact = nd->GetBFact();
+
+  if (bfact >= 2)
+  {
+    if (nd->right_->GetBFact() < 0)
+      nd->right_ = RotR(nd->right_);
+    return RotL(nd);
+  }
+  if (bfact <= -2)
+  {
+    if (nd->left_->GetBFact() > 0)
+      nd->left_ = RotL(nd->left_);
+    return RotR(nd);
+  }
+  return nd;
+}
