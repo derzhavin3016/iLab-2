@@ -2,8 +2,7 @@
 #define TREE_TREE_HPP
 
 #include "Node.hpp"
-
-#define ALLOC_NODISC [[nodiscard]]
+#include "Tree_it.hpp"
 
 namespace ad6
 {
@@ -13,11 +12,21 @@ namespace ad6
   private:
     Node<T> *root_;
     size_t size;
+
   public:
+    using iterator = Tree_it<T>;
+    using const_iterator = Tree_it<const T>;
+
     Tree( void );
 
     void Insert( const T &key );
     Tree<T> &operator <<( const T &key );
+
+    iterator begin( void );
+    iterator end  ( void );
+
+    const_iterator begin( void ) const;
+    const_iterator end  ( void ) const;
 
     void Erase( const T &key );
 
@@ -29,18 +38,20 @@ namespace ad6
   private:
 
     // Nodes rotation functions
-    ALLOC_NODISC Node<T> *RotR( Node<T> *nd );
-    ALLOC_NODISC Node<T> *RotL( Node<T> *nd );
+    [[nodiscard]] Node<T> *RotR( Node<T> *nd );
+    [[nodiscard]] Node<T> *RotL( Node<T> *nd );
 
-    ALLOC_NODISC Node<T> *Balance( Node<T> *nd );
+    [[nodiscard]] Node<T> *Balance( Node<T> *nd );
 
-    ALLOC_NODISC Node<T> *Insert( Node<T> *nd, const T &key );
+    [[nodiscard]] Node<T> *Insert( Node<T> *nd, const T &key );
 
-    ALLOC_NODISC Node<T> *FindMin( Node<T> *nd );
+    [[nodiscard]] Node<T> *DelMin( Node<T> *nd );
 
-    ALLOC_NODISC Node<T> *DelMin( Node<T> *nd );
+    [[nodiscard]] Node<T> *Delete( Node <T> *nd, const T &key );
+    
+    Node<T> *Find( Node<T> *nd, const T &key ) const;
 
-    ALLOC_NODISC Node<T> *Delete( Node <T> *nd, const T &key );
+    Node<T> *FindMin( Node<T> *nd ) const;
   };
 }
 

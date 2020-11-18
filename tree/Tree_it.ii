@@ -1,0 +1,53 @@
+#include "Tree_it.hpp"
+
+template <typename T>
+ad6::Tree_it<T>::Tree_it( Node<T> *nd /* = nullptr */ ) : nd_(nd)
+{
+}
+
+template <typename T>
+bool ad6::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
+{
+  if (nd_ == nullptr || tr_ir.nd_ == nullptr)
+    return false;
+
+  return nd_ == tr_ir.nd_;
+}
+
+template <typename T>
+bool ad6::Tree_it<T>::IsnEq( const Tree_it<T> &tr_ir ) const
+{
+  return !IsEq(tr_ir);
+}
+
+template <typename T>
+typename ad6::Tree_it<T>::reference ad6::Tree_it<T>::operator *( void ) const
+{
+  return *nd_;
+}
+
+template <typename T>
+ad6::Tree_it<T> & ad6::Tree_it<T>::operator ++( void )
+{
+
+}
+
+template <typename T>
+ad6::Tree_it<T> & ad6::Tree_it<T>::operator --( void )
+{
+
+}
+
+
+template <typename T>
+const ad6::Tree_it<T> &ad6::Tree_it<T>::operator --( int )
+{
+
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Tree_it<T>::operator ->( void )
+{
+
+}
+

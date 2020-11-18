@@ -22,6 +22,30 @@ ad6::Tree<T> &ad6::Tree<T>::operator <<( const T &key )
 }
 
 template <typename T>
+typename ad6::Tree<T>::iterator ad6::Tree<T>::begin( void )
+{
+
+}
+
+template <typename T>
+typename ad6::Tree<T>::iterator ad6::Tree<T>::end( void )
+{
+
+}
+
+template <typename T>
+typename ad6::Tree<T>::const_iterator ad6::Tree<T>::begin( void ) const
+{
+
+}
+
+template <typename T>
+typename ad6::Tree<T>::const_iterator ad6::Tree<T>::end( void ) const
+{
+
+}
+
+template <typename T>
 void ad6::Tree<T>::Erase( const T &key )
 {
   root_ = Delete(root_, key);
@@ -104,7 +128,7 @@ ad6::Node<T> *ad6::Tree<T>::Insert( Node<T> *nd, const T &key )
 }
 
 template <typename T>
-ad6::Node<T> *ad6::Tree<T>::FindMin( Node<T> *nd )
+ad6::Node<T> *ad6::Tree<T>::FindMin( Node<T> *nd ) const
 {
   if (nd == nullptr)
     return nd;
@@ -146,4 +170,17 @@ ad6::Node<T> *ad6::Tree<T>::Delete( Node <T> *nd, const T &key )
   }
 
   return Balance(nd);
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Tree<T>::Find( Node<T> *nd, const T &key ) const
+{
+  if (nd == nullptr)
+    return nullptr;
+  if (key < nd->key_)
+    return Find(nd->left_, key);
+  if (key > nd->key_)
+    return Find(nd->right_, key);
+
+  return nd;
 }
