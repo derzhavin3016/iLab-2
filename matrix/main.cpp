@@ -1,12 +1,12 @@
 #include <iostream>
 #include <vector>
-#include <cmath>
 #include "matrix.hpp"
 
 int main( void )
 {
- std::vector<int> vec = {1, 0, 0, 1};
- Matrix<int> m{1, 4, vec.begin(), vec.end()};
+ std::vector<int> vec = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+ //std::cout << *vec.begin();
+ ad6::Matrix<int> m{5, 3, vec.begin(), vec.end()};
 
   //m1 *= 2;
   //m1.Transpose();
