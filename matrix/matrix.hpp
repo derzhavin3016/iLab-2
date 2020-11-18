@@ -12,6 +12,7 @@ T Clamp( T val, T min, T max )
 }
 
 
+
 namespace ad6
 {
   template <typename T>
@@ -20,6 +21,9 @@ namespace ad6
   private:
     T **matr_;
     size_t rows_, cols_;
+
+    // emplace function type
+    //using empl_func = T (*)( int, int );
 
     struct Row_matr
     {
@@ -48,6 +52,9 @@ namespace ad6
 
     template <typename It>
     Matrix( int rows, int cols, const It &begin, const It &end );
+
+    template <typename empl_func>
+    Matrix( int rows, int cols, empl_func fnc );
 
     // copy constructors
     Matrix( const Matrix &matr );
@@ -94,12 +101,15 @@ namespace ad6
     /* copy matrix with idnetical sizes function */
     static void Copy( Matrix &dst, const Matrix &src );
 
+    template <typename empl_func>
+    void EmplbFun( empl_func func );
   };
 
   template<typename T>
   std::ostream &operator <<( std::ostream &ost, const Matrix<T> &matr );
 }
 
+// add functions realizations
 #include "matrix.inl"
 
 

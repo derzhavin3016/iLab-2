@@ -21,6 +21,25 @@ ad6::Matrix<T>::Matrix( int rows, int cols, const It &begin, const It &end ) : m
 }
 
 template <typename T>
+template <typename empl_func>
+ad6::Matrix<T>::Matrix( int rows, int cols, empl_func fnc ) : matr_(nullptr),
+                                                              rows_(rows),
+                                                              cols_(cols)
+{
+  Alloc();
+  EmplbFun(fnc);
+}
+
+template <typename T>
+template <typename empl_func>
+void ad6::Matrix<T>::EmplbFun( empl_func func )
+{
+  for (size_t i = 0; i < rows_; ++i)
+    for (size_t j = 0; j < cols_; ++j)
+      matr_[i][j] = func(i, j);
+}
+
+template <typename T>
 ad6::Matrix<T>::Matrix( const ad6::Matrix<T> &matr ) : matr_(nullptr),
                                                        rows_(matr.rows_),
                                                        cols_(matr.cols_)
@@ -68,25 +87,22 @@ ad6::Matrix<T> & ad6::Matrix<T>::operator =( ad6::Matrix<T> &&matr )
 }
 
 template <typename T>
-ad6::Matrix<T> &ad6::Matrix<T>::operator +=( const Matrix &matr )
+ad6::Matrix<T> &ad6::Matrix<T>::operator +=( const ad6::Matrix<T> &matr )
 {
   assert(matr.rows_ == rows_ && matr.cols_ == cols_);
 
-  for (size_t i = 0; i < rows_; ++i)
-    for (size_t j = 0; j < cols_; ++j)
-      matr_[i][j] += matr.matr_[i][j];
-
+  auto add_fnc = [this, matr]( int i, int j )->T {return this->matr_[i][j] + matr.matr_[i][j];};
+  EmplbFun(add_fnc);
+  
   return *this;
 }
 
 template <typename T>
-ad6::Matrix<T> &ad6::Matrix<T>::operator -=( const Matrix &matr )
+ad6::Matrix<T> &ad6::Matrix<T>::operator -=( const ad6::Matrix<T> &matr )
 {
   assert(matr.rows_ == rows_ && matr.cols_ == cols_);
-
-  for (size_t i = 0; i < rows_; ++i)
-    for (size_t j = 0; j < cols_; ++j)
-      matr_[i][j] -= matr.matr_[i][j];
+  auto add_fnc = [this, matr]( int i, int j )->T {return this->matr_[i][j] - matr.matr_[i][j];};
+  EmplbFun(add_fnc);
 
   return *this;
 }
@@ -94,9 +110,8 @@ ad6::Matrix<T> &ad6::Matrix<T>::operator -=( const Matrix &matr )
 template <typename T>
 ad6::Matrix<T> &ad6::Matrix<T>::operator *=( T val )
 {
-  for (size_t i = 0; i < rows_; ++i)
-    for (size_t j = 0; j < cols_; ++j)
-      matr_[i][j] *= val;
+  auto mul_fnc = [this, val]( int i, int j )-> T { return this->matr_[i][j] * val; };
+  EmplbFun(mul_fnc);
 
   return *this;
 }
@@ -113,10 +128,7 @@ ad6::Matrix<T> &ad6::Matrix<T>::Transpose( void )
 template <typename T>
 ad6::Matrix<T> ad6::Matrix<T>::Identity( int rows )
 {
-  Matrix id(rows, rows, 0);
-
-  for (size_t i = 0; i < rows; ++i)
-    id.matr_[i][i] = 1;
+  Matrix id(rows, rows, []( int i, int j ) { return i == j; });
 
   return id;
 }
@@ -193,7 +205,7 @@ void ad6::Matrix<T>::Copy( ad6::Matrix<T> &dst, const ad6::Matrix<T> &src )
 {
   for (size_t i = 0; i < dst.rows_; ++i)
     for (size_t j = 0; j < dst.cols_; ++j)
-      dst.matr_[i][j] = src.matr[i][j];
+      dst.matr_[i][j] = src.matr_[i][j];
 }
 
 
