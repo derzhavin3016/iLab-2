@@ -5,23 +5,12 @@
 
 int main( void )
 {
-  try
-  {
-    Matrix<int> m1{4, 4, 5};
+  Matrix<int> m1{4, 4, 5};
 
-    m1 *= 2;
-    //m1.Transpose();
+  m1 *= 2;
+  //m1.Transpose();
 
-    std::cout << m1;
-  }
-  catch ( const Error &err )
-  {
-    std::cout << err;
-  }
-  catch (...)
-  {
-    std::cout << "Uncaught throw.\n";
-  }
+  std::cout << m1[1][0];
 
   return 0;
 }

@@ -2,7 +2,7 @@
 #define MATRIX_MATRIX_HPP
 
 #include <cmath>
-#include "errors.hpp"
+#include <assert.h>
 
 template <typename T>
 T Clamp( T val, T min, T max )
@@ -18,6 +18,26 @@ class Matrix
 private:
   T** matr_;
   size_t rows_, cols_;
+
+  struct Row_matr
+  {
+    size_t m_cols;
+    const T* const m_row;
+
+    Row_matr( size_t cols, const T* const row ) : m_cols(cols),
+                                                  m_row(row)
+    {}
+
+    const T & operator[]( int i ) const
+    {
+      return m_row[Clamp(i, 0, static_cast<int>(m_cols - 1))];
+    }
+
+    Row_matr( const Row_matr &row_m ) = default;
+    Row_matr & operator = ( const Row_matr &row_m ) = delete;
+
+
+  };
 public:
 
   Matrix( int rows, int cols, T val = T{} ) : matr_(nullptr),
@@ -33,10 +53,7 @@ public:
                                  cols_(matr.cols_)
   {
     Alloc();
-
-    for (size_t i = 0; i < rows_; ++i)
-      for (size_t j = 0; j < cols_; ++j)
-        matr_[i][j] = matr[i][j];
+    Copy(*this, matr);
   }
 
   Matrix( Matrix &&matr ) : matr_(matr.matr_),
@@ -49,14 +66,25 @@ public:
 
   Matrix & operator = ( const Matrix &matr )
   {
-    Matrix tmp(matr);
-    Swap(*this, tmp);
+    if (this == &matr)
+      return *this;
+
+    if (rows_ == matr.rows_ && cols_ == matr.cols_)
+      Copy(*this, matr);
+    else
+    {
+      Matrix tmp(matr);
+      Swap(*this, tmp);
+    }
 
     return *this;
   }
 
   Matrix & operator = ( Matrix &&matr )
   {
+    if (this == &matr)
+      return *this;
+
     Matrix tmp(std::move(matr));
     Swap(*this, tmp);
 
@@ -70,14 +98,14 @@ public:
   {
     Alloc();
     size_t i = 0, size = rows_ * cols_;
+
     for (It it = begin; it != end &&  i < size; ++it, ++i)
       matr_[i / rows_][i % rows_] = *it;
   }
 
   Matrix & operator += ( const Matrix &matr )
   {
-    ASSERT(matr.rows_ == rows_ && matr.cols_ == cols_,
-           "Matrix' dimensions are different.");
+    assert(matr.rows_ == rows_ && matr.cols_ == cols_);
 
     for (size_t i = 0; i < rows_; ++i)
       for (size_t j = 0; j < cols_; ++j)
@@ -88,8 +116,7 @@ public:
 
   Matrix & operator -= ( const Matrix &matr )
   {
-    ASSERT(matr.rows_ == rows_ && matr.cols_ == cols_,
-           "Matrix' dimensions are different.");
+    assert(matr.rows_ == rows_ && matr.cols_ == cols_);
 
     for (size_t i = 0; i < rows_; ++i)
       for (size_t j = 0; j < cols_; ++j)
@@ -144,9 +171,9 @@ public:
     return matr_[new_i][new_j];
   }
 
-  const T *operator []( int i ) const
+  Row_matr operator []( int i ) const
   {
-    return matr_[Clamp(i, 0, static_cast<int>(rows_ - 1))];
+    return Row_matr{cols_, matr_[Clamp(i, 0, static_cast<int>(rows_ - 1))]};
   }
 
   ~Matrix( void )
@@ -164,7 +191,7 @@ public:
     for (size_t i = 0; i < rows_; ++i)
     {
       ost << "|| ";
-      for (size_t j = 0; j < rows_; ++j)
+      for (size_t j = 0; j < cols_; ++j)
         ost << matr_[i][j] << (j == rows_ - 1 ? "" : ", ");
       ost << " ||\n ";
     }
@@ -200,6 +227,14 @@ private:
     std::swap(lhs.matr_, rhs.matr_);
     std::swap(lhs.cols_, rhs.cols_);
     std::swap(lhs.rows_, rhs.rows_);
+  }
+
+  /* copy matrix with idnetical sizes function */
+  static void Copy( Matrix &dst, const Matrix &src )
+  {
+    for (size_t i = 0; i < dst.rows_; ++i)
+      for (size_t j = 0; j < dst.cols_; ++j)
+        dst.matr_[i][j] = src.matr[i][j];
   }
 
 };

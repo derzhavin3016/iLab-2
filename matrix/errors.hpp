@@ -7,15 +7,17 @@
 
 #include <iostream>
 #include <string>
+#include <stdexcept>
 
 #define LOCATION __LINE__, __FILE__, __PRETTY_FUNCTION__
 
-#define ASSERT(cond, descr)                     \
+#define ASSERT_LOC(cond, descr, LOC)                     \
 if (!(cond))                                    \
 {                                               \
-  throw Error{descr, LOCATION};                 \
+  std::cerr << Error{descr, LOC};                 \
 }
 
+#define ASSERT(cond, descr) ASSERT_LOC(cond, descr, LOCATION)
 
 struct Error : public std::runtime_error
 {
@@ -32,15 +34,15 @@ struct Error : public std::runtime_error
   {
   }
 
-  virtual const std::string what( void )
+  virtual const char * what( void ) const noexcept override
   {
     return descr_;
   }
 };
 
-std::ostream & operator << ( std::ostream &ost, const Error &err )
+std::ostream & operator << ( std::ostream &ost, const std::exception &ex )
 {
-  ost << "!!!!\n!! ERROR: " << err.descr_ <<
+  ost << "!!!!\n!! ERROR: " << ex.descr_ <<
          "\n!! In file: " << err.file_ <<
          "\n!! Function: " << err.function_ <<
          "\n!! Line: " << err.line_ << "\n!!!!\n";
