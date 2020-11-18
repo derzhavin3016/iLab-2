@@ -49,9 +49,6 @@ public:
 
   Matrix & operator = ( const Matrix &matr )
   {
-    if (this == &matr)
-      return *this;
-
     Matrix tmp(matr);
     Swap(*this, tmp);
 
@@ -60,9 +57,6 @@ public:
 
   Matrix & operator = ( Matrix &&matr )
   {
-    if (this == &matr)
-      return *this;
-
     Matrix tmp(std::move(matr));
     Swap(*this, tmp);
 
