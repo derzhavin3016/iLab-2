@@ -20,9 +20,7 @@ namespace ad6
     Node *left_;
     Node *right_;
 
-    Node( void );
-
-    Node( T key, int depth, Node *l, Node *r );
+    Node( const T &key, int depth = 1, Node *l = nullptr, Node *r = nullptr );
 
     int GetLDepth( void ) const;
     int GetRDepth( void ) const;
@@ -30,6 +28,8 @@ namespace ad6
     int GetBFact( void ) const;
 
     void UpdDepth( void );
+
+    void Clear( void );
 
     ~Node( void );
   };

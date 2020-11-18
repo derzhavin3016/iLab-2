@@ -1,15 +1,46 @@
 #include "Tree.hpp"
 
 template <typename T>
-ad6::Tree<T>::Tree( void ) : root_(nullptr)
+ad6::Tree<T>::Tree( void ) : root_(nullptr),
+                             size(0)
 {
+}
+
+template <typename T>
+void ad6::Tree<T>::Insert( const T &key )
+{
+  root_ = Insert(root_, key);
+  ++size;
+}
+
+template <typename T>
+ad6::Tree<T> &ad6::Tree<T>::operator <<( const T &key )
+{
+  Insert(key);
+
+  return *this;
+}
+
+template <typename T>
+void ad6::Tree<T>::Erase( const T &key )
+{
+  root_ = Delete(root_, key);
+}
+
+template <typename T>
+void ad6::Tree<T>::Clear( void )
+{
+  if (root_ != nullptr)
+    root_->Clear();
+  delete root_;
+  root_ = nullptr;
+  size = 0;
 }
 
 template <typename T>
 ad6::Tree<T>::~Tree( void )
 {
-  delete root_;
-  root_ = nullptr;
+  Clear();
 }
 
 template <typename T>
@@ -55,4 +86,64 @@ ad6::Node<T> *ad6::Tree<T>::Balance( Node<T> *nd )
     return RotR(nd);
   }
   return nd;
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Tree<T>::Insert( Node<T> *nd, const T &key )
+{
+  if (nd == nullptr)
+    return new Node<T>{key};
+  if (key < nd->key_)
+    nd->left_ = Insert(nd->left_, key);
+  else if (key > nd->key_)
+    nd->right_ = Insert(nd->right_, key);
+  else
+    return nd;
+
+  return Balance(nd);
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Tree<T>::FindMin( Node<T> *nd )
+{
+  if (nd == nullptr)
+    return nd;
+  return FindMin(nd->left_);
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Tree<T>::DelMin( Node<T> *nd )
+{
+  if (nd->left_ == nullptr)
+    return nd->right_;
+  nd->left_ = DelMin(nd->left_);
+  return Balance(nd);
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Tree<T>::Delete( Node <T> *nd, const T &key )
+{
+  if (nd == nullptr)
+    return nullptr;
+  if (key < nd->key_)
+    nd->left_ = Delete(nd->left_, key);
+  else if (key > nd->key_)
+    nd->right_ = Delete(nd->right_, key);
+  else // key == nd->key_
+  {
+    Node<T> *left = nd->left_;
+    Node<T> *right = nd->right_;
+    delete nd;
+
+    if (right == nullptr)
+      return left;
+
+    Node<T> *min = FindMin(right);
+    min->right_ = DelMin(right);
+    min->left_ = left;
+
+    return Balance(min);
+  }
+
+  return Balance(nd);
 }

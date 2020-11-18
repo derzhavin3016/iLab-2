@@ -1,20 +1,14 @@
 #include "Node.hpp"
 
 template <typename T>
-ad6::Node<T>::Node( void ) : key_(),
-                             depth_(1),
-                             left_(nullptr),
-                             right_(nullptr)
+ad6::Node<T>::Node( const T &key, int depth /* = 1 */,
+                    Node *l /* = nullptr */, Node *r /* = nullptr */ ) : key_(key),
+                                                                         depth_(depth),
+                                                                         left_(l),
+                                                                         right_(r)
 {
 }
 
-template <typename T>
-ad6::Node<T>::Node( T key, int depth, Node *l, Node *r ) : key_(key),
-                                                           depth_(depth),
-                                                           left_(l),
-                                                           right_(r)
-{
-}
 
 template <typename T>
 int ad6::Node<T>::GetLDepth( void ) const
@@ -50,11 +44,22 @@ void ad6::Node<T>::UpdDepth( void )
 }
 
 template <typename T>
-ad6::Node<T>::~Node( void )
+void ad6::Node<T>::Clear( void )
 {
-  delete right_;
-  right_ = nullptr;
+  if (right_ != nullptr)
+    right_->Clear();
+  if (left_ != nullptr)
+    left_->Clear();
 
   delete left_;
+  left_ = nullptr;
+  delete right_;
+  right_ = nullptr;
+}
+
+template <typename T>
+ad6::Node<T>::~Node( void )
+{
+  right_ = nullptr;
   left_ = nullptr;
 }
