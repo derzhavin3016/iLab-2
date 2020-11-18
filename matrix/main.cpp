@@ -5,12 +5,13 @@
 
 int main( void )
 {
-  Matrix<int> m1{4, 4, 5};
+ std::vector<int> vec = {1, 0, 0, 1};
+ Matrix<int> m{1, 4, vec.begin(), vec.end()};
 
-  m1 *= 2;
+  //m1 *= 2;
   //m1.Transpose();
 
-  std::cout << m1[1][0];
+  std::cout << m;
 
   return 0;
 }
