@@ -32,7 +32,9 @@ typename ad6::Tree<T>::iterator ad6::Tree<T>::begin( void )
 template <typename T>
 typename ad6::Tree<T>::iterator ad6::Tree<T>::end( void )
 {
-  return iterator(max_ + 1);
+  if (max_ == nullptr)
+    return iterator();
+  return iterator(max_->right_);
 }
 
 template <typename T>
@@ -51,6 +53,18 @@ template <typename T>
 void ad6::Tree<T>::Erase( const T &key )
 {
   root_ = Delete(root_, key);
+}
+
+template <typename T>
+typename ad6::Tree<T>::iterator ad6::Tree<T>::At( const T& key )
+{
+  iterator it = --end();
+  for (int i = 0; i < size; ++i)
+  {
+    std::cout << "Nd[" << i << "]: " << it.nd_->key_ << "\n";
+    //--it;
+  }
+  return it;
 }
 
 template <typename T>

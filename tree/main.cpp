@@ -6,17 +6,15 @@
 
 int main( void )
 {
-  std::set<int> st{5, 6, 4, 2, 1};
-  std::cout << *(++st.end()) << "\n";
+  std::set<int> st;
+  std::cout << *(st.begin()) << "\n";
 
 
-
+/*
   ad6::Tree<int> tr;
   tr << 12 << 13 << 10 << 5;
 
-  tr.Erase(13);
-  if (!tr.Empty())
-    tr.Clear();
+  tr.At(2);*/
   return 0;
 }
 

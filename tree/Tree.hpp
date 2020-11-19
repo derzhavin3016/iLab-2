@@ -34,6 +34,8 @@ namespace ad6
 
     bool Empty( void ) { return size == 0; }
 
+    iterator At( const T& key );
+
     void Clear( void );
 
     ~Tree( void );

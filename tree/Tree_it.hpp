@@ -14,7 +14,7 @@ namespace ad6
   {
   private:
     Node<T> *nd_;
-
+    bool IsEnd;
     friend class Tree<T>;
   public:
     Tree_it( const Tree_it &tr_it ) = default;
@@ -32,7 +32,7 @@ namespace ad6
     Node<T> *operator ->( void );
 
   private:
-    Tree_it( Node<T> *nd = nullptr );
+    Tree_it( Node<T> *nd = nullptr, bool IsE = false );
   };
 
   template <typename T>
@@ -48,5 +48,6 @@ namespace ad6
   }
 }
 
+#include "Tree_it.ii"
 
 #endif //TREE_TREE_IT_HPP
