@@ -35,7 +35,7 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator ++( void )
 template <typename T>
 ad6::Tree_it<T> & ad6::Tree_it<T>::operator --( void )
 {
-
+  if (nd_->left)
 }
 
 

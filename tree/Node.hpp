@@ -9,18 +9,23 @@ namespace ad6
   class Tree;
 
   template <typename T>
+  class Tree_it;
+
+  template <typename T>
   class Node final
   {
   private:
     friend class Tree<T>;
+    friend class Tree_it<T>;
 
     T key_;
     int depth_;
 
     Node *left_;
     Node *right_;
+    Node *parent_;
 
-    Node( const T &key, int depth = 1, Node *l = nullptr, Node *r = nullptr );
+    Node( const T &key, Node *par = nullptr, int depth = 1, Node *l = nullptr, Node *r = nullptr );
 
     int GetLDepth( void ) const;
     int GetRDepth( void ) const;

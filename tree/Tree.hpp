@@ -11,6 +11,8 @@ namespace ad6
   {
   private:
     Node<T> *root_;
+    Node<T> *min_;
+    Node<T> *max_;
     size_t size;
 
   public:
@@ -43,6 +45,8 @@ namespace ad6
 
     [[nodiscard]] Node<T> *Balance( Node<T> *nd );
 
+    [[nodiscard]] Node<T> *CreatNd( const T &key, Node<T> *par );
+
     [[nodiscard]] Node<T> *Insert( Node<T> *nd, const T &key );
 
     [[nodiscard]] Node<T> *DelMin( Node<T> *nd );
@@ -52,6 +56,9 @@ namespace ad6
     Node<T> *Find( Node<T> *nd, const T &key ) const;
 
     Node<T> *FindMin( Node<T> *nd ) const;
+    Node<T> *FindMax( Node<T> *nd ) const;
+
+    void MinMaxUpd( Node<T> *nd );
   };
 }
 
