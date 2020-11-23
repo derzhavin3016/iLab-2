@@ -40,6 +40,6 @@ namespace ad6
   };
 }
 
-#include "Node.ii"
+#include "Node.inl"
 
 #endif //TREE_NODE_HPP

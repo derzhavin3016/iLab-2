@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 
-add_executable(tree main.cpp Tree.ii Tree.hpp Node.ii Node.hpp Tree_it.hpp Tree_it.ii)
+add_executable(tree main.cpp)
 
 #target_link_libraries(matrix ${GTEST_LIBRARIES} Threads::Threads)
 

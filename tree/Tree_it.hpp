@@ -48,6 +48,6 @@ namespace ad6
   }
 }
 
-#include "Tree_it.ii"
+#include "Tree_it.inl"
 
 #endif //TREE_TREE_IT_HPP

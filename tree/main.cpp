@@ -10,10 +10,10 @@ int main( void )
   std::cout << *(st.begin()) << "\n";
 
 
-/*
+
   ad6::Tree<int> tr;
   tr << 12 << 13 << 10 << 5;
 
-  tr.At(2);*/
+  tr.At(2);
   return 0;
 }
