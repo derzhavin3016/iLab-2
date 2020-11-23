@@ -161,7 +161,7 @@ ad6::ldbl ad6::Matrix<T>::Det( void ) const
     return 0;
 
   // check if the type is valid
-  static_cast<ldbl>(matr_[0][0]);
+  ldbl dummy = static_cast<ldbl>(matr_[0][0]);
 
   Matrix<T> tmp{*this};
 
@@ -211,8 +211,7 @@ void ad6::Matrix<T>::SwapLines( int lhs, int rhs )
   lhs = Clamp(lhs, 0, static_cast<int>(rows_ - 1));
   rhs = Clamp(rhs, 0, static_cast<int>(rows_ - 1));
 
-  for (int i = 0; i < cols_; ++i)
-    std::swap(matr_[lhs][i], matr_[rhs][i]);
+  std::swap(matr_[lhs], matr_[rhs]);
 }
 
 template <typename T>

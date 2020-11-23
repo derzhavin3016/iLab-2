@@ -121,7 +121,7 @@ namespace ad6
     /* copy matrix with idnetical sizes function */
     static void Copy( Matrix &dst, const Matrix &src );
 
-    void SwapLines( int lhs, int rhs );
+  public:void SwapLines( int lhs, int rhs );
 
     void AddLine( int dest_ind, int src_ind );
 
