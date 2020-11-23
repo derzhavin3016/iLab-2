@@ -158,7 +158,7 @@ namespace ad6
 
 
 // add functions realizations
-#include "matrix.ii"
+#include "matrix.inl"
 
 
 #endif //MATRIX_MATRIX_HPP
