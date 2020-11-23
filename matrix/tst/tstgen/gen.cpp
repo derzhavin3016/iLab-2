@@ -61,7 +61,7 @@ int main( int argc, char *argv[] )
   }
 
 
-  std::cout << size << " " << size << "\n";
+  std::cout << size << "\n";
 
   RawPrint(mat);
   return 0;

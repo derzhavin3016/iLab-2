@@ -368,3 +368,19 @@ std::istream &ad6::operator >>( std::istream &ist, Matrix<T> &matr )
 
   return ist;
 }
+
+template <typename T>
+std::istream &ad6::InputQuadr( std::istream &ist, Matrix<T> &matr )
+{
+  int size = 0;
+  ist >> size;
+
+  matr = Matrix<T>{size, size, [&]( int i, int j )
+  {
+    T val{};
+    ist >> val;
+    return val;
+  }};
+
+  return ist;
+}

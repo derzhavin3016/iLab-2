@@ -150,6 +150,9 @@ namespace ad6
 
   template <typename T>
   std::istream &operator >>( std::istream &ist, Matrix<T> &matr );
+
+  template <typename T>
+  std::istream &InputQuadr( std::istream &ist, Matrix<T> &matr );
 }
 
 
