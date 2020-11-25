@@ -11,3 +11,9 @@ Profram which get an array of triangles (array of points triplets) and write num
 * ```plane.hpp``` - plane class module.
 * ```trian.hpp``` - triangle class module.
 * ```mth.hpp``` - calculating an intersection functions. 
+
+## Tree
+**AVL** searching tree algorithm.
+
+## Matrix
+Realization of matrix calss. Realized calculating determinant by Gauss algorithm.
