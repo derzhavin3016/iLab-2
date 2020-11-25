@@ -175,11 +175,11 @@ ad6::ldbl ad6::Matrix<T>::Det( void ) const
         return 0;
 
       tmp.SwapLines(non_z_line, i);
-      continue;
     }
 
+    T div = tmp.matr_[i][i];
     for (size_t j = i + 1; j < rows_; ++j)
-      tmp.AddLineMVal(j, i, -static_cast<ldbl>(tmp.matr_[j][i]) / tmp.matr_[i][i]);
+      tmp.AddLineMVal(j, i, -static_cast<ldbl>(tmp.matr_[j][i]) / div);
   }
 
   ldbl det = 1;
