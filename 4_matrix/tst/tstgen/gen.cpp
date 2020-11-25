@@ -22,11 +22,15 @@ void RawPrint( const Matrix<T> &matr )
 
 int main( int argc, char *argv[] )
 {
-  if (argc != 3)
+  if (argc != 3 && argc != 4)
   {
-    std::cout << "USAGE: ./gen SIZE DET\n";
+    std::cout << "USAGE: ./gen SIZE DET [LOOPS_AMOUNT (5 by def)]\n";
     return 0;
   }
+  size_t loops = 5;
+  if (argc == 4)
+    loops = atoi(argv[3]);
+
 
   int size = atoi(argv[1]);
   ldbl det = atof(argv[2]);
@@ -38,7 +42,7 @@ int main( int argc, char *argv[] )
   srand(clock());
 
 
-  int end = size * 10;
+  int end = size * loops;
 
   for (int i = 0; i < end; ++i)
   {

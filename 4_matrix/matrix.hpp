@@ -102,6 +102,8 @@ namespace ad6
 
     ~Matrix( void );
 
+    void AddLineMVal( size_t dest_ind, size_t src_ind, ldbl val );
+
     bool IsEq( const Matrix &matr ) const;
 
     void Dump( std::ostream &ost ) const;
@@ -126,8 +128,6 @@ namespace ad6
     static void Copy( Matrix &dst, const Matrix &src );
 
     void SwapLines( size_t lhs, size_t rhs );
-
-    void AddLineMVal( size_t dest_ind, size_t src_ind, ldbl val );
 
     void AddLine( size_t dest_ind, size_t src_ind );
 

@@ -6,7 +6,6 @@ find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
 
 add_subdirectory(/usr/src/googletest gtest)
-
 add_executable(matrix main.cpp)
 #add_executable(matrix test.cpp)
 

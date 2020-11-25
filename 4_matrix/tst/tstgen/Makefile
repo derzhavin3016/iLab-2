@@ -1,2 +1,2 @@
 all:
-		g++ -Wall -Wextra gen.cpp -o gen -std=c++17
+		g++ -Wall -Wextra -std=c++2a gen.cpp -o gen
