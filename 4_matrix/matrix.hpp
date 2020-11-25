@@ -3,21 +3,15 @@
 
 #include <iostream>
 #include <cmath>
-#include <assert.h>
-
-template <typename T>
-T Clamp( T val, T min, T max )
-{
-  return val > max ? max : val < min ? min : val;
-}
-
+#include <cassert>
 
 
 namespace ad6
 {
   using ldbl = long double;
 
-  const ldbl MAT_THRESHOLD = 1e-10;
+  constexpr ldbl MAT_THRESHOLD = 1e-10;
+
   template <typename T>
   class Matrix
   {
@@ -39,12 +33,14 @@ namespace ad6
 
       const T &operator []( int i ) const
       {
-        return m_row[Clamp(i, 0, static_cast<int>(m_cols - 1))];
+        assert(i >= 0 && i < m_cols);
+        return m_row[i];
       }
 
       T &operator []( int i )
       {
-        return m_row[Clamp(i, 0, static_cast<int>(m_cols - 1))];
+        assert(i >= 0 && i < m_cols);
+        return m_row[i];
       }
 
       Row_matr( const Row_matr &row_m ) = default;
@@ -54,13 +50,13 @@ namespace ad6
 
   public:
 
-    Matrix( int rows, int cols );
+    Matrix( size_t rows, size_t cols );
 
     template <typename It>
-    Matrix( int rows, int cols, const It &begin, const It &end );
+    Matrix( size_t rows, size_t cols, const It &begin, const It &end );
 
     template <typename empl_func>
-    Matrix( int rows, int cols, empl_func fnc );
+    Matrix( size_t rows, size_t cols, empl_func fnc );
 
     // copy constructors
     Matrix( const Matrix &matr );
@@ -74,6 +70,7 @@ namespace ad6
 
     Matrix &operator +=( const Matrix &matr );
     Matrix &operator -=( const Matrix &matr );
+    Matrix &operator *=( const Matrix &matr );
     Matrix &operator *=( T val );
 
     Matrix &Transpose( void );
@@ -85,29 +82,31 @@ namespace ad6
     size_t getCols( void ) const { return cols_; }
     size_t getRows( void ) const { return rows_; }
 
-    static Matrix Identity( int rows );
+    static Matrix Identity( size_t rows );
 
-    const T &At( int i, int j ) const;
+    const T &At( size_t i, size_t j ) const;
 
-    Row_matr operator []( int i ) const
+    Row_matr operator []( size_t i ) const
     {
-      return Row_matr{cols_, matr_[Clamp(i, 0, static_cast<int>(rows_ - 1))]};
+      assert(i < rows_);
+      return Row_matr{cols_, matr_[i]};
     }
 
-    Row_matr operator []( int i )
+    Row_matr operator []( size_t i )
     {
-      return Row_matr{cols_, matr_[Clamp(i, 0, static_cast<int>(rows_ - 1))]};
+      assert(i < rows_);
+      return Row_matr{cols_, matr_[i]};
     }
 
     ~Matrix( void );
 
     void Dump( std::ostream &ost ) const;
 
-    void AddLineMVal( int dest_ind, int src_ind, ldbl val );
-
     static void SetThreshold( ldbl new_thres ) { threshold = new_thres; }
     static void SetDefThres ( void )           { threshold = MAT_THRESHOLD; }
     static ldbl GetThreshold( void )           { return threshold; }
+
+    static bool IsZero( ldbl val ) { return std::abs(val) < threshold; }
 
   private:
     void Fill( T val );
@@ -121,13 +120,15 @@ namespace ad6
     /* copy matrix with idnetical sizes function */
     static void Copy( Matrix &dst, const Matrix &src );
 
-    void SwapLines( int lhs, int rhs );
+    void SwapLines( size_t lhs, size_t rhs );
 
-    void AddLine( int dest_ind, int src_ind );
+    void AddLineMVal( size_t dest_ind, size_t src_ind, ldbl val );
 
-    void MulLine( int line, ldbl val );
+    void AddLine( size_t dest_ind, size_t src_ind );
 
-    int FindNonZero( int st_col );
+    void MulLine( size_t line, ldbl val );
+
+    int FindNonZero( size_t st_col );
 
     template <typename walk_func>
     void Walker( walk_func walk );
@@ -138,6 +139,9 @@ namespace ad6
 
   template <typename T>
   Matrix<T> operator -( const Matrix<T> &lhs, const Matrix<T> &rhs );
+
+  template <typename T>
+  Matrix<T> operator *( const Matrix<T> &lhs, const Matrix<T> &rhs );
 
   template <typename T>
   Matrix<T> operator *( const Matrix<T> &lhs, T val );
@@ -162,9 +166,9 @@ template <typename T>
 ad6::ldbl ad6::Matrix<T>::threshold = ad6::MAT_THRESHOLD;
 
 template <typename T>
-ad6::Matrix<T>::Matrix( int rows, int cols ) : matr_(nullptr),
-                                               rows_(rows),
-                                               cols_(cols)
+ad6::Matrix<T>::Matrix( size_t rows, size_t cols ) : matr_(nullptr),
+                                                     rows_(rows),
+                                                     cols_(cols)
 {
   Alloc();
   Fill(T{});
@@ -172,9 +176,9 @@ ad6::Matrix<T>::Matrix( int rows, int cols ) : matr_(nullptr),
 
 template <typename T>
 template <typename It>
-ad6::Matrix<T>::Matrix( int rows, int cols, const It &begin, const It &end ) : matr_(nullptr),
-                                                                               rows_(rows),
-                                                                               cols_(cols)
+ad6::Matrix<T>::Matrix( size_t rows, size_t cols, const It &begin, const It &end ) : matr_(nullptr),
+                                                                                     rows_(rows),
+                                                                                     cols_(cols)
 {
   Alloc();
   size_t i = 0, size = rows_ * cols_;
@@ -185,9 +189,9 @@ ad6::Matrix<T>::Matrix( int rows, int cols, const It &begin, const It &end ) : m
 
 template <typename T>
 template <typename empl_func>
-ad6::Matrix<T>::Matrix( int rows, int cols, empl_func fnc ) : matr_(nullptr),
-                                                              rows_(rows),
-                                                              cols_(cols)
+ad6::Matrix<T>::Matrix( size_t rows, size_t cols, empl_func fnc ) : matr_(nullptr),
+                                                                    rows_(rows),
+                                                                    cols_(cols)
 {
   Alloc();
   Walker(fnc);
@@ -271,6 +275,24 @@ ad6::Matrix<T> &ad6::Matrix<T>::operator -=( const ad6::Matrix<T> &matr )
 }
 
 template <typename T>
+ad6::Matrix<T> &ad6::Matrix<T>::operator *=( const Matrix &matr )
+{
+  assert(cols_ == matr.rows_);
+  Transpose();
+  auto mul_func = [this, matr]( int i, int j ) -> T
+    {
+      T new_el = 0;
+      for (int r = 0; r < this->cols_; ++r)
+        new_el += this->matr_[r][i] * matr.matr_[r][j];
+
+      return new_el;
+    };
+  Walker(mul_func);
+
+  return *this;
+}
+
+template <typename T>
 ad6::Matrix<T> &ad6::Matrix<T>::operator *=( T val )
 {
   auto mul_fnc = [this, val]( int i, int j )-> T { return this->matr_[i][j] * val; };
@@ -298,16 +320,11 @@ ad6::Matrix<T> ad6::Matrix<T>::Transposing( void ) const
   return Matrix<T>(cols_, rows_, [*this](int i, int j){ return this->matr_[j][i]; });
 }
 
-bool IsZero( ad6::ldbl val, ad6::ldbl thres )
-{
-  return std::abs(val) < thres;
-}
-
 template <typename T>
-int ad6::Matrix<T>::FindNonZero( int st_col )
+int ad6::Matrix<T>::FindNonZero( size_t st_col )
 {
   for (size_t i = st_col + 1; i < cols_; ++i)
-    if (!IsZero(matr_[i][st_col], threshold))
+    if (!IsZero(matr_[i][st_col]))
       return i;
 
   return -1;
@@ -317,7 +334,7 @@ template <typename T>
 ad6::ldbl ad6::Matrix<T>::Det( void ) const
 {
   if (rows_ != cols_)
-    return 0;
+    return NAN;
 
   // check if the type is valid
   ldbl dummy = static_cast<ldbl>(matr_[0][0]);
@@ -327,7 +344,7 @@ ad6::ldbl ad6::Matrix<T>::Det( void ) const
 
   for (size_t i = 0; i < rows_ - 1; ++i)
   {
-    if (IsZero(tmp.matr_[i][i], threshold))
+    if (IsZero(tmp.matr_[i][i]))
     {
       int non_z_line = tmp.FindNonZero(i);
       if (non_z_line == -1)
@@ -349,54 +366,54 @@ ad6::ldbl ad6::Matrix<T>::Det( void ) const
 }
 
 template <typename T>
-ad6::Matrix<T> ad6::Matrix<T>::Identity( int rows )
+ad6::Matrix<T> ad6::Matrix<T>::Identity( size_t rows )
 {
   Matrix id(rows, rows, []( int i, int j ) { return i == j; });
 
   return id;
 }
 template <typename T>
-const T &ad6::Matrix<T>::At( int i, int j ) const
+const T &ad6::Matrix<T>::At( size_t i, size_t j ) const
 {
-  int new_i = Clamp(i, 0, static_cast<int>(rows_ - 1)),
-    new_j = Clamp(j, 0, static_cast<int>(cols_ - 1));
+  assert(i < rows_);
+  assert(j < cols_);
 
-  return matr_[new_i][new_j];
+  return matr_[i][j];
 }
 
 template <typename T>
-void ad6::Matrix<T>::SwapLines( int lhs, int rhs )
+void ad6::Matrix<T>::SwapLines( size_t lhs, size_t rhs )
 {
-  lhs = Clamp(lhs, 0, static_cast<int>(rows_ - 1));
-  rhs = Clamp(rhs, 0, static_cast<int>(rows_ - 1));
+  assert(lhs < rows_);
+  assert(rhs < rows_);
 
   std::swap(matr_[lhs], matr_[rhs]);
 }
 
 template <typename T>
-void ad6::Matrix<T>::AddLine( int dest_ind, int src_ind )
+void ad6::Matrix<T>::AddLine( size_t dest_ind, size_t src_ind )
 {
-  dest_ind = Clamp(dest_ind, 0, static_cast<int>(rows_ - 1));
-  src_ind = Clamp(src_ind, 0, static_cast<int>(rows_ - 1));
+  assert(dest_ind < rows_);
+  assert(src_ind < rows_);
 
   for (int i = 0; i < cols_; ++i)
     matr_[dest_ind][i] += matr_[src_ind][i];
 }
 
 template <typename T>
-void ad6::Matrix<T>::AddLineMVal( int dest_ind, int src_ind, ldbl val )
+void ad6::Matrix<T>::AddLineMVal( size_t dest_ind, size_t src_ind, ldbl val )
 {
-  dest_ind = Clamp(dest_ind, 0, static_cast<int>(rows_ - 1));
-  src_ind = Clamp(src_ind, 0, static_cast<int>(rows_ - 1));
+  assert(dest_ind < rows_);
+  assert(src_ind < rows_);
 
   for (size_t i = 0; i < cols_; ++i)
     matr_[dest_ind][i] += val * matr_[src_ind][i];
 }
 
 template <typename T>
-void ad6::Matrix<T>::MulLine( int line, ldbl val )
+void ad6::Matrix<T>::MulLine( size_t line, ldbl val )
 {
-  line = Clamp(line, 0, static_cast<int>(rows_ - 1));
+  assert(line < rows_);
 
   for (int i = 0; i < cols_; ++i)
     matr_[line][i] *= val;
@@ -489,6 +506,15 @@ ad6::Matrix<T> ad6::operator -( const Matrix<T> &lhs, const Matrix<T> &rhs )
 }
 
 template <typename T>
+ad6::Matrix<T> ad6::operator *( const Matrix<T> &lhs, const Matrix<T> &rhs )
+{
+  Matrix<T> temp{lhs};
+  temp *= rhs;
+
+  return temp;
+}
+
+template <typename T>
 ad6::Matrix<T> ad6::operator *( const Matrix<T> &lhs, T val )
 {
   Matrix<T> temp{lhs};
@@ -514,10 +540,10 @@ std::ostream & ad6::operator <<( std::ostream &ost, const ad6::Matrix<T> &matr )
 template <typename T>
 std::istream &ad6::operator >>( std::istream &ist, Matrix<T> &matr )
 {
-  int rows = 0, cols = 0;
+  size_t rows = 0, cols = 0;
   ist >> rows >> cols;
 
-  matr = Matrix<T>{rows, cols, [&]( int i, int j )
+  matr = Matrix<T>{rows, cols, [&]( int, int )
   {
     T val{};
     ist >> val;
@@ -530,10 +556,10 @@ std::istream &ad6::operator >>( std::istream &ist, Matrix<T> &matr )
 template <typename T>
 std::istream &ad6::InputQuadr( std::istream &ist, Matrix<T> &matr )
 {
-  int size = 0;
+  size_t size = 0;
   ist >> size;
 
-  matr = Matrix<T>{size, size, [&]( int i, int j )
+  matr = Matrix<T>{size, size, [&]( int, int )
   {
     T val{};
     ist >> val;
