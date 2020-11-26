@@ -60,9 +60,10 @@ bool ad6::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
   if (nd_ == nullptr || tr_ir.nd_ == nullptr)
     return false;
 
-  if (IsEnd == tr_ir.IsEnd && IsEnd)
-    return true;
+  if (tr_ir.IsEnd || IsEnd)
+    return IsEnd && tr_ir.IsEnd;
 
+  // not for end
   return nd_ == tr_ir.nd_;
 }
 
@@ -85,8 +86,33 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator ++( void )
     return *this;
 
   if (nd_->right_ != nullptr)
-    nd_ = nd_->right_;
+  {
+    Node<T> *node = nd_->right_;
+    while (node->left_ != nullptr)
+      node = node->left_;
+    nd_ = node;
+  }
+  else
+  {
+    /* go upper until you get a node with less key value
+     * OR with nullptr (then you at the max node)
+     * */
 
+    if (nd_->parent_ == nullptr)
+      return *this;
+
+    Node<T> *start_nd = nd_;
+    while (nd_ != nullptr && nd_->key_ <= start_nd->key_)
+      nd_ = nd_->parent_;
+
+    // this node is ALREADY max
+    if (nd_ == nullptr)
+    {
+      IsEnd = true;
+      nd_ = start_nd;
+    }
+
+  }
 }
 
 template <typename T>
@@ -99,41 +125,29 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator --( void )
   }
 
   if (nd_->left_ != nullptr)
-    nd_ = nd_->left_;
+  {
+    Node<T> *node = nd_->left_;
+    while (node->right_ != nullptr)
+      node = node->right_;
+    nd_ = node;
+  }
   else
   {
-    Node<T> *new_nd = nd_;
-    Node<T> *old_nd = nullptr;
+    /* go upper until you get a node with less key value
+     * OR with nullptr (then you at the minimum node)
+     * */
 
-    while (1)
-    {
-      // the node is a root
-      if (new_nd->parent_ == nullptr)
-      {
-        if (new_nd->left_ != nullptr && old_nd != new_nd->left_)
-        {
-          old_nd = new_nd;
-          new_nd = new_nd->left_;
-        }
-        break;
-      }
-      if (new_nd->left_ == nullptr)
-      {
-        if (new_nd->parent_ != nullptr && old_nd != new_nd->parent_)
-        {
-          old_nd = new_nd;
-          new_nd = new_nd->parent_;
-        }
-        break;
-      }
+    if (nd_->parent_ == nullptr)
+      return *this;
 
-      old_nd = new_nd;
-      new_nd = new_nd->left_;
-    }
-    nd_ = new_nd;
+    Node<T> *start_nd = nd_;
+    while (nd_ != nullptr && nd_->key_ >= start_nd->key_)
+      nd_ = nd_->parent_;
+
+    if (nd_ == nullptr)
+      nd_ = start_nd;
+
   }
-
-  return *this;
 }
 
 

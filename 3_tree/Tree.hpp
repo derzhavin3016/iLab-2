@@ -36,7 +36,7 @@ namespace ad6
 
     bool Empty( void ) { return size_ == 0; }
 
-    iterator At( const T& key );
+    iterator At( const T& key ) const;
 
     void Clear( void );
 
@@ -59,6 +59,22 @@ namespace ad6
 
     void MinMaxUpd( Node<T> *nd );
   };
+
+  template <typename T>
+  std::istream &operator >>( std::istream &ist, Tree<T> &tr )
+  {
+    size_t size = 0;
+    ist >> size;
+    T elem{};
+
+    for (size_t i = 0; i < size; ++i)
+    {
+      ist >> elem;
+      tr.Insert(elem);
+    }
+
+    return ist;
+  }
 }
 
 template <typename T>
@@ -117,14 +133,14 @@ void ad6::Tree<T>::Erase( const T &key )
 }
 
 template <typename T>
-typename ad6::Tree<T>::iterator ad6::Tree<T>::At( const T& key )
+typename ad6::Tree<T>::iterator ad6::Tree<T>::At( const T& key ) const
 {
-  iterator it = --end();
-  for (int i = 0; i < size_; ++i, --it)
-    std::cout << "TR[" << i << "]: " << *it << "\n";
+  iterator end_it = end();
+  for (iterator It = begin(); It != end_it; ++It)
+    if (*It == key)
+      return It;
 
-
-  return it;
+  return end_it;
 }
 
 template <typename T>

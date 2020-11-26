@@ -6,15 +6,10 @@
 
 int main( void )
 {
- // std::set<int> st;
-  // std::cout << *(st.begin()) << "\n";
-
-
-
   ad6::Tree<int> tr;
-  tr << 12 << 13 << 10 << 5 << 6 << 3 << 8 << 1;
+  std::cin >> tr;
 
-  //tr.At(1);
+
   tr.DotDump();
   return 0;
 }
