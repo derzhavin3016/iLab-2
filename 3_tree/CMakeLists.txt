@@ -2,20 +2,8 @@ cmake_minimum_required(VERSION 3.17)
 
 project(tree)
 
-#find_package(GTest REQUIRED)
-# find_package(Threads REQUIRED)
-
-# include_directories(../include ${GTEST_INCLUDE_DIRS})
-# add_subdirectory(/usr/src/googletest gtest)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-
+set(EXECUTABLE_OUTPUT_PATH ../)
 
 add_executable(tree main.cpp)
-
-#target_link_libraries(matrix ${GTEST_LIBRARIES} Threads::Threads)
-
-# enable_testing()
+target_compile_features(tree PRIVATE cxx_std_20)
+target_compile_options(tree PRIVATE -Wall -Wextra -Wpedantic)

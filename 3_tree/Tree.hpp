@@ -3,6 +3,8 @@
 
 #include "Node.hpp"
 #include "Tree_it.hpp"
+#include <fstream>
+#include <string>
 
 namespace ad6
 {
@@ -13,7 +15,7 @@ namespace ad6
     Node<T> *root_;
     Node<T> *min_;
     Node<T> *max_;
-    size_t size;
+    size_t size_;
 
   public:
     using iterator = Tree_it<T>;
@@ -32,33 +34,28 @@ namespace ad6
 
     void Erase( const T &key );
 
-    bool Empty( void ) { return size == 0; }
+    bool Empty( void ) { return size_ == 0; }
 
     iterator At( const T& key );
 
     void Clear( void );
 
+    void DotDump( const std::string &dotname = "dump.dot",
+                  const std::string &pngname = "dump.png" );
+
     ~Tree( void );
   private:
 
-    // Nodes rotation functions
-    [[nodiscard]] Node<T> *RotR( Node<T> *nd );
-    [[nodiscard]] Node<T> *RotL( Node<T> *nd );
-
-    [[nodiscard]] Node<T> *Balance( Node<T> *nd );
 
     [[nodiscard]] Node<T> *CreatNd( const T &key, Node<T> *par );
 
-    [[nodiscard]] Node<T> *Insert( Node<T> *nd, const T &key );
+    [[nodiscard]] ad6::Node<T> *Insert( Node<T> *nd, const T &key );
 
     [[nodiscard]] Node<T> *DelMin( Node<T> *nd );
 
     [[nodiscard]] Node<T> *Delete( Node <T> *nd, const T &key );
-    
-    Node<T> *Find( Node<T> *nd, const T &key ) const;
 
-    Node<T> *FindMin( Node<T> *nd ) const;
-    Node<T> *FindMax( Node<T> *nd ) const;
+    [[nodiscard]] Node<T> *Balance( Node<T> *nd );
 
     void MinMaxUpd( Node<T> *nd );
   };
@@ -68,7 +65,7 @@ template <typename T>
 ad6::Tree<T>::Tree( void ) : root_(nullptr),
                              min_(nullptr),
                              max_(nullptr),
-                             size(0)
+                             size_(0)
 {
 }
 
@@ -76,7 +73,7 @@ template <typename T>
 void ad6::Tree<T>::Insert( const T &key )
 {
   root_ = Insert(root_, key);
-  ++size;
+  ++size_;
 }
 
 template <typename T>
@@ -97,8 +94,8 @@ template <typename T>
 typename ad6::Tree<T>::iterator ad6::Tree<T>::end( void )
 {
   if (max_ == nullptr)
-    return iterator();
-  return iterator(max_->right_);
+    return iterator(nullptr, true);
+  return iterator(max_, true);
 }
 
 template <typename T>
@@ -110,7 +107,7 @@ typename ad6::Tree<T>::const_iterator ad6::Tree<T>::begin( void ) const
 template <typename T>
 typename ad6::Tree<T>::const_iterator ad6::Tree<T>::end( void ) const
 {
-  return const_iterator(max_ + 1);
+  return const_iterator(max_, false);
 }
 
 template <typename T>
@@ -123,11 +120,10 @@ template <typename T>
 typename ad6::Tree<T>::iterator ad6::Tree<T>::At( const T& key )
 {
   iterator it = --end();
-  for (int i = 0; i < size; ++i)
-  {
-    std::cout << "Nd[" << i << "]: " << it.nd_->key_ << "\n";
-    //--it;
-  }
+  for (int i = 0; i < size_; ++i, --it)
+    std::cout << "TR[" << i << "]: " << *it << "\n";
+
+
   return it;
 }
 
@@ -139,7 +135,30 @@ void ad6::Tree<T>::Clear( void )
   delete root_;
 
   root_ = min_ = max_ = nullptr;
-  size = 0;
+  size_ = 0;
+}
+
+template <typename T>
+void ad6::Tree<T>::DotDump( const std::string &dotname /* = "dump.dot" */,
+                            const std::string &pngname /* = "dump.png" */ )
+{
+  std::ofstream fout;
+  fout.open(dotname, std::ios::out);
+
+  if (!fout.is_open())
+  {
+    std::cout << "Cannot open dump file: " << dotname << "\n";
+    return;
+  }
+  fout << "digraph D {\n";
+  if (root_ != nullptr)
+    root_->RecDotPrint(fout);
+
+  fout << "}\n";
+  fout.close();
+
+  std::string promt = "dot " + dotname + " -Tpng > " + pngname;
+  system(promt.c_str());
 }
 
 template <typename T>
@@ -149,64 +168,11 @@ ad6::Tree<T>::~Tree( void )
 }
 
 template <typename T>
-ad6::Node<T> *ad6::Tree<T>::RotR( Node<T> *nd )
+ad6::Node<T> *ad6::Tree<T>::CreatNd( const T &key, Node<T> *par )
 {
-  Node<T> *lnd = nd->left_;
-  nd->left_ = lnd->right_;
-  if (nd->left_ != nullptr)
-    nd->left_->parent_ = lnd->right_->parent_;
-
-  lnd->right_ = nd;
-
-  lnd->parent_ = nd->parent_;
-  nd->parent_ = lnd;
-
-  nd->UpdDepth();
-  lnd->UpdDepth();
-
-  return lnd;
-}
-
-template <typename T>
-ad6::Node<T> *ad6::Tree<T>::RotL( Node<T> *nd )
-{
-  Node<T> *rnd = nd->right_;
-  nd->right_ = rnd->left_;
-  nd->right_->parent_ = rnd->left_->parent_;
-
-  rnd->left_ = nd;
-
-  rnd->parent_ = nd->parent_;
-  nd->parent_ = rnd;
-
-  nd->UpdDepth();
-  rnd->UpdDepth();
-
-  return rnd;
-}
-
-template <typename T>
-ad6::Node<T> *ad6::Tree<T>::Balance( Node<T> *nd )
-{
-  if (nd == nullptr)
-    return nd;
-
-  nd->UpdDepth();
-  int bfact = nd->GetBFact();
-
-  if (bfact >= 2)
-  {
-    if (nd->right_->GetBFact() < 0)
-      nd->right_ = RotR(nd->right_);
-    return RotL(nd);
-  }
-  if (bfact <= -2)
-  {
-    if (nd->left_->GetBFact() > 0)
-      nd->left_ = RotL(nd->left_);
-    return RotR(nd);
-  }
-  return nd;
+  Node<T> *new_nd = new Node<T>{key, par};
+  MinMaxUpd(new_nd);
+  return new_nd;
 }
 
 template <typename T>
@@ -218,14 +184,6 @@ void ad6::Tree<T>::MinMaxUpd( Node<T> *nd )
     max_ = nd;
   else if (nd->key_ < min_->key_)
     min_ = nd;
-}
-
-template <typename T>
-ad6::Node<T> *ad6::Tree<T>::CreatNd( const T &key, Node<T> *par )
-{
-  Node<T> *new_nd = new Node<T>{key, par};
-  MinMaxUpd(new_nd);
-  return new_nd;
 }
 
 template <typename T>
@@ -281,31 +239,6 @@ ad6::Node<T> *ad6::Tree<T>::Insert( Node<T> *nd, const T &key )
 }
 
 template <typename T>
-ad6::Node<T> *ad6::Tree<T>::FindMin( Node<T> *nd ) const
-{
-  if (nd == nullptr)
-    return nd;
-  return FindMin(nd->left_);
-}
-
-template <typename T>
-ad6::Node<T> *ad6::Tree<T>::FindMax( Node<T> *nd ) const
-{
-  if (nd == nullptr)
-    return nd;
-  return FindMax(nd->right_);
-}
-
-template <typename T>
-ad6::Node<T> *ad6::Tree<T>::DelMin( Node<T> *nd )
-{
-  if (nd->left_ == nullptr)
-    return nd->right_;
-  nd->left_ = DelMin(nd->left_);
-  return Balance(nd);
-}
-
-template <typename T>
 ad6::Node<T> *ad6::Tree<T>::Delete( Node <T> *nd, const T &key )
 {
   if (nd == nullptr)
@@ -324,7 +257,7 @@ ad6::Node<T> *ad6::Tree<T>::Delete( Node <T> *nd, const T &key )
     if (right == nullptr)
       return left;
 
-    Node<T> *min = FindMin(right);
+    Node<T> *min = right->FindMin();
     min->right_ = DelMin(right);
     min->left_ = left;
     min->parent_ = parent;
@@ -336,16 +269,37 @@ ad6::Node<T> *ad6::Tree<T>::Delete( Node <T> *nd, const T &key )
 }
 
 template <typename T>
-ad6::Node<T> *ad6::Tree<T>::Find( Node<T> *nd, const T &key ) const
+ad6::Node<T> *ad6::Tree<T>::Balance( Node<T> *nd )
 {
   if (nd == nullptr)
-    return nullptr;
-  if (key < nd->key_)
-    return Find(nd->left_, key);
-  if (key > nd->key_)
-    return Find(nd->right_, key);
+    return nd;
 
+  nd->UpdDepth();
+  int bfact = nd->GetBFact();
+
+  if (bfact >= 2)
+  {
+    if (nd->right_->GetBFact() < 0)
+      nd->right_ = nd->right_->RotR();
+    return nd->RotL();
+  }
+  if (bfact <= -2)
+  {
+    if (nd->left_->GetBFact() > 0)
+      nd->left_ = nd->left_->RotL();
+    return nd->RotR();
+  }
   return nd;
+}
+
+
+template <typename T>
+ad6::Node<T> *ad6::Tree<T>::DelMin( Node<T> *nd )
+{
+  if (nd->left_ == nullptr)
+    return nd->right_;
+  nd->left_ = nd->left_->DelMin();
+  return Balance(nd);
 }
 
 

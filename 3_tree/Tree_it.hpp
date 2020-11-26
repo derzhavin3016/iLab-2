@@ -60,6 +60,9 @@ bool ad6::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
   if (nd_ == nullptr || tr_ir.nd_ == nullptr)
     return false;
 
+  if (IsEnd == tr_ir.IsEnd && IsEnd)
+    return true;
+
   return nd_ == tr_ir.nd_;
 }
 
@@ -72,12 +75,17 @@ bool ad6::Tree_it<T>::IsnEq( const Tree_it<T> &tr_ir ) const
 template <typename T>
 typename ad6::Tree_it<T>::reference ad6::Tree_it<T>::operator *( void ) const
 {
-  return *nd_;
+  return nd_->key_;
 }
 
 template <typename T>
 ad6::Tree_it<T> & ad6::Tree_it<T>::operator ++( void )
 {
+  if (IsEnd)
+    return *this;
+
+  if (nd_->right_ != nullptr)
+    nd_ = nd_->right_;
 
 }
 
@@ -86,7 +94,7 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator --( void )
 {
   if (IsEnd)
   {
-    --nd_;
+    IsEnd = false;
     return *this;
   }
 
@@ -106,7 +114,6 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator --( void )
         {
           old_nd = new_nd;
           new_nd = new_nd->left_;
-          continue;
         }
         break;
       }
@@ -116,7 +123,6 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator --( void )
         {
           old_nd = new_nd;
           new_nd = new_nd->parent_;
-          continue;
         }
         break;
       }

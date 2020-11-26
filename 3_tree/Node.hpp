@@ -2,6 +2,7 @@
 #define TREE_NODE_HPP
 
 #include <iostream>
+#include <fstream>
 
 namespace ad6
 {
@@ -35,6 +36,17 @@ namespace ad6
     void UpdDepth( void );
 
     void Clear( void );
+
+    void RecDotPrint( std::ofstream &oft );
+
+    // Nodes rotation functions
+    [[nodiscard]] Node<T> *RotR( void );
+    [[nodiscard]] Node<T> *RotL( void );
+
+    [[nodiscard]] Node<T> *Find( const T &key ) const;
+
+    Node<T> *FindMin( void ) const;
+    Node<T> *FindMax( void ) const;
 
     ~Node( void );
   };
@@ -98,6 +110,89 @@ void ad6::Node<T>::Clear( void )
   delete right_;
   right_ = nullptr;
   parent_ = nullptr;
+}
+
+template <typename T>
+void ad6::Node<T>::RecDotPrint( std::ofstream &oft )
+{
+  if (left_ != nullptr)
+  {
+    oft << key_ << " -> " << left_->key_ << ";\n";
+    left_->RecDotPrint(oft);
+  }
+  if (right_ != nullptr)
+  {
+    oft << key_ << " -> " << right_->key_ << ";\n";
+    right_->RecDotPrint(oft);
+  }
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Node<T>::RotR( void )
+{
+  Node<T> *lnd = left_;
+  left_ = lnd->right_;
+
+  if (left_ != nullptr && lnd->right_ != nullptr)
+    left_->parent_ = lnd->right_->parent_;
+
+  lnd->right_ = this;
+
+  lnd->parent_ = parent_;
+  parent_ = lnd;
+
+  UpdDepth();
+  lnd->UpdDepth();
+
+  return lnd;
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Node<T>::RotL( void )
+{
+  Node<T> *rnd = right_;
+  right_ = rnd->left_;
+  if (right_ != nullptr && rnd->left_ != nullptr)
+    right_->parent_ = rnd->left_->parent_;
+
+  rnd->left_ = this;
+
+  rnd->parent_ = parent_;
+  parent_ = rnd;
+
+  UpdDepth();
+  rnd->UpdDepth();
+
+  return rnd;
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Node<T>::FindMin( void ) const
+{
+  if (this == nullptr)
+    return this;
+  return left_->FindMin();
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Node<T>::FindMax( void ) const
+{
+  if (this == nullptr)
+    return this;
+  return right_->FindMax();
+}
+
+template <typename T>
+ad6::Node<T> *ad6::Node<T>::Find( const T &key ) const
+{
+  if (this == nullptr)
+    return nullptr;
+  if (key < key_)
+    return Find(left_, key);
+  if (key > key_)
+    return Find(right_, key);
+
+  return this;
 }
 
 template <typename T>
