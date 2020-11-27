@@ -28,6 +28,9 @@ namespace ad6
 
     Node( const T &key, Node *par = nullptr, int depth = 1, Node *l = nullptr, Node *r = nullptr );
 
+    Node( const Node &nd ) = default;
+    Node &operator =( const Node &nd ) = default;
+
     int GetLDepth( void ) const;
     int GetRDepth( void ) const;
 
