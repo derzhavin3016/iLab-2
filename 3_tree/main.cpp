@@ -7,9 +7,14 @@
 int main( void )
 {
   ad6::Tree<int> tr;
-  std::cin >> tr;
+  //std::cin >> tr;
+  for (int i = 0; i < 100; ++i)
+    tr << i;
+  //tr << 10 << 12 << 8 << 5 << 9 << 6;
 
 
+
+  // for debug
   tr.DotDump();
   return 0;
 }

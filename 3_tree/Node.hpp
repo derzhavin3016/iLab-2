@@ -43,8 +43,6 @@ namespace ad6
     [[nodiscard]] Node<T> *RotR( void );
     [[nodiscard]] Node<T> *RotL( void );
 
-    [[nodiscard]] Node<T> *Find( const T &key ) const;
-
     Node<T> *FindMin( void ) const;
     Node<T> *FindMax( void ) const;
 
@@ -125,6 +123,7 @@ void ad6::Node<T>::RecDotPrint( std::ofstream &oft )
     oft << key_ << " -> " << right_->key_ << ";\n";
     right_->RecDotPrint(oft);
   }
+  oft << key_ << ";\n";
 }
 
 template <typename T>
@@ -180,19 +179,6 @@ ad6::Node<T> *ad6::Node<T>::FindMax( void ) const
   if (this == nullptr)
     return this;
   return right_->FindMax();
-}
-
-template <typename T>
-ad6::Node<T> *ad6::Node<T>::Find( const T &key ) const
-{
-  if (this == nullptr)
-    return nullptr;
-  if (key < key_)
-    return Find(left_, key);
-  if (key > key_)
-    return Find(right_, key);
-
-  return this;
 }
 
 template <typename T>

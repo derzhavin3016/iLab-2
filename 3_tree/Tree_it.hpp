@@ -18,18 +18,22 @@ namespace ad6
     friend class Tree<T>;
   public:
     Tree_it( const Tree_it &tr_it ) = default;
+    Tree_it &operator =( const Tree_it &that ) = default;
 
     bool IsEq( const Tree_it &tr_ir ) const;
     bool IsnEq( const Tree_it &tr_ir ) const;
 
-    typename Tree_it::reference operator *( void ) const;
+    const typename Tree_it::reference operator *( void ) const;
+    typename Tree_it::reference operator *( void );
 
     Tree_it &operator ++( void );
     Tree_it &operator --( void );
 
     const Tree_it &operator --( int );
+    const Tree_it &operator ++( int );
 
-    Node<T> *operator ->( void );
+    T *operator ->( void );
+    const T *operator ->( void ) const;
 
   private:
     Tree_it( Node<T> *nd = nullptr, bool IsE = false );
@@ -74,7 +78,13 @@ bool ad6::Tree_it<T>::IsnEq( const Tree_it<T> &tr_ir ) const
 }
 
 template <typename T>
-typename ad6::Tree_it<T>::reference ad6::Tree_it<T>::operator *( void ) const
+const typename ad6::Tree_it<T>::reference ad6::Tree_it<T>::operator *( void ) const
+{
+  return nd_->key_;
+}
+
+template <typename T>
+typename ad6::Tree_it<T>::reference ad6::Tree_it<T>::operator *( void )
 {
   return nd_->key_;
 }
@@ -113,6 +123,7 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator ++( void )
     }
 
   }
+  return *this;
 }
 
 template <typename T>
@@ -146,21 +157,39 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator --( void )
 
     if (nd_ == nullptr)
       nd_ = start_nd;
-
   }
+  return *this;
 }
 
 
 template <typename T>
 const ad6::Tree_it<T> &ad6::Tree_it<T>::operator --( int )
 {
+  Tree_it<T> tmp{*this};
+  operator--();
 
+  return tmp;
 }
 
 template <typename T>
-ad6::Node<T> *ad6::Tree_it<T>::operator ->( void )
+const ad6::Tree_it<T> &ad6::Tree_it<T>::operator ++( int )
 {
+  Tree_it<T> tmp{*this};
+  operator++();
 
+  return tmp;
+}
+
+template <typename T>
+T *ad6::Tree_it<T>::operator ->( void )
+{
+  return &(nd_->key_);
+}
+
+template <typename T>
+const T *ad6::Tree_it<T>::operator ->( void ) const
+{
+  return &(nd_->key_);
 }
 
 #endif //TREE_TREE_IT_HPP
