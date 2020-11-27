@@ -19,7 +19,7 @@ namespace ad6
     friend class Tree<T>;
     friend class Tree_it<T>;
 
-    T key_;
+    const T key_;
     int depth_;
 
     Node *left_;

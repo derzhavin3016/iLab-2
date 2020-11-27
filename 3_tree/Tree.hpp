@@ -19,7 +19,6 @@ namespace ad6
 
   public:
     using iterator = Tree_it<T>;
-    using const_iterator = Tree_it<const T>;
     using iter_n_bool = std::pair<iterator, bool>;
 
     Tree( void );
@@ -28,16 +27,12 @@ namespace ad6
     Tree<T> &operator <<( const T &key );
 
     iterator Find( const T &key );
-    const_iterator Find( const T &key ) const;
+    iterator Find( const T &key ) const;
 
-    iterator begin( void );
-    iterator end  ( void );
+    size_t FindAm( const T &kmin, const T &kmax ) const;
 
-    const_iterator begin( void ) const;
-    const_iterator end  ( void ) const;
-
-    const_iterator cbegin( void ) const;
-    const_iterator cend  ( void ) const;
+    iterator begin( void ) const;
+    iterator end  ( void ) const;
 
     void Erase( const T &key );
 
@@ -50,7 +45,9 @@ namespace ad6
 
     ~Tree( void );
   private:
+    iterator MinProc( const T &kmin ) const;
 
+    iterator FindNear( Node<T> *nd, const T &key ) const;
 
     [[nodiscard]] Node<T> *CreatNd( const T &key, Node<T> *par );
 
@@ -124,54 +121,72 @@ typename ad6::Tree<T>::iterator ad6::Tree<T>::Find( const T &key )
 }
 
 template <typename T>
-typename ad6::Tree<T>::const_iterator ad6::Tree<T>::Find( const T &key ) const
+typename ad6::Tree<T>::iterator ad6::Tree<T>::Find( const T &key ) const
 {
   Node<T> *found = Find(root_, key);
   if (found == nullptr)
     return end();
-  return const_iterator(found);
+  return iterator(found);
 }
 
 
+
 template <typename T>
-typename ad6::Tree<T>::iterator ad6::Tree<T>::begin( void )
+size_t ad6::Tree<T>::FindAm( const T &kmin, const T &kmax ) const
+{
+  auto imin = MinProc(kmin);
+  auto itend = end();
+  size_t count = 0;
+
+  for (auto It = imin; It != itend && *It < kmax; ++It)
+    if (*It > kmin)
+      ++count;
+
+  return count;
+}
+
+template <typename T>
+typename ad6::Tree<T>::iterator ad6::Tree<T>::MinProc( const T &kmin ) const
+{
+  if (kmin == min_->key_)
+    return ++begin();
+
+  return FindNear(root_, kmin);
+}
+
+template <typename T>
+typename ad6::Tree<T>::iterator ad6::Tree<T>::FindNear( Node<T> *nd, const T &key ) const
+{
+  if (nd == nullptr)
+    return nullptr;
+  if (key < nd->key_)
+  {
+    if (nd->left_ == nullptr)
+      return iterator(nd);
+    return FindNear(nd->left_, key);
+  }
+  if (key > nd->key_)
+  {
+    if (nd->right_ == nullptr)
+      return nd == max_ ? end() : iterator(nd);
+    return FindNear(nd->right_, key);
+  }
+
+  return iterator(nd);
+}
+
+template <typename T>
+typename ad6::Tree<T>::iterator ad6::Tree<T>::begin( void ) const
 {
   return iterator(min_);
 }
 
 template <typename T>
-typename ad6::Tree<T>::iterator ad6::Tree<T>::end( void )
+typename ad6::Tree<T>::iterator ad6::Tree<T>::end( void ) const
 {
   if (max_ == nullptr)
     return iterator(nullptr, true);
   return iterator(max_, true);
-}
-
-template <typename T>
-typename ad6::Tree<T>::const_iterator ad6::Tree<T>::begin( void ) const
-{
-  return const_iterator(min_);
-}
-
-template <typename T>
-typename ad6::Tree<T>::const_iterator ad6::Tree<T>::end( void ) const
-{
-  if (max_ == nullptr)
-    return const_iterator(nullptr, true);
-  Node<const T> *cmax = const_cast<Node<const T> *>(max_);
-  return iterator(cmax, true);
-}
-
-template <typename T>
-typename ad6::Tree<T>::const_iterator ad6::Tree<T>::cbegin( void ) const
-{
-  return const_iterator(min_);
-}
-
-template <typename T>
-typename ad6::Tree<T>::const_iterator ad6::Tree<T>::cend( void ) const
-{
-  return const_iterator(max_, true);
 }
 
 template <typename T>

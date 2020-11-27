@@ -7,24 +7,29 @@
 namespace ad6
 {
   template <typename T>
+  class Tree;
+
+  template <typename T>
   class Node;
 
   template <typename T>
-  class Tree_it final : public std::iterator<std::bidirectional_iterator_tag, T>
+  class Tree_it final : public std::iterator<std::bidirectional_iterator_tag, const T>
   {
   private:
     Node<T> *nd_;
     bool IsEnd;
-    friend class Tree<T>;
   public:
+    friend class Tree<T>;
+
+
+    Tree_it( Node<T> *nd = nullptr, bool IsE = false );
     Tree_it( const Tree_it &tr_it ) = default;
     Tree_it &operator =( const Tree_it &that ) = default;
 
     bool IsEq( const Tree_it &tr_ir ) const;
     bool IsnEq( const Tree_it &tr_ir ) const;
 
-    const typename Tree_it::reference operator *( void ) const;
-    typename Tree_it::reference operator *( void );
+    typename Tree_it::reference operator *( void ) const;
 
     Tree_it &operator ++( void );
     Tree_it &operator --( void );
@@ -34,9 +39,6 @@ namespace ad6
 
     T *operator ->( void );
     const T *operator ->( void ) const;
-
-  private:
-    Tree_it( Node<T> *nd = nullptr, bool IsE = false );
   };
 
   template <typename T>
@@ -78,13 +80,7 @@ bool ad6::Tree_it<T>::IsnEq( const Tree_it<T> &tr_ir ) const
 }
 
 template <typename T>
-const typename ad6::Tree_it<T>::reference ad6::Tree_it<T>::operator *( void ) const
-{
-  return nd_->key_;
-}
-
-template <typename T>
-typename ad6::Tree_it<T>::reference ad6::Tree_it<T>::operator *( void )
+typename ad6::Tree_it<T>::reference ad6::Tree_it<T>::operator *( void ) const
 {
   return nd_->key_;
 }
