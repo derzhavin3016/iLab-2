@@ -23,13 +23,11 @@ namespace ad6
 
     Tree( void );
 
-    iter_n_bool Insert( const T &key );
+    iter_n_bool insert( const T &key );
     Tree<T> &operator <<( const T &key );
 
     iterator Find( const T &key );
     iterator Find( const T &key ) const;
-
-    size_t FindAm( const T &kmin, const T &kmax ) const;
 
     iterator begin( void ) const;
     iterator end  ( void ) const;
@@ -44,8 +42,9 @@ namespace ad6
                   const std::string &pngname = "dump.png" );
 
     ~Tree( void );
+
+    iterator lower_bound( const T &kmin ) const;
   private:
-    iterator MinProc( const T &kmin ) const;
 
     iterator FindNear( Node<T> *nd, const T &key ) const;
 
@@ -74,7 +73,7 @@ namespace ad6
     for (size_t i = 0; i < size; ++i)
     {
       ist >> elem;
-      tr.Insert(elem);
+      tr.insert(elem);
     }
 
     return ist;
@@ -90,7 +89,7 @@ ad6::Tree<T>::Tree( void ) : root_(nullptr),
 }
 
 template <typename T>
-typename ad6::Tree<T>::iter_n_bool ad6::Tree<T>::Insert( const T &key )
+typename ad6::Tree<T>::iter_n_bool ad6::Tree<T>::insert( const T &key )
 {
   iter_n_bool pair{iterator(), false};
   size_t old_size{size_};
@@ -106,7 +105,7 @@ typename ad6::Tree<T>::iter_n_bool ad6::Tree<T>::Insert( const T &key )
 template <typename T>
 ad6::Tree<T> &ad6::Tree<T>::operator <<( const T &key )
 {
-  Insert(key);
+  insert(key);
 
   return *this;
 }
@@ -129,24 +128,8 @@ typename ad6::Tree<T>::iterator ad6::Tree<T>::Find( const T &key ) const
   return iterator(found);
 }
 
-
-
 template <typename T>
-size_t ad6::Tree<T>::FindAm( const T &kmin, const T &kmax ) const
-{
-  auto imin = MinProc(kmin);
-  auto itend = end();
-  size_t count = 0;
-
-  for (auto It = imin; It != itend && *It < kmax; ++It)
-    if (*It > kmin)
-      ++count;
-
-  return count;
-}
-
-template <typename T>
-typename ad6::Tree<T>::iterator ad6::Tree<T>::MinProc( const T &kmin ) const
+typename ad6::Tree<T>::iterator ad6::Tree<T>::lower_bound( const T &kmin ) const
 {
   if (kmin == min_->key_)
     return ++begin();
