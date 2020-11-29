@@ -53,7 +53,7 @@ namespace ad6
     Matrix( size_t rows, size_t cols );
 
     template <typename It>
-    Matrix( size_t rows, size_t cols, const It &begin, const It &end );
+    Matrix( size_t rows, size_t cols, It begin, It end );
 
     Matrix( size_t rows, size_t cols, const std::initializer_list<T> &ilist );
 
@@ -120,7 +120,7 @@ namespace ad6
     void Alloc( void );
 
     template <typename It>
-    void FillByIt( const It &begin, const It &end );
+    void FillByIt( It begin, It end );
 
     static void Swap( Matrix &lhs, Matrix &rhs );
 
@@ -352,6 +352,8 @@ ad6::ldbl ad6::Matrix<T>::Det( void ) const
   if (rows_ != cols_)
     return NAN;
 
+  int sign = 1;
+
   // check if the type is valid
   ldbl dummy = static_cast<ldbl>(matr_[0][0]);
 
@@ -367,6 +369,7 @@ ad6::ldbl ad6::Matrix<T>::Det( void ) const
         return 0;
 
       tmp.SwapLines(non_z_line, i);
+      sign = -sign;
     }
 
     T div = tmp.matr_[i][i];
@@ -374,7 +377,7 @@ ad6::ldbl ad6::Matrix<T>::Det( void ) const
       tmp.AddLineMVal(j, i, -static_cast<ldbl>(tmp.matr_[j][i]) / div);
   }
 
-  ldbl det = 1;
+  ldbl det = sign;
   for (size_t i = 0; i < rows_; ++i)
     det *= tmp.matr_[i][i];
 
