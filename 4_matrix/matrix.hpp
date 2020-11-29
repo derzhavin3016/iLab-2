@@ -184,9 +184,9 @@ ad6::Matrix<T>::Matrix( size_t rows, size_t cols ) : matr_(nullptr),
 
 template <typename T>
 template <typename It>
-ad6::Matrix<T>::Matrix( size_t rows, size_t cols, const It &begin, const It &end ) : matr_(nullptr),
-                                                                                     rows_(rows),
-                                                                                     cols_(cols)
+ad6::Matrix<T>::Matrix( size_t rows, size_t cols, It begin, It end ) : matr_(nullptr),
+                                                                       rows_(rows),
+                                                                       cols_(cols)
 {
   Alloc();
   FillByIt(begin, end);
@@ -493,7 +493,7 @@ void ad6::Matrix<T>::Alloc( void )
 
 template <typename T>
 template <typename It>
-void ad6::Matrix<T>::FillByIt( const It &begin, const It &end )
+void ad6::Matrix<T>::FillByIt( It begin, It end )
 {
   size_t i = 0, size = rows_ * cols_;
 
