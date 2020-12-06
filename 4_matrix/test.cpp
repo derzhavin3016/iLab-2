@@ -4,7 +4,7 @@
 
 #include "matrix.hpp"
 
-using namespace ad6;
+using namespace linal;
 
 TEST(ctor, ilist)
 {
@@ -31,6 +31,23 @@ TEST(mult, inv)
                            -336, -518, 807}};
 
   EXPECT_EQ(m1 * m2 == -2308 * Matrix<int>::Identity(3), true);
+}
+
+TEST(transp, easy)
+{
+  Matrix<int> m1 = Matrix<int>::Identity(),
+    m2 = m1.Transposing();
+
+  EXPECT_EQ(m1, m2);
+}
+
+TEST(transp, rowtocol)
+{
+  Matrix<int> m1 = { 3, 1, [](int i, int j) { return i; } };
+  Matrix<int> m2 = { 1, 3, [](int i, int j) { return j; } };
+
+  m1.Transpose();
+  EXPECT_EQ(m1, m2);
 }
 
 int main( int, char *[] )

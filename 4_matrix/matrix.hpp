@@ -6,7 +6,7 @@
 #include <cassert>
 
 
-namespace ad6
+namespace linal
 {
   using ldbl = long double;
 
@@ -171,10 +171,10 @@ namespace ad6
 
 
 template <typename T>
-ad6::ldbl ad6::Matrix<T>::threshold = ad6::MAT_THRESHOLD;
+linal::ldbl linal::Matrix<T>::threshold = linal::MAT_THRESHOLD;
 
 template <typename T>
-ad6::Matrix<T>::Matrix( size_t rows, size_t cols ) : matr_(nullptr),
+linal::Matrix<T>::Matrix( size_t rows, size_t cols ) : matr_(nullptr),
                                                      rows_(rows),
                                                      cols_(cols)
 {
@@ -184,7 +184,7 @@ ad6::Matrix<T>::Matrix( size_t rows, size_t cols ) : matr_(nullptr),
 
 template <typename T>
 template <typename It>
-ad6::Matrix<T>::Matrix( size_t rows, size_t cols, It begin, It end ) : matr_(nullptr),
+linal::Matrix<T>::Matrix( size_t rows, size_t cols, It begin, It end ) : matr_(nullptr),
                                                                        rows_(rows),
                                                                        cols_(cols)
 {
@@ -193,7 +193,7 @@ ad6::Matrix<T>::Matrix( size_t rows, size_t cols, It begin, It end ) : matr_(nul
 }
 
 template <typename T>
-ad6::Matrix<T>::Matrix( size_t rows, size_t cols, const std::initializer_list<T> &ilist ) : matr_(nullptr),
+linal::Matrix<T>::Matrix( size_t rows, size_t cols, const std::initializer_list<T> &ilist ) : matr_(nullptr),
                                                                                             rows_(rows),
                                                                                             cols_(cols)
 {
@@ -203,7 +203,7 @@ ad6::Matrix<T>::Matrix( size_t rows, size_t cols, const std::initializer_list<T>
 
 template <typename T>
 template <typename empl_func>
-ad6::Matrix<T>::Matrix( size_t rows, size_t cols, empl_func fnc ) : matr_(nullptr),
+linal::Matrix<T>::Matrix( size_t rows, size_t cols, empl_func fnc ) : matr_(nullptr),
                                                                     rows_(rows),
                                                                     cols_(cols)
 {
@@ -213,7 +213,7 @@ ad6::Matrix<T>::Matrix( size_t rows, size_t cols, empl_func fnc ) : matr_(nullpt
 
 template <typename T>
 template <typename walk_func>
-void ad6::Matrix<T>::Walker( walk_func walk )
+void linal::Matrix<T>::Walker( walk_func walk )
 {
   for (size_t i = 0; i < rows_; ++i)
     for (size_t j = 0; j < cols_; ++j)
@@ -221,7 +221,7 @@ void ad6::Matrix<T>::Walker( walk_func walk )
 }
 
 template <typename T>
-ad6::Matrix<T>::Matrix( const ad6::Matrix<T> &matr ) : matr_(nullptr),
+linal::Matrix<T>::Matrix( const linal::Matrix<T> &matr ) : matr_(nullptr),
                                                        rows_(matr.rows_),
                                                        cols_(matr.cols_)
 {
@@ -230,7 +230,7 @@ ad6::Matrix<T>::Matrix( const ad6::Matrix<T> &matr ) : matr_(nullptr),
 }
 
 template <typename T>
-ad6::Matrix<T>::Matrix( ad6::Matrix<T> &&matr ) : matr_(matr.matr_),
+linal::Matrix<T>::Matrix( linal::Matrix<T> &&matr ) : matr_(matr.matr_),
                                                   rows_(matr.rows_),
                                                   cols_(matr.cols_)
 {
@@ -239,7 +239,7 @@ ad6::Matrix<T>::Matrix( ad6::Matrix<T> &&matr ) : matr_(matr.matr_),
 }
 
 template <typename T>
-ad6::Matrix<T> & ad6::Matrix<T>::operator =( const ad6::Matrix<T> &matr )
+linal::Matrix<T> & linal::Matrix<T>::operator =( const linal::Matrix<T> &matr )
 {
   if (this == &matr)
     return *this;
@@ -256,7 +256,7 @@ ad6::Matrix<T> & ad6::Matrix<T>::operator =( const ad6::Matrix<T> &matr )
 }
 
 template <typename T>
-ad6::Matrix<T> & ad6::Matrix<T>::operator =( ad6::Matrix<T> &&matr )
+linal::Matrix<T> & linal::Matrix<T>::operator =( linal::Matrix<T> &&matr )
 {
   if (this == &matr)
     return *this;
@@ -268,34 +268,34 @@ ad6::Matrix<T> & ad6::Matrix<T>::operator =( ad6::Matrix<T> &&matr )
 }
 
 template <typename T>
-ad6::Matrix<T> &ad6::Matrix<T>::operator +=( const ad6::Matrix<T> &matr )
+linal::Matrix<T> &linal::Matrix<T>::operator +=( const linal::Matrix<T> &matr )
 {
   assert(matr.rows_ == rows_ && matr.cols_ == cols_);
 
-  auto add_fnc = [this, matr]( int i, int j )->T {return this->matr_[i][j] + matr.matr_[i][j];};
+  auto add_fnc = [&]( int i, int j ) { return matr_[i][j] + matr.matr_[i][j]; };
   Walker(add_fnc);
 
   return *this;
 }
 
 template <typename T>
-ad6::Matrix<T> &ad6::Matrix<T>::operator -=( const ad6::Matrix<T> &matr )
+linal::Matrix<T> &linal::Matrix<T>::operator -=( const linal::Matrix<T> &matr )
 {
   assert(matr.rows_ == rows_ && matr.cols_ == cols_);
-  auto add_fnc = [this, matr]( int i, int j )->T {return this->matr_[i][j] - matr.matr_[i][j];};
+  auto add_fnc = [&]( int i, int j ){return matr_[i][j] - matr.matr_[i][j];};
   Walker(add_fnc);
 
   return *this;
 }
 
 template <typename T>
-ad6::Matrix<T> &ad6::Matrix<T>::operator *=( const Matrix &matr )
+linal::Matrix<T> &linal::Matrix<T>::operator *=( const Matrix &matr )
 {
   assert(cols_ == matr.rows_);
 
   Matrix<T> temp = Transposing();
 
-  auto mul_func = [temp, matr]( int i, int j ) -> T
+  auto mul_func = [&]( int i, int j )
     {
       T new_el = 0;
       for (size_t r = 0; r < temp.cols_; ++r)
@@ -309,21 +309,21 @@ ad6::Matrix<T> &ad6::Matrix<T>::operator *=( const Matrix &matr )
 }
 
 template <typename T>
-ad6::Matrix<T> &ad6::Matrix<T>::operator *=( T val )
+linal::Matrix<T> &linal::Matrix<T>::operator *=( T val )
 {
-  auto mul_fnc = [this, val]( int i, int j )-> T { return this->matr_[i][j] * val; };
+  auto mul_fnc = [&]( int i, int j ){ return matr_[i][j] * val; };
   Walker(mul_fnc);
 
   return *this;
 }
 
 template <typename T>
-ad6::Matrix<T> &ad6::Matrix<T>::Transpose( void )
+linal::Matrix<T> &linal::Matrix<T>::Transpose( void )
 {
   if (rows_ == cols_)
     return Transpose_Quad();
 
-  Matrix<T> temp{cols_, rows_, [*this](int i, int j){ return this->matr_[j][i]; }};
+  Matrix<T> temp{cols_, rows_, [&](int i, int j){ return matr_[j][i]; }};
 
   Swap(*this, temp);
 
@@ -331,13 +331,13 @@ ad6::Matrix<T> &ad6::Matrix<T>::Transpose( void )
 }
 
 template <typename T>
-ad6::Matrix<T> ad6::Matrix<T>::Transposing( void ) const
+linal::Matrix<T> linal::Matrix<T>::Transposing( void ) const
 {
-  return Matrix<T>(cols_, rows_, [*this](int i, int j){ return this->matr_[j][i]; });
+  return Matrix<T>(cols_, rows_, [&](int i, int j){ return matr_[j][i]; });
 }
 
 template <typename T>
-int ad6::Matrix<T>::FindNonZero( size_t st_col ) const
+int linal::Matrix<T>::FindNonZero( size_t st_col ) const
 {
   for (size_t i = st_col + 1; i < cols_; ++i)
     if (!IsZero(matr_[i][st_col]))
@@ -347,7 +347,7 @@ int ad6::Matrix<T>::FindNonZero( size_t st_col ) const
 }
 
 template <typename T>
-ad6::ldbl ad6::Matrix<T>::Det( void ) const
+linal::ldbl linal::Matrix<T>::Det( void ) const
 {
   if (rows_ != cols_)
     return NAN;
@@ -385,14 +385,14 @@ ad6::ldbl ad6::Matrix<T>::Det( void ) const
 }
 
 template <typename T>
-ad6::Matrix<T> ad6::Matrix<T>::Identity( size_t rows )
+linal::Matrix<T> linal::Matrix<T>::Identity( size_t rows )
 {
   Matrix id(rows, rows, []( int i, int j ) { return i == j; });
 
   return id;
 }
 template <typename T>
-const T &ad6::Matrix<T>::At( size_t i, size_t j ) const
+const T &linal::Matrix<T>::At( size_t i, size_t j ) const
 {
   assert(i < rows_);
   assert(j < cols_);
@@ -401,7 +401,7 @@ const T &ad6::Matrix<T>::At( size_t i, size_t j ) const
 }
 
 template <typename T>
-void ad6::Matrix<T>::SwapLines( size_t lhs, size_t rhs )
+void linal::Matrix<T>::SwapLines( size_t lhs, size_t rhs )
 {
   assert(lhs < rows_);
   assert(rhs < rows_);
@@ -410,7 +410,7 @@ void ad6::Matrix<T>::SwapLines( size_t lhs, size_t rhs )
 }
 
 template <typename T>
-void ad6::Matrix<T>::AddLine( size_t dest_ind, size_t src_ind )
+void linal::Matrix<T>::AddLine( size_t dest_ind, size_t src_ind )
 {
   assert(dest_ind < rows_);
   assert(src_ind < rows_);
@@ -420,7 +420,7 @@ void ad6::Matrix<T>::AddLine( size_t dest_ind, size_t src_ind )
 }
 
 template <typename T>
-void ad6::Matrix<T>::AddLineMVal( size_t dest_ind, size_t src_ind, ldbl val )
+void linal::Matrix<T>::AddLineMVal( size_t dest_ind, size_t src_ind, ldbl val )
 {
   assert(dest_ind < rows_);
   assert(src_ind < rows_);
@@ -430,7 +430,7 @@ void ad6::Matrix<T>::AddLineMVal( size_t dest_ind, size_t src_ind, ldbl val )
 }
 
 template <typename T>
-void ad6::Matrix<T>::MulLine( size_t line, ldbl val )
+void linal::Matrix<T>::MulLine( size_t line, ldbl val )
 {
   assert(line < rows_);
 
@@ -439,7 +439,7 @@ void ad6::Matrix<T>::MulLine( size_t line, ldbl val )
 }
 
 template <typename T>
-ad6::Matrix<T>::~Matrix( void )
+linal::Matrix<T>::~Matrix( void )
 {
   for (size_t i = 0; i < rows_; ++i)
     delete[] matr_[i];
@@ -450,7 +450,7 @@ ad6::Matrix<T>::~Matrix( void )
 }
 
 template <typename T>
-bool ad6::Matrix<T>::IsEq( const Matrix &matr ) const
+bool linal::Matrix<T>::IsEq( const Matrix &matr ) const
 {
   for (size_t i = 0; i < rows_; ++i)
     for (size_t j = 0; j < cols_; ++j)
@@ -461,7 +461,7 @@ bool ad6::Matrix<T>::IsEq( const Matrix &matr ) const
 }
 
 template <typename T>
-void ad6::Matrix<T>::Dump( std::ostream &ost ) const
+void linal::Matrix<T>::Dump( std::ostream &ost ) const
 {
   for (size_t i = 0; i < rows_; ++i)
   {
@@ -473,7 +473,7 @@ void ad6::Matrix<T>::Dump( std::ostream &ost ) const
 }
 
 template <typename T>
-ad6::Matrix<T> &ad6::Matrix<T>::Transpose_Quad( void )
+linal::Matrix<T> &linal::Matrix<T>::Transpose_Quad( void )
 {
   for (size_t i = 0; i < cols_; ++i)
     for (size_t j = i + 1; j < cols_; ++j)
@@ -483,7 +483,7 @@ ad6::Matrix<T> &ad6::Matrix<T>::Transpose_Quad( void )
 }
 
 template <typename T>
-void ad6::Matrix<T>::Alloc( void )
+void linal::Matrix<T>::Alloc( void )
 {
   matr_ = new T *[rows_];
 
@@ -493,7 +493,7 @@ void ad6::Matrix<T>::Alloc( void )
 
 template <typename T>
 template <typename It>
-void ad6::Matrix<T>::FillByIt( It begin, It end )
+void linal::Matrix<T>::FillByIt( It begin, It end )
 {
   size_t i = 0, size = rows_ * cols_;
 
@@ -502,7 +502,7 @@ void ad6::Matrix<T>::FillByIt( It begin, It end )
 }
 
 template <typename T>
-void ad6::Matrix<T>::Swap( ad6::Matrix<T> &lhs, ad6::Matrix<T> &rhs )
+void linal::Matrix<T>::Swap( linal::Matrix<T> &lhs, linal::Matrix<T> &rhs )
 {
   std::swap(lhs.matr_, rhs.matr_);
   std::swap(lhs.cols_, rhs.cols_);
@@ -511,21 +511,24 @@ void ad6::Matrix<T>::Swap( ad6::Matrix<T> &lhs, ad6::Matrix<T> &rhs )
 
 /* copy matrix with idnetical sizes function */
 template <typename T>
-void ad6::Matrix<T>::Copy( ad6::Matrix<T> &dst, const ad6::Matrix<T> &src )
+void linal::Matrix<T>::Copy( linal::Matrix<T> &dst, const linal::Matrix<T> &src )
 {
+  assert(dst.rows_ == src.rows_);
+  assert(dst.cols_ == src.cols_);
+
   for (size_t i = 0; i < dst.rows_; ++i)
     for (size_t j = 0; j < dst.cols_; ++j)
       dst.matr_[i][j] = src.matr_[i][j];
 }
 
 template <typename T>
-bool ad6::operator ==( const Matrix<T> &lhs, const Matrix<T> &rhs )
+bool linal::operator ==( const Matrix<T> &lhs, const Matrix<T> &rhs )
 {
   return lhs.IsEq(rhs);
 }
 
 template <typename T>
-ad6::Matrix<T> ad6::operator +( const Matrix<T> &lhs, const Matrix<T> &rhs )
+linal::Matrix<T> linal::operator +( const Matrix<T> &lhs, const Matrix<T> &rhs )
 {
   Matrix<T> temp{lhs};
   temp += rhs;
@@ -534,7 +537,7 @@ ad6::Matrix<T> ad6::operator +( const Matrix<T> &lhs, const Matrix<T> &rhs )
 }
 
 template <typename T>
-ad6::Matrix<T> ad6::operator -( const Matrix<T> &lhs, const Matrix<T> &rhs )
+linal::Matrix<T> linal::operator -( const Matrix<T> &lhs, const Matrix<T> &rhs )
 {
   Matrix<T> temp{lhs};
   temp -= rhs;
@@ -543,7 +546,7 @@ ad6::Matrix<T> ad6::operator -( const Matrix<T> &lhs, const Matrix<T> &rhs )
 }
 
 template <typename T>
-ad6::Matrix<T> ad6::operator *( const Matrix<T> &lhs, const Matrix<T> &rhs )
+linal::Matrix<T> linal::operator *( const Matrix<T> &lhs, const Matrix<T> &rhs )
 {
   Matrix<T> temp{lhs};
   temp *= rhs;
@@ -552,7 +555,7 @@ ad6::Matrix<T> ad6::operator *( const Matrix<T> &lhs, const Matrix<T> &rhs )
 }
 
 template <typename T>
-ad6::Matrix<T> ad6::operator *( const Matrix<T> &lhs, T val )
+linal::Matrix<T> linal::operator *( const Matrix<T> &lhs, T val )
 {
   Matrix<T> temp{lhs};
   temp *= val;
@@ -561,13 +564,13 @@ ad6::Matrix<T> ad6::operator *( const Matrix<T> &lhs, T val )
 }
 
 template <typename T>
-ad6::Matrix<T> ad6::operator *( T val, const Matrix<T> &rhs )
+linal::Matrix<T> linal::operator *( T val, const Matrix<T> &rhs )
 {
   return rhs * val;
 }
 
 template<typename T>
-std::ostream & ad6::operator <<( std::ostream &ost, const ad6::Matrix<T> &matr )
+std::ostream & linal::operator <<( std::ostream &ost, const linal::Matrix<T> &matr )
 {
   matr.Dump(ost);
 
@@ -575,7 +578,7 @@ std::ostream & ad6::operator <<( std::ostream &ost, const ad6::Matrix<T> &matr )
 }
 
 template <typename T>
-std::istream &ad6::operator >>( std::istream &ist, Matrix<T> &matr )
+std::istream &linal::operator >>( std::istream &ist, Matrix<T> &matr )
 {
   size_t rows = 0, cols = 0;
   ist >> rows >> cols;
@@ -591,7 +594,7 @@ std::istream &ad6::operator >>( std::istream &ist, Matrix<T> &matr )
 }
 
 template <typename T>
-std::istream &ad6::InputQuadr( std::istream &ist, Matrix<T> &matr )
+std::istream &linal::InputQuadr( std::istream &ist, Matrix<T> &matr )
 {
   size_t size = 0;
   ist >> size;
