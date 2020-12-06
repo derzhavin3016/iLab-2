@@ -17,12 +17,12 @@ def main():
     matr = np.random.randint(args.fr, args.to, (args.size, args.size))
     det = np.linalg.det(matr)
 
-    print('Det = ' + str(det))
     print(args.size)
     for i in range(args.size):
         for j in range(args.size):
             print(matr[i][j], end=' ')
         print()
+    print('Det = ' + str(det))
 
 
 if __name__ == '__main__':

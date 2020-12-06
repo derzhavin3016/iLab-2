@@ -35,7 +35,7 @@ TEST(mult, inv)
 
 TEST(transp, easy)
 {
-  Matrix<int> m1 = Matrix<int>::Identity(),
+  Matrix<int> m1 = Matrix<int>::Identity(1000),
     m2 = m1.Transposing();
 
   EXPECT_EQ(m1, m2);
@@ -43,11 +43,19 @@ TEST(transp, easy)
 
 TEST(transp, rowtocol)
 {
-  Matrix<int> m1 = { 3, 1, [](int i, int j) { return i; } };
-  Matrix<int> m2 = { 1, 3, [](int i, int j) { return j; } };
+  Matrix<int> m1 = {3, 1, [](int i, int j) { return i; }};
+  Matrix<int> m2 = {1, 3, [](int i, int j) { return j; }};
 
   m1.Transpose();
   EXPECT_EQ(m1, m2);
+}
+
+TEST(transp, triangle)
+{
+  Matrix<int> m1 = {3, 3, [](int i, int j) { return i <= j ? i * j : 0; }},
+              m2 = {3, 3, [](int i, int j) { return i >= j ? i * j : 0; }};
+
+  EXPECT_EQ(m1.Transposing(), m2);
 }
 
 int main( int, char *[] )
