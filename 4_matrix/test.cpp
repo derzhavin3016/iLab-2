@@ -18,7 +18,7 @@ TEST(mult, fst)
 {
   Matrix<int> m1 = Matrix<int>::Identity(5);
 
-  EXPECT_EQ(m1 * m1 == m1, true);
+  EXPECT_EQ(m1 * m1, m1);
 }
 
 TEST(mult, inv)
@@ -30,7 +30,7 @@ TEST(mult, inv)
                            340, 428, -796,
                            -336, -518, 807}};
 
-  EXPECT_EQ(m1 * m2 == -2308 * Matrix<int>::Identity(3), true);
+  EXPECT_EQ(m1 * m2, -2308 * Matrix<int>::Identity(3));
 }
 
 TEST(transp, easy)

@@ -124,7 +124,7 @@ namespace linal
 
     static void Swap( Matrix &lhs, Matrix &rhs );
 
-    /* copy matrix with idnetical sizes function */
+    /* copy matrix with identical sizes function */
     static void Copy( Matrix &dst, const Matrix &src );
 
     void SwapLines( size_t lhs, size_t rhs );
@@ -509,7 +509,7 @@ void linal::Matrix<T>::Swap( linal::Matrix<T> &lhs, linal::Matrix<T> &rhs )
   std::swap(lhs.rows_, rhs.rows_);
 }
 
-/* copy matrix with idnetical sizes function */
+/* copy matrix with identical sizes function */
 template <typename T>
 void linal::Matrix<T>::Copy( linal::Matrix<T> &dst, const linal::Matrix<T> &src )
 {
