@@ -355,7 +355,8 @@ linal::ldbl linal::Matrix<T>::Det( void ) const
   int sign = 1;
 
   // check if the type is valid
-  ldbl dummy = static_cast<ldbl>(matr_[0][0]);
+  if (!std::is_arithmetic_v<T>)
+    return NAN;
 
   Matrix<T> tmp{*this};
 

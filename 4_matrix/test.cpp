@@ -43,8 +43,8 @@ TEST(transp, easy)
 
 TEST(transp, rowtocol)
 {
-  Matrix<int> m1 = {3, 1, [](int i, int j) { return i; }};
-  Matrix<int> m2 = {1, 3, [](int i, int j) { return j; }};
+  Matrix<int> m1 = {3, 1, [](int i, int) { return i; }};
+  Matrix<int> m2 = {1, 3, [](int, int j) { return j; }};
 
   m1.Transpose();
   EXPECT_EQ(m1, m2);
