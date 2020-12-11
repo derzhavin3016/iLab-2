@@ -47,4 +47,58 @@ int main( void )
   //tr.DotDump();
   return 0;
 }
+// TODO:
+/*
+ * Ok, что бросается в глаза без тестов корректности:
+
+(1)
+
+friend class Tree<T>;
+friend class Tree_it<T>;
+
+Так себе идея. Лучше занесите Node в namespace detail и сделайте поля открытыми или в приватную часть класса Tree и то же самое.
+
+Иначе сейчас я напишу
+
+struct Foo;
+template <> class Tree<Foo> {
+  // упс, теперь я тоже ваш друг =)
+};
+
+(2)
+
+ad6::Node<T>::~Node( void )
+{
+  right_ = nullptr;
+  left_ = nullptr;
+  parent_ = nullptr;
+
+Бессмысленные зануления, компилятор их выкинет
+
+(3)
+
+if (this == nullptr)
+    return this;
+
+Бессмысленная проверка, this == null означает что сломана трансляционная модель
+
+(4)
+
+void RecDotPrint( std::ofstream &oft );  <--- const?
+
+(5)
+
+: root_(nullptr),
+ min_(nullptr),
+ max_(nullptr),
+ size_(0)
+
+Предпочитайте тривиальную инициализацию в классе
+
+(6)
+
+ad6::Tree<T>::Insert
+
+А как тут с безопасностью исключений?
+ * */
 

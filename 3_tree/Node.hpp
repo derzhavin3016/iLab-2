@@ -4,21 +4,11 @@
 #include <iostream>
 #include <fstream>
 
-namespace ad6
+namespace ad6::detail
 {
   template <typename T>
-  class Tree;
-
-  template <typename T>
-  class Tree_it;
-
-  template <typename T>
-  class Node final
+  struct Node final
   {
-  private:
-    friend class Tree<T>;
-    friend class Tree_it<T>;
-
     const T key_;
     int depth_;
 
@@ -54,7 +44,7 @@ namespace ad6
 
 
 template <typename T>
-ad6::Node<T>::Node( const T &key, Node *par /* = nullptr */, int depth /* = 1 */,
+ad6::detail::Node<T>::Node( const T &key, Node *par /* = nullptr */, int depth /* = 1 */,
                     Node *l /* = nullptr */, Node *r /* = nullptr */ ) : key_(key),
                                                                          depth_(depth),
                                                                          left_(l),
@@ -65,7 +55,7 @@ ad6::Node<T>::Node( const T &key, Node *par /* = nullptr */, int depth /* = 1 */
 
 
 template <typename T>
-int ad6::Node<T>::GetLDepth( void ) const
+int ad6::detail::Node<T>::GetLDepth( void ) const
 {
   if (left_ == nullptr)
     return 0;
@@ -74,7 +64,7 @@ int ad6::Node<T>::GetLDepth( void ) const
 }
 
 template <typename T>
-int ad6::Node<T>::GetRDepth( void ) const
+int ad6::detail::Node<T>::GetRDepth( void ) const
 {
   if (right_ == nullptr)
     return 0;
@@ -83,13 +73,13 @@ int ad6::Node<T>::GetRDepth( void ) const
 }
 
 template <typename T>
-int ad6::Node<T>::GetBFact( void ) const
+int ad6::detail::Node<T>::GetBFact( void ) const
 {
   return GetRDepth() - GetLDepth();
 }
 
 template <typename T>
-void ad6::Node<T>::UpdDepth( void )
+void ad6::detail::Node<T>::UpdDepth( void )
 {
   int ldepth = GetLDepth();
   int rdepth = GetRDepth();
@@ -98,7 +88,7 @@ void ad6::Node<T>::UpdDepth( void )
 }
 
 template <typename T>
-void ad6::Node<T>::Clear( void )
+void ad6::detail::Node<T>::Clear( void )
 {
   if (right_ != nullptr)
     right_->Clear();
@@ -113,7 +103,7 @@ void ad6::Node<T>::Clear( void )
 }
 
 template <typename T>
-void ad6::Node<T>::RecDotPrint( std::ofstream &oft )
+void ad6::detail::Node<T>::RecDotPrint( std::ofstream &oft )
 {
   if (left_ != nullptr)
   {
@@ -129,7 +119,7 @@ void ad6::Node<T>::RecDotPrint( std::ofstream &oft )
 }
 
 template <typename T>
-ad6::Node<T> *ad6::Node<T>::RotR( void )
+ad6::detail::Node<T> *ad6::detail::Node<T>::RotR( void )
 {
   Node<T> *lnd = left_;
   left_ = lnd->right_;
@@ -149,7 +139,7 @@ ad6::Node<T> *ad6::Node<T>::RotR( void )
 }
 
 template <typename T>
-ad6::Node<T> *ad6::Node<T>::RotL( void )
+ad6::detail::Node<T> *ad6::detail::Node<T>::RotL( void )
 {
   Node<T> *rnd = right_;
   right_ = rnd->left_;
@@ -168,7 +158,7 @@ ad6::Node<T> *ad6::Node<T>::RotL( void )
 }
 
 template <typename T>
-ad6::Node<T> *ad6::Node<T>::FindMin( void ) const
+ad6::detail::Node<T> *ad6::detail::Node<T>::FindMin( void ) const
 {
   if (this == nullptr)
     return this;
@@ -176,7 +166,7 @@ ad6::Node<T> *ad6::Node<T>::FindMin( void ) const
 }
 
 template <typename T>
-ad6::Node<T> *ad6::Node<T>::FindMax( void ) const
+ad6::detail::Node<T> *ad6::detail::Node<T>::FindMax( void ) const
 {
   if (this == nullptr)
     return this;
@@ -184,7 +174,7 @@ ad6::Node<T> *ad6::Node<T>::FindMax( void ) const
 }
 
 template <typename T>
-ad6::Node<T>::~Node( void )
+ad6::detail::Node<T>::~Node( void )
 {
   right_ = nullptr;
   left_ = nullptr;
