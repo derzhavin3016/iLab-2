@@ -12,10 +12,10 @@ namespace ad6
   class Tree final
   {
   private:
-    detail::Node<T> *root_;
-    detail::Node<T> *min_;
-    detail::Node<T> *max_;
-    size_t size_;
+    detail::Node<T> *root_ = nullptr;
+    detail::Node<T> *min_ = nullptr;
+    detail::Node<T> *max_ = nullptr;
+    size_t size_ = 0;
 
   public:
     using iterator = detail::Tree_it<T>;
@@ -81,10 +81,7 @@ namespace ad6
 }
 
 template <typename T>
-ad6::Tree<T>::Tree( void ) : root_(nullptr),
-                             min_(nullptr),
-                             max_(nullptr),
-                             size_(0)
+ad6::Tree<T>::Tree( void )
 {
 }
 

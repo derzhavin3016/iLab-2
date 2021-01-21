@@ -10,11 +10,11 @@ namespace ad6::detail
   class Tree_it final : public std::iterator<std::bidirectional_iterator_tag, const T>
   {
   private:
-    detail::Node<T> *nd_;
-    bool IsEnd;
+    detail::Node<T> *nd_ = nullptr;
+    bool IsEnd = false;
   public:
 
-    Tree_it( Node<T> *nd = nullptr, bool IsE = false );
+    Tree_it( Node<T> *nd, bool IsE );
     Tree_it( const Tree_it &tr_it ) = default;
     Tree_it &operator =( const Tree_it &that ) = default;
 
@@ -48,7 +48,7 @@ namespace ad6::detail
 
 
 template <typename T>
-ad6::detail::Tree_it<T>::Tree_it( Node<T> *nd /* = nullptr */, bool IsE /* = false */ ) : nd_(nd), IsEnd(IsE)
+ad6::detail::Tree_it<T>::Tree_it( Node<T> *nd, bool IsE ) : nd_(nd), IsEnd(IsE)
 {
 }
 
