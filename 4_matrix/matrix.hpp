@@ -65,7 +65,7 @@ namespace linal
     // move
     Matrix( Matrix &&matr );
 
-    // assignments opearators
+    // assignments operators
     Matrix &operator =( const Matrix &matr );
     // move
     Matrix &operator =( Matrix &&matr );
@@ -453,11 +453,20 @@ linal::Matrix<T>::~Matrix( void )
 template <typename T>
 bool linal::Matrix<T>::IsEq( const Matrix &matr ) const
 {
-  for (size_t i = 0; i < rows_; ++i)
-    for (size_t j = 0; j < cols_; ++j)
-      if (matr_[i][j] != matr.matr_[i][j])
-        return false;
-
+  if (std::is_arithmetic_v<T>)
+  {
+    for (size_t i = 0; i < rows_; ++i)
+      for (size_t j = 0; j < cols_; ++j)
+        if (!IsZero(matr_[i][j] - matr.matr_[i][j]))
+          return false;
+  }
+  else
+  {
+    for (size_t i = 0; i < rows_; ++i)
+      for (size_t j = 0; j < cols_; ++j)
+        if (matr_[i][j] != matr.matr_[i][j])
+          return false;
+  }
   return true;
 }
 
