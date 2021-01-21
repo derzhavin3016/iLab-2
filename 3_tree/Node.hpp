@@ -10,13 +10,13 @@ namespace ad6::detail
   struct Node final
   {
     const T key_;
-    int depth_ = 1;
+    int depth_;
 
-    Node *left_   = nullptr;
-    Node *right_  = nullptr;
-    Node *parent_ = nullptr;
+    Node *left_;
+    Node *right_;
+    Node *parent_;
 
-    Node( const T &key, Node *par, int depth, Node *l, Node *r );
+    Node( const T &key, Node *par = nullptr, int depth = 1, Node *l = nullptr, Node *r = nullptr );
 
     Node( const Node &nd ) = default;
 
@@ -44,11 +44,12 @@ namespace ad6::detail
 
 
 template <typename T>
-ad6::detail::Node<T>::Node( const T &key, Node *par, int dept, Node *l, Node *r ) : key_(key),
-                                                                                    depth_(depth),
-                                                                                    left_(l),                                                                         
-                                                                                    right_(r),
-                                                                                    parent_(par)
+ad6::detail::Node<T>::Node( const T &key, Node *par /* = nullptr */, int depth /* = 1 */,
+                    Node *l /* = nullptr */, Node *r /* = nullptr */ ) : key_(key),
+                                                                         depth_(depth),
+                                                                         left_(l),
+                                                                         right_(r),
+                                                                         parent_(par)
 {
 }
 

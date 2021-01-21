@@ -86,7 +86,7 @@ if (this == nullptr)
 
 void RecDotPrint( std::ofstream &oft );  <--- const?
 
-(5)
+(5) OK
 
 : root_(nullptr),
  min_(nullptr),
