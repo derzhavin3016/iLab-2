@@ -13,8 +13,8 @@ namespace ad6
   {
   private:
     detail::Node<T> *root_ = nullptr;
-    detail::Node<T> *min_ = nullptr;
-    detail::Node<T> *max_ = nullptr;
+    detail::Node<T> *min_  = nullptr;
+    detail::Node<T> *max_  = nullptr;
     size_t size_ = 0;
 
   public:

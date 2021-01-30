@@ -44,14 +44,14 @@ int main( void )
   GetRequests(tr);
 
   // FOR DEBUG
-  //tr.DotDump();
+  tr.DotDump();
   return 0;
 }
 // TODO:
 /*
  * Ok, что бросается в глаза без тестов корректности:
 
-(1)
+(1) OK
 
 friend class Tree<T>;
 friend class Tree_it<T>;
@@ -65,7 +65,7 @@ template <> class Tree<Foo> {
   // упс, теперь я тоже ваш друг =)
 };
 
-(2)
+(2) OK
 
 ad6::Node<T>::~Node( void )
 {
@@ -95,7 +95,7 @@ void RecDotPrint( std::ofstream &oft );  <--- const?
 
 Предпочитайте тривиальную инициализацию в классе
 
-(6)
+(6) 
 
 ad6::Tree<T>::Insert
 

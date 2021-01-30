@@ -29,7 +29,7 @@ namespace ad6::detail
 
     void Clear( void );
 
-    void RecDotPrint( std::ofstream &oft );
+    void RecDotPrint( std::ofstream &oft ) const;
 
     // Nodes rotation functions
     [[nodiscard]] Node<T> *RotR( void );
@@ -103,7 +103,7 @@ void ad6::detail::Node<T>::Clear( void )
 }
 
 template <typename T>
-void ad6::detail::Node<T>::RecDotPrint( std::ofstream &oft )
+void ad6::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
 {
   if (left_ != nullptr)
   {
@@ -160,7 +160,7 @@ ad6::detail::Node<T> *ad6::detail::Node<T>::RotL( void )
 template <typename T>
 ad6::detail::Node<T> *ad6::detail::Node<T>::FindMin( void ) const
 {
-  if (this == nullptr)
+  if (left_ == nullptr)
     return this;
   return left_->FindMin();
 }
@@ -168,7 +168,7 @@ ad6::detail::Node<T> *ad6::detail::Node<T>::FindMin( void ) const
 template <typename T>
 ad6::detail::Node<T> *ad6::detail::Node<T>::FindMax( void ) const
 {
-  if (this == nullptr)
+  if (right_ == nullptr)
     return this;
   return right_->FindMax();
 }
@@ -176,9 +176,6 @@ ad6::detail::Node<T> *ad6::detail::Node<T>::FindMax( void ) const
 template <typename T>
 ad6::detail::Node<T>::~Node( void )
 {
-  right_ = nullptr;
-  left_ = nullptr;
-  parent_ = nullptr;
 }
 
 
