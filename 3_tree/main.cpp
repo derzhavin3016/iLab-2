@@ -75,14 +75,14 @@ ad6::Node<T>::~Node( void )
 
 Бессмысленные зануления, компилятор их выкинет
 
-(3)
+(3) OK
 
 if (this == nullptr)
     return this;
 
 Бессмысленная проверка, this == null означает что сломана трансляционная модель
 
-(4)
+(4) OK
 
 void RecDotPrint( std::ofstream &oft );  <--- const?
 
@@ -95,7 +95,7 @@ void RecDotPrint( std::ofstream &oft );  <--- const?
 
 Предпочитайте тривиальную инициализацию в классе
 
-(6) 
+(6)  
 
 ad6::Tree<T>::Insert
 
