@@ -95,7 +95,7 @@ void RecDotPrint( std::ofstream &oft );  <--- const?
 
 Предпочитайте тривиальную инициализацию в классе
 
-(6)  
+(6)  MB OK
 
 ad6::Tree<T>::Insert
 

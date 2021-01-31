@@ -221,7 +221,7 @@ ad6::detail::Node<T> *ad6::Tree<T>::CreatNd( const T &key, detail::Node<T> *par 
 {
   detail::Node<T> *new_nd = new detail::Node<T>{key, par};
   MinMaxUpd(new_nd);
-  return new_nd;
+  return new_nd; 
 }
 
 template <typename T>
@@ -270,8 +270,10 @@ ad6::detail::Node<T> *ad6::Tree<T>::Insert( detail::Node<T> *nd, const T &key, i
 
   if (nd == nullptr)
   {
-    ++size_;
+    // Here we can caught an exception
     detail::Node<T> *new_node = CreatNd(key, nullptr);
+
+    ++size_;
     ins_it = iterator(new_node);
     return new_node;
   }

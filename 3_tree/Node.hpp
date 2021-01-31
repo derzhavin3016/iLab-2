@@ -161,7 +161,7 @@ template <typename T>
 ad6::detail::Node<T> *ad6::detail::Node<T>::FindMin( void ) const
 {
   if (left_ == nullptr)
-    return this;
+    return nullptr;
   return left_->FindMin();
 }
 
@@ -169,7 +169,7 @@ template <typename T>
 ad6::detail::Node<T> *ad6::detail::Node<T>::FindMax( void ) const
 {
   if (right_ == nullptr)
-    return this;
+    return nullptr;
   return right_->FindMax();
 }
 
