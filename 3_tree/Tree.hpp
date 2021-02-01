@@ -60,6 +60,10 @@ namespace ad6
 
     [[nodiscard]] detail::Node<T> *Find( detail::Node<T> *nd, const T &key ) const;
 
+    [[nodiscard]] detail::Node<T> *NodeDel( detail::Node<T> *nd );
+
+    detail::Node<T> *FindMin( void ) const;
+
     void MinMaxUpd( detail::Node<T> *nd );
   };
 
@@ -311,12 +315,12 @@ ad6::detail::Node<T> *ad6::Tree<T>::Delete( detail::Node <T> *nd, const T &key )
     detail::Node<T> *left = nd->left_;
     detail::Node<T> *right = nd->right_;
     detail::Node<T> *parent = nd->parent_;
-    delete nd;
+    delete nd; // deleting required node
 
     if (right == nullptr)
       return left;
 
-    detail::Node<T> *min = right->FindMin();
+    auto min = right->FindMin();
     min->right_ = DelMin(right);
     min->left_ = left;
     min->parent_ = parent;
@@ -362,6 +366,32 @@ ad6::detail::Node<T> *ad6::Tree<T>::Find( detail::Node<T> *nd, const T &key ) co
     return Find(nd->right_, key);
 
   return nd;
+}
+
+template <typename T>
+ad6::detail::Node<T> *ad6::Tree<T>::NodeDel( detail::Node<T> *nd )
+{
+  detail::Node<T> *left = nd->left_;
+  detail::Node<T> *right = nd->right_;
+  detail::Node<T> *parent = nd->parent_;
+  delete nd; // deleting required node
+
+  if (right == nullptr)
+    return left;
+
+  auto min = right->FindMin();
+  min->right_ = DelMin(right);
+  min->left_ = left;
+  min->parent_ = parent;
+
+  return Balance(min);
+}
+
+template <typename T>
+ad6::detail::Node<T> *ad6::Tree<T>::FindMin( void ) const
+{
+  
+  
 }
 
 template <typename T>

@@ -41,7 +41,9 @@ int main( void )
   ad6::Tree<int> tr;
   std::cin >> tr;
 
-  GetRequests(tr);
+  //GetRequests(tr);
+
+  tr.Erase(14);
 
   // FOR DEBUG
   tr.DotDump();

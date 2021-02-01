@@ -35,9 +35,6 @@ namespace ad6::detail
     [[nodiscard]] Node<T> *RotR( void );
     [[nodiscard]] Node<T> *RotL( void );
 
-    Node<T> *FindMin( void ) const;
-    Node<T> *FindMax( void ) const;
-
     ~Node( void );
   };
 }
@@ -155,22 +152,6 @@ ad6::detail::Node<T> *ad6::detail::Node<T>::RotL( void )
   rnd->UpdDepth();
 
   return rnd;
-}
-
-template <typename T>
-ad6::detail::Node<T> *ad6::detail::Node<T>::FindMin( void ) const
-{
-  if (left_ == nullptr)
-    return nullptr;
-  return left_->FindMin();
-}
-
-template <typename T>
-ad6::detail::Node<T> *ad6::detail::Node<T>::FindMax( void ) const
-{
-  if (right_ == nullptr)
-    return nullptr;
-  return right_->FindMax();
 }
 
 template <typename T>
