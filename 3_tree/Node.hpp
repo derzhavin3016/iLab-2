@@ -39,10 +39,16 @@ namespace ad6::detail
   };
 
   template <typename T>
-  [[nodiscard]] Node<T> *FindMin( Node<T> *nd );
+  Node<T> *FindMin( Node<T> *nd );
 
   template <typename T>
-  [[nodiscard]] Node<T> *DelMin ( Node<T> *nd );
+  [[nodiscard]] Node<T> *DelMin( Node<T> *nd );
+
+  template <typename T>
+  [[nodiscard]] Node<T> *Balance( Node<T> *nd );
+
+  template <typename T>
+  Node<T> *Find( Node<T> *nd, const T &key );
 }
 
 
@@ -182,8 +188,45 @@ ad6::detail::Node<T> *ad6::detail::DelMin( detail::Node<T> *nd )
 {
   if (nd->left_ == nullptr)
     return nd->right_;
-  nd->left_ = nd->left_->DelMin();
+  nd->left_ = DelMin(nd->left_);
   return Balance(nd);
+}
+
+template <typename T>
+ad6::detail::Node<T> *ad6::detail::Balance( detail::Node<T> *nd )
+{
+  if (nd == nullptr)
+    return nd;
+
+  nd->UpdDepth();
+  int bfact = nd->GetBFact();
+
+  if (bfact >= 2)
+  {
+    if (nd->right_->GetBFact() < 0)
+      nd->right_ = nd->right_->RotR();
+    return nd->RotL();
+  }
+  if (bfact <= -2)
+  {
+    if (nd->left_->GetBFact() > 0)
+      nd->left_ = nd->left_->RotL();
+    return nd->RotR();
+  }
+  return nd;
+}
+
+template <typename T>
+ad6::detail::Node<T> *ad6::detail::Find( detail::Node<T> *nd, const T &key )
+{
+  if (nd == nullptr)
+    return nullptr;
+  if (key < nd->key_)
+    return Find(nd->left_, key);
+  if (key > nd->key_)
+    return Find(nd->right_, key);
+
+  return nd;
 }
 
 
