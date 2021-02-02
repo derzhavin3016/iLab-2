@@ -59,20 +59,7 @@ namespace ad6
   };
 
   template <typename T>
-  std::istream &operator >>( std::istream &ist, Tree<T> &tr )
-  {
-    size_t size = 0;
-    ist >> size;
-    T elem{};
-
-    for (size_t i = 0; i < size; ++i)
-    {
-      ist >> elem;
-      tr.insert(elem);
-    }
-
-    return ist;
-  }
+  std::istream &operator >>( std::istream &ist, Tree<T> &tr );
 }
 
 template <typename T>
@@ -105,7 +92,7 @@ ad6::Tree<T> &ad6::Tree<T>::operator <<( const T &key )
 template <typename T>
 typename ad6::Tree<T>::iterator ad6::Tree<T>::Find( const T &key )
 {
-  detail::Node<T> *found = Find(root_, key);
+  detail::Node<T> *found = detail::Find(root_, key);
   if (found == nullptr)
     return end();
   return iterator(found);
@@ -114,7 +101,7 @@ typename ad6::Tree<T>::iterator ad6::Tree<T>::Find( const T &key )
 template <typename T>
 typename ad6::Tree<T>::iterator ad6::Tree<T>::Find( const T &key ) const
 {
-  detail::Node<T> *found = Find(root_, key);
+  detail::Node<T> *found = detail::Find(root_, key);
   if (found == nullptr)
     return end();
   return iterator(found);
@@ -290,7 +277,7 @@ ad6::detail::Node<T> *ad6::Tree<T>::Insert( detail::Node<T> *nd, const T &key, i
     return nd;
   }
 
-  return Balance(nd);
+  return detail::Balance(nd);
 }
 
 template <typename T>
@@ -319,11 +306,26 @@ ad6::detail::Node<T> *ad6::Tree<T>::Delete( detail::Node <T> *nd, const T &key )
     min->left_ = left;
     min->parent_ = parent;
 
-    return Balance(min);
+    return detail::Balance(min);
   }
 
-  return Balance(nd);
+  return detail::Balance(nd);
 }
 
+template <typename T>
+std::istream &ad6::operator >>( std::istream &ist, ad6::Tree<T> &tr )
+{
+  size_t size = 0;
+  ist >> size;
+  T elem{};
+
+  for (size_t i = 0; i < size; ++i)
+  {
+    ist >> elem;
+    tr.insert(elem);
+  }
+
+  return ist;
+}
 
 #endif //TREE_TREE_HPP
