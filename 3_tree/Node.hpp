@@ -37,6 +37,12 @@ namespace ad6::detail
 
     ~Node( void );
   };
+
+  template <typename T>
+  [[nodiscard]] Node<T> *FindMin( Node<T> *nd );
+
+  template <typename T>
+  [[nodiscard]] Node<T> *DelMin ( Node<T> *nd );
 }
 
 
@@ -157,6 +163,27 @@ ad6::detail::Node<T> *ad6::detail::Node<T>::RotL( void )
 template <typename T>
 ad6::detail::Node<T>::~Node( void )
 {
+}
+
+template <typename T>
+ad6::detail::Node<T> *ad6::detail::FindMin( detail::Node<T> *nd )
+{
+  if (nd == nullptr)
+    return nullptr;
+
+  if (nd->left_ == nullptr)
+    return nd;
+  
+  return FindMin(nd->left_);
+}
+
+template <typename T>
+ad6::detail::Node<T> *ad6::detail::DelMin( detail::Node<T> *nd )
+{
+  if (nd->left_ == nullptr)
+    return nd->right_;
+  nd->left_ = nd->left_->DelMin();
+  return Balance(nd);
 }
 
 

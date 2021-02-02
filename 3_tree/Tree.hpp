@@ -17,8 +17,9 @@ namespace ad6
     detail::Node<T> *max_  = nullptr;
     size_t size_ = 0;
 
+    using iterator = Tree_it<T>;
+
   public:
-    using iterator = detail::Tree_it<T>;
     using iter_n_bool = std::pair<iterator, bool>;
 
     Tree( void );
@@ -52,17 +53,11 @@ namespace ad6
 
     [[nodiscard]] ad6::detail::Node<T> *Insert( detail::Node<T> *nd, const T &key, iterator &ins_it );
 
-    [[nodiscard]] detail::Node<T> *DelMin( detail::Node<T> *nd );
-
     [[nodiscard]] detail::Node<T> *Delete( detail::Node <T> *nd, const T &key );
 
     [[nodiscard]] detail::Node<T> *Balance( detail::Node<T> *nd );
 
     [[nodiscard]] detail::Node<T> *Find( detail::Node<T> *nd, const T &key ) const;
-
-    [[nodiscard]] detail::Node<T> *NodeDel( detail::Node<T> *nd );
-
-    detail::Node<T> *FindMin( void ) const;
 
     void MinMaxUpd( detail::Node<T> *nd );
   };
@@ -177,6 +172,7 @@ template <typename T>
 void ad6::Tree<T>::Erase( const T &key )
 {
   root_ = Delete(root_, key);
+  // TODO: min, max ?
 }
 
 template <typename T>
@@ -317,6 +313,8 @@ ad6::detail::Node<T> *ad6::Tree<T>::Delete( detail::Node <T> *nd, const T &key )
     detail::Node<T> *parent = nd->parent_;
     delete nd; // deleting required node
 
+    //if (nd == max_)
+
     if (right == nullptr)
       return left;
 
@@ -366,41 +364,6 @@ ad6::detail::Node<T> *ad6::Tree<T>::Find( detail::Node<T> *nd, const T &key ) co
     return Find(nd->right_, key);
 
   return nd;
-}
-
-template <typename T>
-ad6::detail::Node<T> *ad6::Tree<T>::NodeDel( detail::Node<T> *nd )
-{
-  detail::Node<T> *left = nd->left_;
-  detail::Node<T> *right = nd->right_;
-  detail::Node<T> *parent = nd->parent_;
-  delete nd; // deleting required node
-
-  if (right == nullptr)
-    return left;
-
-  auto min = right->FindMin();
-  min->right_ = DelMin(right);
-  min->left_ = left;
-  min->parent_ = parent;
-
-  return Balance(min);
-}
-
-template <typename T>
-ad6::detail::Node<T> *ad6::Tree<T>::FindMin( void ) const
-{
-  
-  
-}
-
-template <typename T>
-ad6::detail::Node<T> *ad6::Tree<T>::DelMin( detail::Node<T> *nd )
-{
-  if (nd->left_ == nullptr)
-    return nd->right_;
-  nd->left_ = nd->left_->DelMin();
-  return Balance(nd);
 }
 
 
