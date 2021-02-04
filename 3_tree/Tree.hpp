@@ -17,9 +17,8 @@ namespace ad6
     detail::Node<T> *max_  = nullptr;
     size_t size_ = 0;
 
-    using iterator = Tree_it<T>;
-
   public:
+    using iterator = Tree_it<T>;
     using iter_n_bool = std::pair<iterator, bool>;
 
     Tree( void );
@@ -39,8 +38,8 @@ namespace ad6
 
     void Clear( void );
 
-    void DotDump( const std::string &dotname = "dump.dot",
-                  const std::string &pngname = "dump.png" );
+    void DotDump( const std::string &pngname = "dump.png",
+                  const std::string &dotname = "dump.dot" );
 
     ~Tree( void );
 
@@ -120,7 +119,7 @@ template <typename T>
 typename ad6::Tree<T>::iterator ad6::Tree<T>::FindNear( detail::Node<T> *nd, const T &key ) const
 {
   if (nd == nullptr)
-    return nullptr;
+    return iterator{};
   if (key < nd->key_)
   {
     if (nd->left_ == nullptr)
@@ -171,8 +170,8 @@ void ad6::Tree<T>::Clear( void )
 }
 
 template <typename T>
-void ad6::Tree<T>::DotDump( const std::string &dotname /* = "dump.dot" */,
-                            const std::string &pngname /* = "dump.png" */ )
+void ad6::Tree<T>::DotDump( const std::string &pngname /* = "dump.png" */,
+                            const std::string &dotname /* = "dump.dot" */ )
 {
   std::ofstream fout;
   fout.open(dotname, std::ios::out);
@@ -294,9 +293,29 @@ ad6::detail::Node<T> *ad6::Tree<T>::Delete( detail::Node <T> *nd, const T &key )
     detail::Node<T> *left = nd->left_;
     detail::Node<T> *right = nd->right_;
     detail::Node<T> *parent = nd->parent_;
-    delete nd; // deleting required node
 
-    //if (nd == max_)
+    if (nd == max_)
+    {
+      if (left != nullptr)
+        max_ = left;
+      else if (parent != nullptr)
+        max_ = parent;
+      else
+        max_ = nullptr;
+    }
+
+    if (nd == min_)
+    {
+      if (right != nullptr)
+        min_ = right;
+      else if (parent != nullptr)
+        min_ = parent;
+      else
+        min_ = nullptr;
+    }
+
+
+    delete nd; // deleting required node
 
     if (right == nullptr)
       return left;
