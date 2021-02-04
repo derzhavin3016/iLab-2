@@ -7,14 +7,19 @@
 namespace ad6
 {
   template <typename T>
+  class Tree;
+
+  template <typename T>
   class Tree_it final : public std::iterator<std::bidirectional_iterator_tag, const T>
   {
   private:
     detail::Node<T> *nd_;
     bool IsEnd;
+
   public:
 
-    Tree_it( detail::Node<T> *nd = nullptr, bool IsE = false );
+    explicit Tree_it( detail::Node<T> *nd = nullptr, bool IsE = false );
+
     Tree_it( const Tree_it &tr_it ) = default;
     Tree_it &operator =( const Tree_it &that ) = default;
 
