@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include "Tree.hpp"
 #include <vector>
 #include <set>
@@ -51,9 +52,18 @@ int main( void )
   for (auto &elem : vecreq)
     std::cin >> elem.first >> elem.second;
 
+  auto tr_t1 = std::chrono::high_resolution_clock::now();
   Test(tr);
-  Test(set);
+  auto tr_t2 = std::chrono::high_resolution_clock::now();
 
+  auto set_t1 = std::chrono::high_resolution_clock::now();
+  Test(set);
+  auto set_t2 = std::chrono::high_resolution_clock::now();
+
+  std::chrono::duration<double, std::milli> tr_dt = tr_t2 - tr_t1, set_dt = set_t2 - set_t1;
+
+  std::cout << "std::set time = " << set_dt.count() << " ms\n";
+  std::cout << "Tree time = " << tr_dt.count() << " ms\n";
 
   // FOR DEBUG
   //tr.DotDump();
