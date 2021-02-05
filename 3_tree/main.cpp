@@ -43,14 +43,16 @@ int main( void )
 
   //GetRequests(tr);
 
-  tr.DotDump("a.png");
+  //tr.DotDump("a.png");
 
-  ad6::Tree<int>::iterator It = tr.begin();
+  GetRequests(tr);
 
-  tr.Erase(*It);
+  //ad6::Tree<int>::iterator It = tr.begin();
+
+  //tr.Erase(*It);
 
   // FOR DEBUG
-  tr.DotDump("b.png");
+  //tr.DotDump("b.png");
   return 0;
 }
 // TODO:

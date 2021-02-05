@@ -53,10 +53,12 @@ int main( void )
     std::cin >> elem.first >> elem.second;
 
   auto tr_t1 = std::chrono::high_resolution_clock::now();
+  std::cout << "Tree answer: ";
   Test(tr);
   auto tr_t2 = std::chrono::high_resolution_clock::now();
 
   auto set_t1 = std::chrono::high_resolution_clock::now();
+  std::cout << "std::set answer: ";
   Test(set);
   auto set_t2 = std::chrono::high_resolution_clock::now();
 
