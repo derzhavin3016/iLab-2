@@ -46,7 +46,7 @@ namespace ad6
     iterator lower_bound( const T &kmin ) const;
   private:
 
-    iterator FindNear( detail::Node<T> *nd, const T &key ) const;
+    iterator FindLower( detail::Node<T> *nd, const T &key ) const;
 
     [[nodiscard]] detail::Node<T> *CreatNd( const T &key, detail::Node<T> *par );
 
@@ -110,13 +110,13 @@ template <typename T>
 typename ad6::Tree<T>::iterator ad6::Tree<T>::lower_bound( const T &kmin ) const
 {
   if (kmin == min_->key_)
-    return ++begin();
+    return begin();
 
-  return FindNear(root_, kmin);
+  return FindLower(root_, kmin);
 }
 
 template <typename T>
-typename ad6::Tree<T>::iterator ad6::Tree<T>::FindNear( detail::Node<T> *nd, const T &key ) const
+typename ad6::Tree<T>::iterator ad6::Tree<T>::FindLower( detail::Node<T> *nd, const T &key ) const
 {
   if (nd == nullptr)
     return iterator{};
@@ -124,13 +124,13 @@ typename ad6::Tree<T>::iterator ad6::Tree<T>::FindNear( detail::Node<T> *nd, con
   {
     if (nd->left_ == nullptr)
       return iterator(nd);
-    return FindNear(nd->left_, key);
+    return FindLower(nd->left_, key);
   }
   if (key > nd->key_)
   {
     if (nd->right_ == nullptr)
-      return nd == max_ ? end() : iterator(nd);
-    return FindNear(nd->right_, key);
+      return ++iterator{nd};
+    return FindLower(nd->right_, key);
   }
 
   return iterator(nd);
