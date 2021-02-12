@@ -21,15 +21,17 @@ namespace adset
     using iterator = Tree_it<T>;
     using iter_n_bool = std::pair<iterator, bool>;
 
-    Tree( void );
+    Tree( void ) = default;
 
     Tree( const Tree &that );
     Tree( Tree &&that );
 
+    Tree &operator =( const Tree &that );
+    Tree &operator =( Tree &&that );
+
     iter_n_bool insert( const T &key );
     Tree<T> &operator <<( const T &key );
 
-    iterator Find( const T &key );
     iterator Find( const T &key ) const;
 
     iterator begin( void ) const;
@@ -64,15 +66,21 @@ namespace adset
   std::istream &operator >>( std::istream &ist, Tree<T> &tr );
 }
 
-template <typename T>
-adset::Tree<T>::Tree( void )
-{
-}
 
 template <typename T>
-adset::Tree<T>::Tree( const Tree &that ) 
-{
+adset::Tree<T>::Tree( const Tree &that ) : root_(that.root_),
+                                           min_(that.min_),
+                                           max_(that.max_),
+                                           size_(that.size_)
 
+{
+  // Here the deep copy goes
+  iterator itend = end();
+
+  for (iterator it = begin(); it != itend; ++it)
+  {
+
+  }
 }
 
 template <typename T>
@@ -83,6 +91,24 @@ adset::Tree<T>::Tree( Tree &&that ) : root_(that.root_),
 {
   that.root_ = that.min_ = that.max_ = nullptr;
   size_ = 0;
+}
+
+template <typename T>
+adset::Tree<T> &adset::Tree<T>::operator =( const Tree &that )
+{
+
+}
+
+template <typename T>
+adset::Tree<T> &adset::Tree<T>::operator =( Tree &&that )
+{
+  if (this == &that)
+    return *this;
+
+  Tree tmp{std::move(that)};
+  std::swap(*this, tmp);
+
+  return *this;
 }
 
 template <typename T>
@@ -105,15 +131,6 @@ adset::Tree<T> &adset::Tree<T>::operator <<( const T &key )
   insert(key);
 
   return *this;
-}
-
-template <typename T>
-typename adset::Tree<T>::iterator adset::Tree<T>::Find( const T &key )
-{
-  detail::Node<T> *found = detail::Find(root_, key);
-  if (found == nullptr)
-    return end();
-  return iterator(found);
 }
 
 template <typename T>

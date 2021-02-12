@@ -71,7 +71,7 @@ int main( void )
 
 Копирование и присваивание для Tree?
 
-(4)
+(4) OK
 
 template <typename T>
 adset::Tree<T>::Tree( void )
@@ -82,7 +82,7 @@ adset::Tree<T>::Tree( void )
 
 Во вторых с такой реализацией всё что вам нужно это =default
 
-(5)
+(5) OK
 
 К слову
 
@@ -90,7 +90,7 @@ namespace adset
 
 Отличное имя неймспейса...
 
-(6)
+(6) OK
 
     iterator Find( const T &key );
     iterator Find( const T &key ) const;
