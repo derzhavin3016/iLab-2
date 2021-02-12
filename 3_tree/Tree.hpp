@@ -421,7 +421,21 @@ adset::detail::Node<T> *adset::Tree<T>::CopyNd( const detail::Node<T> *nd )
 {
   if (nd == nullptr)
     return nullptr;
+/*
+  auto tmp_root =
 
+  while (true)
+  {
+    if (nd->right_ != nullptr)
+    {
+
+    }
+
+    if (nd->left_ != nullptr)
+    {
+
+    }
+  }*/
   auto tmp = CreatNd(nd->key_, nd->parent_, nd->depth_);
 
   tmp->right_ = CopyNd(nd->right_);
