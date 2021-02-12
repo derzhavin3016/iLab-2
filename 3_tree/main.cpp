@@ -34,16 +34,28 @@ void GetRequests( adset::Tree<int> &tr )
   std::cout << "\n";
 }
 
+using trint = adset::Tree<int>;
+
 int main( void )
 {
-  adset::Tree<int> tr;
+  trint tr;
   std::cin >> tr;
+
+  //tr.DotDump("tr.png");
+ /* std::cout << tr.size();
+
+  auto it = tr.begin();
+
+  tr.Erase(it);
+  std::cout << tr.size();
+*/
+  //tr.DotDump("tr1.png");
 
   //GetRequests(tr);
 
   //tr.DotDump("a.png");
 
-  GetRequests(tr);
+  //GetRequests(tr);
 
   //adset::Tree<int>::iterator It = tr.begin();
 
@@ -67,7 +79,7 @@ int main( void )
 
 Добавьте тестов на десятки тысяч элементов. Сейчас вы в таких тестах будете замерять только вывод на экран по факту, т.к. он у вас не отключаемый
 
-(3)
+(3) OK
 
 Копирование и присваивание для Tree?
 

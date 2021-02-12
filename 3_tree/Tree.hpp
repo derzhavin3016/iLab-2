@@ -5,6 +5,7 @@
 #include "Tree_it.hpp"
 #include <fstream>
 #include <string>
+#include <stack>
 
 namespace adset
 {
@@ -37,9 +38,13 @@ namespace adset
     iterator begin( void ) const;
     iterator end  ( void ) const;
 
+    void Erase( iterator it );
+
     void Erase( const T &key );
 
     bool Empty( void ) { return size_ == 0; }
+
+    size_t size( void ) { return size_; }
 
     void Clear( void );
 
@@ -60,6 +65,8 @@ namespace adset
     [[nodiscard]] detail::Node<T> *Delete( detail::Node <T> *nd, const T &key );
 
     [[nodiscard]] detail::Node<T> *CopyNd( const detail::Node<T> *nd );
+
+    void TreeDel( void );
 
     static void LightSwap( Tree &lhs, Tree &rhs );
 
@@ -98,7 +105,7 @@ adset::Tree<T> &adset::Tree<T>::operator =( const Tree &that )
     return *this;
 
   Tree tmp{that};
-  LightSwap(*this, that);
+  LightSwap(*this, tmp);
 
   return *this;
 }
@@ -191,18 +198,61 @@ typename adset::Tree<T>::iterator adset::Tree<T>::end( void ) const
 }
 
 template <typename T>
+void adset::Tree<T>::Erase( iterator it )
+{
+  Erase(*it);
+}
+
+template <typename T>
 void adset::Tree<T>::Erase( const T &key )
 {
   root_ = Delete(root_, key);
-  // TODO: min, max ?
+}
+
+template <typename T>
+void adset::Tree<T>::TreeDel( void )
+{
+  auto nd = root_;
+  std::stack<detail::Node<T> *> stk{};
+
+  while (true)
+  {
+    if (nd == nullptr)
+    {
+      if (stk.empty())
+        return;
+      nd = stk.top();
+      stk.pop();
+    }
+
+    auto old_nd = nd;
+
+    if (nd->right_ != nullptr)
+    {
+      stk.push(nd);
+      nd = nd->right_;
+      old_nd->right_ = nullptr;
+      continue;
+    }
+
+    if (nd->left_ != nullptr)
+    {
+      stk.push(nd);
+      nd = nd->left_;
+      old_nd->left_ = nullptr;
+      continue;
+    }
+
+    delete nd;
+    nd = nullptr;
+  }
 }
 
 template <typename T>
 void adset::Tree<T>::Clear( void )
 {
   if (root_ != nullptr)
-    root_->Clear();
-  delete root_;
+    TreeDel();
 
   root_ = nullptr;
   min_ = max_ = nullptr;

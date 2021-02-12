@@ -35,7 +35,7 @@ namespace adset::detail
     [[nodiscard]] Node<T> *RotR( void );
     [[nodiscard]] Node<T> *RotL( void );
 
-    ~Node( void );
+    ~Node( void ) = default;
   };
 
   template <typename T>
@@ -164,11 +164,6 @@ adset::detail::Node<T> *adset::detail::Node<T>::RotL( void )
   rnd->UpdDepth();
 
   return rnd;
-}
-
-template <typename T>
-adset::detail::Node<T>::~Node( void )
-{
 }
 
 template <typename T>
