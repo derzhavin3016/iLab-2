@@ -46,18 +46,22 @@ namespace adset
     void DotDump( const std::string &pngname = "dump.png",
                   const std::string &dotname = "dump.dot" );
 
-    ~Tree( void );
+    ~Tree( void ) { Clear(); }
 
     iterator lower_bound( const T &kmin ) const;
   private:
 
     iterator FindLower( detail::Node<T> *nd, const T &key ) const;
 
-    [[nodiscard]] detail::Node<T> *CreatNd( const T &key, detail::Node<T> *par );
+    [[nodiscard]] detail::Node<T> *CreatNd( const T &key, detail::Node<T> *par, int depth = 1 );
 
     [[nodiscard]] adset::detail::Node<T> *Insert( detail::Node<T> *nd, const T &key, iterator &ins_it );
 
     [[nodiscard]] detail::Node<T> *Delete( detail::Node <T> *nd, const T &key );
+
+    [[nodiscard]] detail::Node<T> *CopyNd( const detail::Node<T> *nd );
+
+    static void LightSwap( Tree &lhs, Tree &rhs );
 
     void MinMaxUpd( detail::Node<T> *nd );
   };
@@ -68,19 +72,13 @@ namespace adset
 
 
 template <typename T>
-adset::Tree<T>::Tree( const Tree &that ) : root_(that.root_),
-                                           min_(that.min_),
-                                           max_(that.max_),
+adset::Tree<T>::Tree( const Tree &that ) : root_(),
+                                           min_(),
+                                           max_(),
                                            size_(that.size_)
 
 {
-  // Here the deep copy goes
-  iterator itend = end();
-
-  for (iterator it = begin(); it != itend; ++it)
-  {
-
-  }
+  root_ = CopyNd(that.root_);
 }
 
 template <typename T>
@@ -96,7 +94,13 @@ adset::Tree<T>::Tree( Tree &&that ) : root_(that.root_),
 template <typename T>
 adset::Tree<T> &adset::Tree<T>::operator =( const Tree &that )
 {
+  if (this == &that)
+    return *this;
 
+  Tree tmp{that};
+  LightSwap(*this, that);
+
+  return *this;
 }
 
 template <typename T>
@@ -106,7 +110,7 @@ adset::Tree<T> &adset::Tree<T>::operator =( Tree &&that )
     return *this;
 
   Tree tmp{std::move(that)};
-  std::swap(*this, tmp);
+  LightSwap(*this, tmp);
 
   return *this;
 }
@@ -229,15 +233,9 @@ void adset::Tree<T>::DotDump( const std::string &pngname /* = "dump.png" */,
 }
 
 template <typename T>
-adset::Tree<T>::~Tree( void )
+adset::detail::Node<T> *adset::Tree<T>::CreatNd( const T &key, detail::Node<T> *par, int depth /* = 1 */ )
 {
-  Clear();
-}
-
-template <typename T>
-adset::detail::Node<T> *adset::Tree<T>::CreatNd( const T &key, detail::Node<T> *par )
-{
-  detail::Node<T> *new_nd = new detail::Node<T>{key, par};
+  auto new_nd = new detail::Node<T>{key, par, depth};
   MinMaxUpd(new_nd);
   return new_nd; 
 }
@@ -245,7 +243,7 @@ adset::detail::Node<T> *adset::Tree<T>::CreatNd( const T &key, detail::Node<T> *
 template <typename T>
 void adset::Tree<T>::MinMaxUpd( detail::Node<T> *nd )
 {
-  if (min_ == nullptr)
+  if (min_ == nullptr) // max is also nullptr
     max_ = min_ = nd;
   else if (nd->key_ > max_->key_)
     max_ = nd;
@@ -289,7 +287,7 @@ adset::detail::Node<T> *adset::Tree<T>::Insert( detail::Node<T> *nd, const T &ke
   if (nd == nullptr)
   {
     // Here we can caught an exception
-    detail::Node<T> *new_node = CreatNd(key, nullptr);
+    auto new_node = CreatNd(key, nullptr);
 
     ++size_;
     ins_it = iterator(new_node);
@@ -326,9 +324,9 @@ adset::detail::Node<T> *adset::Tree<T>::Delete( detail::Node <T> *nd, const T &k
     nd->right_ = Delete(nd->right_, key);
   else // key == nd->key_
   {
-    detail::Node<T> *left = nd->left_;
-    detail::Node<T> *right = nd->right_;
-    detail::Node<T> *parent = nd->parent_;
+    auto left = nd->left_;
+    auto right = nd->right_;
+    auto parent = nd->parent_;
 
     if (nd == max_)
     {
@@ -366,6 +364,29 @@ adset::detail::Node<T> *adset::Tree<T>::Delete( detail::Node <T> *nd, const T &k
   }
 
   return detail::Balance(nd);
+}
+
+template <typename T>
+adset::detail::Node<T> *adset::Tree<T>::CopyNd( const detail::Node<T> *nd )
+{
+  if (nd == nullptr)
+    return nullptr;
+
+  auto tmp = CreatNd(nd->key_, nd->parent_, nd->depth_);
+
+  tmp->right_ = CopyNd(nd->right_);
+  tmp->left_  = CopyNd(nd->left_);
+
+  return tmp;
+}
+
+template <typename T>
+void adset::Tree<T>::LightSwap( Tree &lhs, Tree &rhs )
+{
+  std::swap(lhs.root_, rhs.root_);
+  std::swap(lhs.min_, rhs.min_);
+  std::swap(lhs.max_, rhs.max_);
+  std::swap(lhs.size_, rhs.size_);
 }
 
 template <typename T>
