@@ -2,14 +2,12 @@
 #include "Tree.hpp"
 #include <vector>
 
-#define B std::cout << *(st.begin()) << "\n" << *(--st.end()) << "\n";
-
 // the first - the smaller
 using veccnt = std::vector<size_t>;
 
 
 
-void GetRequests( ad6::Tree<int> &tr )
+void GetRequests( adset::Tree<int> &tr )
 {
   size_t req_amount = 0;
 
@@ -38,7 +36,7 @@ void GetRequests( ad6::Tree<int> &tr )
 
 int main( void )
 {
-  ad6::Tree<int> tr;
+  adset::Tree<int> tr;
   std::cin >> tr;
 
   //GetRequests(tr);
@@ -47,7 +45,7 @@ int main( void )
 
   GetRequests(tr);
 
-  //ad6::Tree<int>::iterator It = tr.begin();
+  //adset::Tree<int>::iterator It = tr.begin();
 
   //tr.Erase(*It);
 
@@ -57,56 +55,50 @@ int main( void )
 }
 // TODO:
 /*
- * Ok, что бросается в глаза без тестов корректности:
-
 (1) OK
 
-friend class Tree<T>;
-friend class Tree_it<T>;
+#define B std::cout << *(st.begin()) << "\n" << *(--st.end()) << "\n";
 
-Так себе идея. Лучше занесите Node в namespace detail и сделайте поля открытыми или в приватную часть класса Tree и то же самое.
+Да ладно? B? Что?
 
-Иначе сейчас я напишу
+(2)
 
-struct Foo;
-template <> class Tree<Foo> {
-  // упс, теперь я тоже ваш друг =)
-};
+Сделайте пожалуйста отдельный таргет для тестирования корректности который выводит результаты работы вашего set и один таргет для замеров производительности который запускает там и там но ничего лишнего кроме результата не выводит
 
-(2) OK
+Добавьте тестов на десятки тысяч элементов. Сейчас вы в таких тестах будете замерять только вывод на экран по факту, т.к. он у вас не отключаемый
 
-ad6::Node<T>::~Node( void )
+(3)
+
+Копирование и присваивание для Tree?
+
+(4)
+
+template <typename T>
+adset::Tree<T>::Tree( void )
 {
-  right_ = nullptr;
-  left_ = nullptr;
-  parent_ = nullptr;
+}
 
-Бессмысленные зануления, компилятор их выкинет
+Во первых явный void в default-ctor не принято писать (ошибкой это не является просто выглядит странно
 
-(3) OK
+Во вторых с такой реализацией всё что вам нужно это =default
 
-if (this == nullptr)
-    return this;
+(5)
 
-Бессмысленная проверка, this == null означает что сломана трансляционная модель
+К слову
 
-(4) OK
+namespace adset
 
-void RecDotPrint( std::ofstream &oft );  <--- const?
+Отличное имя неймспейса...
 
-(5) OK
+(6)
 
-: root_(nullptr),
- min_(nullptr),
- max_(nullptr),
- size_(0)
+    iterator Find( const T &key );
+    iterator Find( const T &key ) const;
 
-Предпочитайте тривиальную инициализацию в классе
+Зачем их два?
 
-(6)  MB OK
+(7)
 
-ad6::Tree<T>::Insert
-
-А как тут с безопасностью исключений?
+Сделайте пожалуйста итеративное удаление
  * */
 

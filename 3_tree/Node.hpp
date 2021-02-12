@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 
-namespace ad6::detail
+namespace adset::detail
 {
   template <typename T>
   struct Node final
@@ -53,8 +53,8 @@ namespace ad6::detail
 
 
 template <typename T>
-ad6::detail::Node<T>::Node( const T &key, Node *par /* = nullptr */, int depth /* = 1 */,
-                    Node *l /* = nullptr */, Node *r /* = nullptr */ ) : key_(key),
+adset::detail::Node<T>::Node( const T &key, Node *par /* = nullptr */, int depth /* = 1 */,
+                              Node *l /* = nullptr */, Node *r /* = nullptr */ ) : key_(key),
                                                                          depth_(depth),
                                                                          left_(l),
                                                                          right_(r),
@@ -64,7 +64,7 @@ ad6::detail::Node<T>::Node( const T &key, Node *par /* = nullptr */, int depth /
 
 
 template <typename T>
-int ad6::detail::Node<T>::GetLDepth( void ) const
+int adset::detail::Node<T>::GetLDepth( void ) const
 {
   if (left_ == nullptr)
     return 0;
@@ -73,7 +73,7 @@ int ad6::detail::Node<T>::GetLDepth( void ) const
 }
 
 template <typename T>
-int ad6::detail::Node<T>::GetRDepth( void ) const
+int adset::detail::Node<T>::GetRDepth( void ) const
 {
   if (right_ == nullptr)
     return 0;
@@ -82,13 +82,13 @@ int ad6::detail::Node<T>::GetRDepth( void ) const
 }
 
 template <typename T>
-int ad6::detail::Node<T>::GetBFact( void ) const
+int adset::detail::Node<T>::GetBFact( void ) const
 {
   return GetRDepth() - GetLDepth();
 }
 
 template <typename T>
-void ad6::detail::Node<T>::UpdDepth( void )
+void adset::detail::Node<T>::UpdDepth( void )
 {
   int ldepth = GetLDepth();
   int rdepth = GetRDepth();
@@ -97,7 +97,7 @@ void ad6::detail::Node<T>::UpdDepth( void )
 }
 
 template <typename T>
-void ad6::detail::Node<T>::Clear( void )
+void adset::detail::Node<T>::Clear( void )
 {
   if (right_ != nullptr)
     right_->Clear();
@@ -112,7 +112,7 @@ void ad6::detail::Node<T>::Clear( void )
 }
 
 template <typename T>
-void ad6::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
+void adset::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
 {
   if (left_ != nullptr)
   {
@@ -128,7 +128,7 @@ void ad6::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
 }
 
 template <typename T>
-ad6::detail::Node<T> *ad6::detail::Node<T>::RotR( void )
+adset::detail::Node<T> *adset::detail::Node<T>::RotR( void )
 {
   Node<T> *lnd = left_;
   left_ = lnd->right_;
@@ -148,7 +148,7 @@ ad6::detail::Node<T> *ad6::detail::Node<T>::RotR( void )
 }
 
 template <typename T>
-ad6::detail::Node<T> *ad6::detail::Node<T>::RotL( void )
+adset::detail::Node<T> *adset::detail::Node<T>::RotL( void )
 {
   Node<T> *rnd = right_;
   right_ = rnd->left_;
@@ -167,12 +167,12 @@ ad6::detail::Node<T> *ad6::detail::Node<T>::RotL( void )
 }
 
 template <typename T>
-ad6::detail::Node<T>::~Node( void )
+adset::detail::Node<T>::~Node( void )
 {
 }
 
 template <typename T>
-ad6::detail::Node<T> *ad6::detail::FindMin( detail::Node<T> *nd )
+adset::detail::Node<T> *adset::detail::FindMin( detail::Node<T> *nd )
 {
   if (nd == nullptr)
     return nullptr;
@@ -184,7 +184,7 @@ ad6::detail::Node<T> *ad6::detail::FindMin( detail::Node<T> *nd )
 }
 
 template <typename T>
-ad6::detail::Node<T> *ad6::detail::DelMin( detail::Node<T> *nd )
+adset::detail::Node<T> *adset::detail::DelMin( detail::Node<T> *nd )
 {
   if (nd->left_ == nullptr)
     return nd->right_;
@@ -193,7 +193,7 @@ ad6::detail::Node<T> *ad6::detail::DelMin( detail::Node<T> *nd )
 }
 
 template <typename T>
-ad6::detail::Node<T> *ad6::detail::Balance( detail::Node<T> *nd )
+adset::detail::Node<T> *adset::detail::Balance( detail::Node<T> *nd )
 {
   if (nd == nullptr)
     return nd;
@@ -217,7 +217,7 @@ ad6::detail::Node<T> *ad6::detail::Balance( detail::Node<T> *nd )
 }
 
 template <typename T>
-ad6::detail::Node<T> *ad6::detail::Find( detail::Node<T> *nd, const T &key )
+adset::detail::Node<T> *adset::detail::Find( detail::Node<T> *nd, const T &key )
 {
   if (nd == nullptr)
     return nullptr;

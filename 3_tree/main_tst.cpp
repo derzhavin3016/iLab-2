@@ -4,8 +4,6 @@
 #include <vector>
 #include <set>
 
-#define B std::cout << *(st.begin()) << "\n" << *(--st.end()) << "\n";
-
 using std::vector;
 using RQvec = vector<std::pair<int, int>>;
 
@@ -37,7 +35,7 @@ void Test( Tree &tr )
 int main( void )
 {
   size_t keynum = 0, req_amount = 0;
-  ad6::Tree<int> tr;
+  adset::Tree<int> tr;
   std::set<int> set;
 
   std::cin >> keynum;

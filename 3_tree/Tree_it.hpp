@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace ad6
+namespace adset
 {
   template <typename T>
   class Tree;
@@ -53,12 +53,12 @@ namespace ad6
 
 
 template <typename T>
-ad6::Tree_it<T>::Tree_it( detail::Node<T> *nd /* = nullptr */, bool IsE /* = false */ ) : nd_(nd), IsEnd(IsE)
+adset::Tree_it<T>::Tree_it( detail::Node<T> *nd /* = nullptr */, bool IsE /* = false */ ) : nd_(nd), IsEnd(IsE)
 {
 }
 
 template <typename T>
-bool ad6::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
+bool adset::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
 {
   if (nd_ == nullptr || tr_ir.nd_ == nullptr)
     return false;
@@ -71,19 +71,19 @@ bool ad6::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
 }
 
 template <typename T>
-bool ad6::Tree_it<T>::IsnEq( const Tree_it<T> &tr_ir ) const
+bool adset::Tree_it<T>::IsnEq( const Tree_it<T> &tr_ir ) const
 {
   return !IsEq(tr_ir);
 }
 
 template <typename T>
-typename ad6::Tree_it<T>::reference ad6::Tree_it<T>::operator *( void ) const
+typename adset::Tree_it<T>::reference adset::Tree_it<T>::operator *( void ) const
 {
   return nd_->key_;
 }
 
 template <typename T>
-ad6::Tree_it<T> & ad6::Tree_it<T>::operator ++( void )
+adset::Tree_it<T> & adset::Tree_it<T>::operator ++( void )
 {
   if (IsEnd)
     return *this;
@@ -120,7 +120,7 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator ++( void )
 }
 
 template <typename T>
-ad6::Tree_it<T> & ad6::Tree_it<T>::operator --( void )
+adset::Tree_it<T> & adset::Tree_it<T>::operator --( void )
 {
   if (IsEnd)
   {
@@ -156,7 +156,7 @@ ad6::Tree_it<T> & ad6::Tree_it<T>::operator --( void )
 
 
 template <typename T>
-const ad6::Tree_it<T> &ad6::Tree_it<T>::operator --( int )
+const adset::Tree_it<T> &adset::Tree_it<T>::operator --( int )
 {
   Tree_it<T> tmp{*this};
   operator--();
@@ -165,7 +165,7 @@ const ad6::Tree_it<T> &ad6::Tree_it<T>::operator --( int )
 }
 
 template <typename T>
-const ad6::Tree_it<T> &ad6::Tree_it<T>::operator ++( int )
+const adset::Tree_it<T> &adset::Tree_it<T>::operator ++( int )
 {
   Tree_it<T> tmp{*this};
   operator++();
@@ -174,13 +174,13 @@ const ad6::Tree_it<T> &ad6::Tree_it<T>::operator ++( int )
 }
 
 template <typename T>
-T *ad6::Tree_it<T>::operator ->( void )
+T *adset::Tree_it<T>::operator ->( void )
 {
   return &(nd_->key_);
 }
 
 template <typename T>
-const T *ad6::Tree_it<T>::operator ->( void ) const
+const T *adset::Tree_it<T>::operator ->( void ) const
 {
   return &(nd_->key_);
 }
