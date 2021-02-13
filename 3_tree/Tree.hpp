@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <stack>
+#include <list>
 
 namespace adset
 {
@@ -13,10 +14,17 @@ namespace adset
   class Tree final
   {
   private:
-    detail::Node<T> *root_ = nullptr;
-    detail::Node<T> *min_  = nullptr;
-    detail::Node<T> *max_  = nullptr;
-    size_t size_ = 0;
+    // useful aliases
+    using ndlist = detail::nodelist<T>;
+    using lit = detail::liter<T>;
+
+    const lit nulit = detail::nulit<T>;
+
+    lit root_{}, min_{}, max_{};
+
+    // list with nodes
+    ndlist nodes;
+
 
   public:
     using iterator = Tree_it<T>;
@@ -42,9 +50,9 @@ namespace adset
 
     void Erase( const T &key );
 
-    bool Empty( void ) { return size_ == 0; }
+    bool Empty( void ) { return nodes.size() == 0; }
 
-    size_t size( void ) { return size_; }
+    size_t size( void ) { return nodes.size(); }
 
     void Clear( void );
 
@@ -272,7 +280,7 @@ void adset::Tree<T>::DotDump( const std::string &pngname /* = "dump.png" */,
     return;
   }
   fout << "digraph D {\n";
-  if (root_ != nullptr)
+  if (root_ != nulit)
     root_->RecDotPrint(fout);
 
   fout << "}\n";
@@ -334,12 +342,11 @@ adset::detail::Node<T> *adset::Tree<T>::Insert( detail::Node<T> *nd, const T &ke
   }*/
   ////////////////////////////////
 
-  if (nd == nullptr)
+  if (nd == nulit)
   {
     // Here we can caught an exception
     auto new_node = CreatNd(key, nullptr);
 
-    ++size_;
     ins_it = iterator(new_node);
     return new_node;
   }

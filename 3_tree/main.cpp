@@ -38,18 +38,6 @@ using trint = adset::Tree<int>;
 
 int main( void )
 {
-
-  try
-  {
-    int *a = new int;
-
-    throw 2;
-  }
-  catch (...)
-  {
-    std::cout << "hui";
-  }
-
   /*
   trint tr;
   std::cin >> tr;

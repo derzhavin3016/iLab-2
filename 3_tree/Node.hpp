@@ -3,20 +3,31 @@
 
 #include <iostream>
 #include <fstream>
+#include <list>
 
 namespace adset::detail
 {
+  template <typename T>
+  struct Node;
+
+  template <typename T>
+  using nodelist = std::list<Node<T>>;
+
+  template <typename T>
+  using liter = typename nodelist<T>::iterator;
+
+  template <typename T>
+  const liter<T> nulit = liter<T>{};
+
   template <typename T>
   struct Node final
   {
     const T key_;
     int depth_;
 
-    Node *left_;
-    Node *right_;
-    Node *parent_;
+    liter<T> left_, right_, parent_;
 
-    Node( const T &key, Node *par = nullptr, int depth = 1, Node *l = nullptr, Node *r = nullptr );
+    Node( const T &key, liter<T> par = {}, int depth = 1, liter<T> l = {}, liter<T> r = {} );
 
     Node( const Node &nd ) = default;
 
@@ -27,38 +38,36 @@ namespace adset::detail
 
     void UpdDepth( void );
 
-    void Clear( void );
-
     void RecDotPrint( std::ofstream &oft ) const;
 
     // Nodes rotation functions
-    [[nodiscard]] Node<T> *RotR( void );
-    [[nodiscard]] Node<T> *RotL( void );
+    [[nodiscard]] liter<T> RotR( void );
+    [[nodiscard]] liter<T> RotL( void );
 
     ~Node( void ) = default;
   };
 
   template <typename T>
-  Node<T> *FindMin( Node<T> *nd );
+  liter<T> FindMin( liter<T> nd );
 
   template <typename T>
-  [[nodiscard]] Node<T> *DelMin( Node<T> *nd );
+  [[nodiscard]] liter<T> DelMin( liter<T> nd );
 
   template <typename T>
-  [[nodiscard]] Node<T> *Balance( Node<T> *nd );
+  [[nodiscard]] liter<T> Balance( liter<T> nd );
 
   template <typename T>
-  Node<T> *Find( Node<T> *nd, const T &key );
+  liter<T> Find( liter<T> nd, const T &key );
 }
 
 
 template <typename T>
-adset::detail::Node<T>::Node( const T &key, Node *par /* = nullptr */, int depth /* = 1 */,
-                              Node *l /* = nullptr */, Node *r /* = nullptr */ ) : key_(key),
-                                                                         depth_(depth),
-                                                                         left_(l),
-                                                                         right_(r),
-                                                                         parent_(par)
+adset::detail::Node<T>::Node( const T &key, liter<T> par /* = {} */, int depth /* = 1 */,
+                              liter<T> l /* = {} */, liter<T> r /* = {} */ ) : key_(key),
+                                                                               depth_(depth),
+                                                                               left_(l),
+                                                                               right_(r),
+                                                                               parent_(par)
 {
 }
 
@@ -66,7 +75,7 @@ adset::detail::Node<T>::Node( const T &key, Node *par /* = nullptr */, int depth
 template <typename T>
 int adset::detail::Node<T>::GetLDepth( void ) const
 {
-  if (left_ == nullptr)
+  if (left_ == nulit<T>)
     return 0;
 
   return left_->depth_;
@@ -75,7 +84,7 @@ int adset::detail::Node<T>::GetLDepth( void ) const
 template <typename T>
 int adset::detail::Node<T>::GetRDepth( void ) const
 {
-  if (right_ == nullptr)
+  if (right_ == nulit<T>)
     return 0;
 
   return right_->depth_;
@@ -97,29 +106,14 @@ void adset::detail::Node<T>::UpdDepth( void )
 }
 
 template <typename T>
-void adset::detail::Node<T>::Clear( void )
-{
-  if (right_ != nullptr)
-    right_->Clear();
-  if (left_ != nullptr)
-    left_->Clear();
-
-  delete left_;
-  left_ = nullptr;
-  delete right_;
-  right_ = nullptr;
-  parent_ = nullptr;
-}
-
-template <typename T>
 void adset::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
 {
-  if (left_ != nullptr)
+  if (left_ != nulit<T>)
   {
     oft << key_ << " -> " << left_->key_ << ";\n";
     left_->RecDotPrint(oft);
   }
-  if (right_ != nullptr)
+  if (right_ != nulit<T>)
   {
     oft << key_ << " -> " << right_->key_ << ";\n";
     right_->RecDotPrint(oft);
@@ -128,15 +122,15 @@ void adset::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
 }
 
 template <typename T>
-adset::detail::Node<T> *adset::detail::Node<T>::RotR( void )
+adset::detail::liter<T> adset::detail::Node<T>::RotR( void )
 {
-  Node<T> *lnd = left_;
+  liter<T> lnd = left_;
   left_ = lnd->right_;
 
-  if (left_ != nullptr && lnd->right_ != nullptr)
+  if (left_ != nulit<T> && lnd->right_ != nulit<T>)
     left_->parent_ = lnd->right_->parent_;
 
-  lnd->right_ = this;
+  lnd->right_ = lnd->parent_; // this
 
   lnd->parent_ = parent_;
   parent_ = lnd;
@@ -148,14 +142,14 @@ adset::detail::Node<T> *adset::detail::Node<T>::RotR( void )
 }
 
 template <typename T>
-adset::detail::Node<T> *adset::detail::Node<T>::RotL( void )
+adset::detail::liter<T> adset::detail::Node<T>::RotL( void )
 {
   Node<T> *rnd = right_;
   right_ = rnd->left_;
   if (right_ != nullptr && rnd->left_ != nullptr)
     right_->parent_ = rnd->left_->parent_;
 
-  rnd->left_ = this;
+  rnd->left_ = rnd->parent_; //this
 
   rnd->parent_ = parent_;
   parent_ = rnd;
@@ -167,30 +161,30 @@ adset::detail::Node<T> *adset::detail::Node<T>::RotL( void )
 }
 
 template <typename T>
-adset::detail::Node<T> *adset::detail::FindMin( detail::Node<T> *nd )
+adset::detail::liter<T> adset::detail::FindMin( detail::liter<T> nd )
 {
-  if (nd == nullptr)
+  if (nd == nulit<T>)
     return nullptr;
 
-  if (nd->left_ == nullptr)
+  if (nd->left_ == nulit<T>)
     return nd;
   
   return FindMin(nd->left_);
 }
 
 template <typename T>
-adset::detail::Node<T> *adset::detail::DelMin( detail::Node<T> *nd )
+adset::detail::liter<T> adset::detail::DelMin( detail::liter<T> nd )
 {
-  if (nd->left_ == nullptr)
+  if (nd->left_ == nulit<T>)
     return nd->right_;
   nd->left_ = DelMin(nd->left_);
   return Balance(nd);
 }
 
 template <typename T>
-adset::detail::Node<T> *adset::detail::Balance( detail::Node<T> *nd )
+adset::detail::liter<T> adset::detail::Balance( detail::liter<T> nd )
 {
-  if (nd == nullptr)
+  if (nd == nulit<T>)
     return nd;
 
   nd->UpdDepth();
@@ -212,10 +206,10 @@ adset::detail::Node<T> *adset::detail::Balance( detail::Node<T> *nd )
 }
 
 template <typename T>
-adset::detail::Node<T> *adset::detail::Find( detail::Node<T> *nd, const T &key )
+adset::detail::liter<T> adset::detail::Find( detail::liter<T> nd, const T &key )
 {
-  if (nd == nullptr)
-    return nullptr;
+  if (nd == nulit<T>)
+    return nulit<T>;
   if (key < nd->key_)
     return Find(nd->left_, key);
   if (key > nd->key_)

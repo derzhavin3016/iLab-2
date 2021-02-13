@@ -13,12 +13,12 @@ namespace adset
   class Tree_it final : public std::iterator<std::bidirectional_iterator_tag, const T>
   {
   private:
-    detail::Node<T> *nd_;
+    detail::liter<T> nd_;
     bool IsEnd;
 
   public:
 
-    explicit Tree_it( detail::Node<T> *nd = nullptr, bool IsE = false );
+    explicit Tree_it( detail::liter<T> nd = {}, bool IsE = false );
 
     Tree_it( const Tree_it &tr_it ) = default;
     Tree_it &operator =( const Tree_it &that ) = default;
@@ -31,8 +31,8 @@ namespace adset
     Tree_it &operator ++( void );
     Tree_it &operator --( void );
 
-    const Tree_it &operator --( int );
-    const Tree_it &operator ++( int );
+    Tree_it &operator --( int );
+    Tree_it &operator ++( int );
 
     T *operator ->( void );
     const T *operator ->( void ) const;
@@ -53,14 +53,14 @@ namespace adset
 
 
 template <typename T>
-adset::Tree_it<T>::Tree_it( detail::Node<T> *nd /* = nullptr */, bool IsE /* = false */ ) : nd_(nd), IsEnd(IsE)
+adset::Tree_it<T>::Tree_it( detail::liter<T> nd /* = {} */, bool IsE /* = false */ ) : nd_(nd), IsEnd(IsE)
 {
 }
 
 template <typename T>
 bool adset::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
 {
-  if (nd_ == nullptr || tr_ir.nd_ == nullptr)
+  if (nd_ == detail::nulit<T> || tr_ir.nd_ == detail::nulit<T>)
     return false;
 
   if (tr_ir.IsEnd || IsEnd)
@@ -88,10 +88,10 @@ adset::Tree_it<T> & adset::Tree_it<T>::operator ++( void )
   if (IsEnd)
     return *this;
 
-  if (nd_->right_ != nullptr)
+  if (nd_->right_ != detail::nulit<T>)
   {
-    detail::Node<T> *node = nd_->right_;
-    while (node->left_ != nullptr)
+    detail::liter<T> node = nd_->right_;
+    while (node->left_ != detail::nulit<T>)
       node = node->left_;
     nd_ = node;
   }
@@ -101,7 +101,7 @@ adset::Tree_it<T> & adset::Tree_it<T>::operator ++( void )
      * OR with nullptr (then you at the max node)
      * */
 
-    if (nd_->parent_ == nullptr)
+    if (nd_->parent_ == detail::nulit<T>)
       return *this;
 
     detail::Node<T> *start_nd = nd_;
