@@ -17,7 +17,7 @@ namespace ad_set
 
   public:
 
-    explicit Tree_it( detail::liter<T> nd = {} );
+    Tree_it( detail::liter<T> nd = {} );
 
     Tree_it( const Tree_it &tr_it ) = default;
     Tree_it &operator =( const Tree_it &that ) = default;
@@ -30,8 +30,8 @@ namespace ad_set
     Tree_it &operator ++( void );
     Tree_it &operator --( void );
 
-    Tree_it &operator --( int );
-    Tree_it &operator ++( int );
+    const Tree_it &operator --( int );
+    const Tree_it &operator ++( int );
 
     T *operator ->( void );
     const T *operator ->( void ) const;

@@ -16,6 +16,7 @@ namespace ad_set
     // useful aliases
     using ndlist = detail::nodelist<T>;
     using lit = detail::liter<T>;
+    using clit = typename ndlist::const_iterator;
 
     const lit nulit = detail::nulit<T>;
 
@@ -44,6 +45,9 @@ namespace ad_set
 
     iterator Find( const T &key ) const;
 
+    iterator begin( void );
+    iterator end  ( void );
+
     iterator begin( void ) const;
     iterator end  ( void ) const;
 
@@ -63,7 +67,7 @@ namespace ad_set
     iterator lower_bound( const T &kmin ) const;
   private:
 
-    iterator FindLower( detail::Node<T> *nd, const T &key ) const;
+    iterator FindLower( lit nd, const T &key ) const;
 
     [[nodiscard]] lit Insert( lit nd, const T &key, iterator &ins_it );
 
@@ -80,11 +84,7 @@ namespace ad_set
 
 
 template <typename T>
-ad_set::Tree<T>::Tree( const Tree &that ) : root_(),
-                                            min_(),
-                                            max_(),
-                                            size_(that.size_)
-
+ad_set::Tree<T>::Tree( const Tree &that ) : root_()
 {
   root_ = CopyNd(that.root_);
 }
@@ -155,14 +155,14 @@ typename ad_set::Tree<T>::iterator ad_set::Tree<T>::Find( const T &key ) const
 template <typename T>
 typename ad_set::Tree<T>::iterator ad_set::Tree<T>::lower_bound( const T &kmin ) const
 {
-  if (kmin == nodes_.front())
+  if (kmin == nodes_.begin()->key_)
     return begin();
 
   return FindLower(root_, kmin);
 }
 
 template <typename T>
-typename ad_set::Tree<T>::iterator ad_set::Tree<T>::FindLower( detail::Node<T> *nd, const T &key ) const
+typename ad_set::Tree<T>::iterator ad_set::Tree<T>::FindLower( lit nd, const T &key ) const
 {
   if (nd == nulit)
     return iterator{};
@@ -183,13 +183,13 @@ typename ad_set::Tree<T>::iterator ad_set::Tree<T>::FindLower( detail::Node<T> *
 }
 
 template <typename T>
-typename ad_set::Tree<T>::iterator ad_set::Tree<T>::begin( void ) const
+typename ad_set::Tree<T>::iterator ad_set::Tree<T>::begin( void )
 {
   return iterator{nodes_.begin()};
 }
 
 template <typename T>
-typename ad_set::Tree<T>::iterator ad_set::Tree<T>::end( void ) const
+typename ad_set::Tree<T>::iterator ad_set::Tree<T>::end( void )
 {
   return iterator{nodes_.end()};
 }
