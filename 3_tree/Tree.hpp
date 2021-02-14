@@ -19,10 +19,12 @@ namespace ad_set
 
     const lit nulit = detail::nulit<T>;
 
+    // iterator to tree's root
     lit root_{};
 
-    // list with nodes
-    ndlist nodes;
+    // list with nodes_
+    ndlist nodes_;
+    // using list for inserting/deleting data in/from any place by O(1)
 
 
   public:
@@ -49,9 +51,9 @@ namespace ad_set
 
     void Erase( const T &key );
 
-    bool Empty( void ) { return nodes.size() == 0; }
+    bool Empty( void ) { return nodes_.size() == 0; }
 
-    size_t size( void ) { return nodes.size(); }
+    size_t size( void ) { return nodes_.size(); }
 
     void DotDump( const std::string &pngname = "dump.png",
                   const std::string &dotname = "dump.dot" );
@@ -89,11 +91,8 @@ ad_set::Tree<T>::Tree( const Tree &that ) : root_(),
 
 template <typename T>
 ad_set::Tree<T>::Tree( Tree &&that ) : root_(that.root_),
-                                       min_(that.min_),
-                                       max_(that.max_),
-
+                                       nodes_(std::move(that.nodes_))
 {
-  that.root_ = that.min_ = that.max_ = nullptr;
 }
 
 template <typename T>
@@ -103,7 +102,8 @@ ad_set::Tree<T> &ad_set::Tree<T>::operator =( const Tree &that )
     return *this;
 
   Tree tmp{that};
-  LightSwap(*this, tmp);
+  std::swap(root_, tmp.root_);
+  std::swap(nodes_, tmp.nodes_);
 
   return *this;
 }
@@ -115,7 +115,8 @@ ad_set::Tree<T> &ad_set::Tree<T>::operator =( Tree &&that )
     return *this;
 
   Tree tmp{std::move(that)};
-  LightSwap(*this, tmp);
+  std::swap(root_, tmp.root_);
+  std::swap(nodes_, tmp.nodes_);
 
   return *this;
 }
@@ -124,11 +125,11 @@ template <typename T>
 typename ad_set::Tree<T>::iter_n_bool ad_set::Tree<T>::insert( const T &key )
 {
   iter_n_bool pair{iterator{}, false};
-  size_t old_size{nodes.size()};
+  size_t old_size{nodes_.size()};
 
   root_ = Insert(root_, key, pair.first);
 
-  if (nodes.size() != old_size)
+  if (nodes_.size() != old_size)
     pair.second = true;
 
   return pair;
@@ -154,7 +155,7 @@ typename ad_set::Tree<T>::iterator ad_set::Tree<T>::Find( const T &key ) const
 template <typename T>
 typename ad_set::Tree<T>::iterator ad_set::Tree<T>::lower_bound( const T &kmin ) const
 {
-  if (kmin == nodes.front())
+  if (kmin == nodes_.front())
     return begin();
 
   return FindLower(root_, kmin);
@@ -184,13 +185,13 @@ typename ad_set::Tree<T>::iterator ad_set::Tree<T>::FindLower( detail::Node<T> *
 template <typename T>
 typename ad_set::Tree<T>::iterator ad_set::Tree<T>::begin( void ) const
 {
-  return iterator{nodes.begin()};
+  return iterator{nodes_.begin()};
 }
 
 template <typename T>
 typename ad_set::Tree<T>::iterator ad_set::Tree<T>::end( void ) const
 {
-  return iterator{nodes.end()};
+  return iterator{nodes_.end()};
 }
 
 template <typename T>
@@ -265,17 +266,17 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Insert( lit nd, const T &key, ite
   if (nd == nulit)
   {
     // if tree is empty
-    nodes.push_back(detail::Node<T>{key});
+    nodes_.push_back(detail::Node<T>{key});
 
-    ins_it = iterator{nodes.begin()};
-    return nodes.begin();
+    ins_it = iterator{nodes_.begin()};
+    return nodes_.begin();
   }
 
   if (key < nd->key_)
   {
     if (nd->left_ == nulit)
     {
-      nd->left_ = nodes.insert(nd, detail::Node<T>{key, nd});
+      nd->left_ = nodes_.insert(nd, detail::Node<T>{key, nd});
       ins_it = iterator{nd->left_};
     }
     else
@@ -289,7 +290,7 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Insert( lit nd, const T &key, ite
     if (nd->right_ == nulit)
     {
       lit nxt{nd};
-      nd->right_ = nodes.insert(++nxt, detail::Node<T>{key, nd});
+      nd->right_ = nodes_.insert(++nxt, detail::Node<T>{key, nd});
     }
     else
     {
@@ -322,7 +323,7 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Delete( lit nd, const T &key )
     auto parent = nd->parent_;
 
     // deleting node
-    nodes.erase(nd);
+    nodes_.erase(nd);
 
     if (right == nulit)
       return left;
@@ -365,16 +366,6 @@ ad_set::detail::Node<T> *ad_set::Tree<T>::CopyNd( const detail::Node<T> *nd )
 
   return tmp;
 }
-
-template <typename T>
-void ad_set::Tree<T>::LightSwap( Tree &lhs, Tree &rhs )
-{
-  std::swap(lhs.root_, rhs.root_);
-  std::swap(lhs.min_, rhs.min_);
-  std::swap(lhs.max_, rhs.max_);
-  std::swap(lhs.size_, rhs.size_);
-}
-
 template <typename T>
 std::istream &ad_set::operator >>( std::istream &ist, ad_set::Tree<T> &tr )
 {
