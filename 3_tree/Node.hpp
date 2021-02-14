@@ -5,7 +5,7 @@
 #include <fstream>
 #include <list>
 
-namespace adset::detail
+namespace ad_set::detail
 {
   template <typename T>
   struct Node;
@@ -62,8 +62,8 @@ namespace adset::detail
 
 
 template <typename T>
-adset::detail::Node<T>::Node( const T &key, liter<T> par /* = {} */, int depth /* = 1 */,
-                              liter<T> l /* = {} */, liter<T> r /* = {} */ ) : key_(key),
+ad_set::detail::Node<T>::Node( const T &key, liter<T> par /* = {} */, int depth /* = 1 */,
+                               liter<T> l /* = {} */, liter<T> r /* = {} */ ) : key_(key),
                                                                                depth_(depth),
                                                                                left_(l),
                                                                                right_(r),
@@ -73,7 +73,7 @@ adset::detail::Node<T>::Node( const T &key, liter<T> par /* = {} */, int depth /
 
 
 template <typename T>
-int adset::detail::Node<T>::GetLDepth( void ) const
+int ad_set::detail::Node<T>::GetLDepth( void ) const
 {
   if (left_ == nulit<T>)
     return 0;
@@ -82,7 +82,7 @@ int adset::detail::Node<T>::GetLDepth( void ) const
 }
 
 template <typename T>
-int adset::detail::Node<T>::GetRDepth( void ) const
+int ad_set::detail::Node<T>::GetRDepth( void ) const
 {
   if (right_ == nulit<T>)
     return 0;
@@ -91,13 +91,13 @@ int adset::detail::Node<T>::GetRDepth( void ) const
 }
 
 template <typename T>
-int adset::detail::Node<T>::GetBFact( void ) const
+int ad_set::detail::Node<T>::GetBFact( void ) const
 {
   return GetRDepth() - GetLDepth();
 }
 
 template <typename T>
-void adset::detail::Node<T>::UpdDepth( void )
+void ad_set::detail::Node<T>::UpdDepth( void )
 {
   int ldepth = GetLDepth();
   int rdepth = GetRDepth();
@@ -106,7 +106,7 @@ void adset::detail::Node<T>::UpdDepth( void )
 }
 
 template <typename T>
-void adset::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
+void ad_set::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
 {
   if (left_ != nulit<T>)
   {
@@ -122,7 +122,7 @@ void adset::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
 }
 
 template <typename T>
-adset::detail::liter<T> adset::detail::Node<T>::RotR( void )
+ad_set::detail::liter<T> ad_set::detail::Node<T>::RotR( void )
 {
   liter<T> lnd = left_;
   left_ = lnd->right_;
@@ -142,7 +142,7 @@ adset::detail::liter<T> adset::detail::Node<T>::RotR( void )
 }
 
 template <typename T>
-adset::detail::liter<T> adset::detail::Node<T>::RotL( void )
+ad_set::detail::liter<T> ad_set::detail::Node<T>::RotL( void )
 {
   Node<T> *rnd = right_;
   right_ = rnd->left_;
@@ -161,7 +161,7 @@ adset::detail::liter<T> adset::detail::Node<T>::RotL( void )
 }
 
 template <typename T>
-adset::detail::liter<T> adset::detail::FindMin( detail::liter<T> nd )
+ad_set::detail::liter<T> ad_set::detail::FindMin( detail::liter<T> nd )
 {
   if (nd == nulit<T>)
     return nullptr;
@@ -173,7 +173,7 @@ adset::detail::liter<T> adset::detail::FindMin( detail::liter<T> nd )
 }
 
 template <typename T>
-adset::detail::liter<T> adset::detail::DelMin( detail::liter<T> nd )
+ad_set::detail::liter<T> ad_set::detail::DelMin( detail::liter<T> nd )
 {
   if (nd->left_ == nulit<T>)
     return nd->right_;
@@ -182,7 +182,7 @@ adset::detail::liter<T> adset::detail::DelMin( detail::liter<T> nd )
 }
 
 template <typename T>
-adset::detail::liter<T> adset::detail::Balance( detail::liter<T> nd )
+ad_set::detail::liter<T> ad_set::detail::Balance( detail::liter<T> nd )
 {
   if (nd == nulit<T>)
     return nd;
@@ -206,7 +206,7 @@ adset::detail::liter<T> adset::detail::Balance( detail::liter<T> nd )
 }
 
 template <typename T>
-adset::detail::liter<T> adset::detail::Find( detail::liter<T> nd, const T &key )
+ad_set::detail::liter<T> ad_set::detail::Find( detail::liter<T> nd, const T &key )
 {
   if (nd == nulit<T>)
     return nulit<T>;

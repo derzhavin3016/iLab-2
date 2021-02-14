@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace adset
+namespace ad_set
 {
   template <typename T>
   class Tree;
@@ -53,12 +53,12 @@ namespace adset
 
 
 template <typename T>
-adset::Tree_it<T>::Tree_it( detail::liter<T> nd /* = {} */, bool IsE /* = false */ ) : nd_(nd), IsEnd(IsE)
+ad_set::Tree_it<T>::Tree_it( detail::liter<T> nd /* = {} */, bool IsE /* = false */ ) : nd_(nd), IsEnd(IsE)
 {
 }
 
 template <typename T>
-bool adset::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
+bool ad_set::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
 {
   if (nd_ == detail::nulit<T> || tr_ir.nd_ == detail::nulit<T>)
     return false;
@@ -71,19 +71,19 @@ bool adset::Tree_it<T>::IsEq( const Tree_it<T> &tr_ir ) const
 }
 
 template <typename T>
-bool adset::Tree_it<T>::IsnEq( const Tree_it<T> &tr_ir ) const
+bool ad_set::Tree_it<T>::IsnEq( const Tree_it<T> &tr_ir ) const
 {
   return !IsEq(tr_ir);
 }
 
 template <typename T>
-typename adset::Tree_it<T>::reference adset::Tree_it<T>::operator *( void ) const
+typename ad_set::Tree_it<T>::reference ad_set::Tree_it<T>::operator *( void ) const
 {
   return nd_->key_;
 }
 
 template <typename T>
-adset::Tree_it<T> & adset::Tree_it<T>::operator ++( void )
+ad_set::Tree_it<T> & ad_set::Tree_it<T>::operator ++( void )
 {
   if (IsEnd)
     return *this;
@@ -104,12 +104,12 @@ adset::Tree_it<T> & adset::Tree_it<T>::operator ++( void )
     if (nd_->parent_ == detail::nulit<T>)
       return *this;
 
-    detail::Node<T> *start_nd = nd_;
-    while (nd_ != nullptr && nd_->key_ <= start_nd->key_)
+    detail::liter<T> start_nd = nd_;
+    while (nd_ != detail::nulit<T> && nd_->key_ <= start_nd->key_)
       nd_ = nd_->parent_;
 
     // this node is ALREADY max
-    if (nd_ == nullptr)
+    if (nd_ == detail::nulit<T>)
     {
       IsEnd = true;
       nd_ = start_nd;
@@ -120,7 +120,7 @@ adset::Tree_it<T> & adset::Tree_it<T>::operator ++( void )
 }
 
 template <typename T>
-adset::Tree_it<T> & adset::Tree_it<T>::operator --( void )
+ad_set::Tree_it<T> & ad_set::Tree_it<T>::operator --( void )
 {
   if (IsEnd)
   {
@@ -128,10 +128,10 @@ adset::Tree_it<T> & adset::Tree_it<T>::operator --( void )
     return *this;
   }
 
-  if (nd_->left_ != nullptr)
+  if (nd_->left_ != detail::nulit<T>)
   {
-    detail::Node<T> *node = nd_->left_;
-    while (node->right_ != nullptr)
+    detail::liter<T> node = nd_->left_;
+    while (node->right_ != detail::nulit<T>)
       node = node->right_;
     nd_ = node;
   }
@@ -141,14 +141,14 @@ adset::Tree_it<T> & adset::Tree_it<T>::operator --( void )
      * OR with nullptr (then you at the minimum node)
      * */
 
-    if (nd_->parent_ == nullptr)
+    if (nd_->parent_ == detail::nulit<T>)
       return *this;
 
-    detail::Node<T> *start_nd = nd_;
-    while (nd_ != nullptr && nd_->key_ >= start_nd->key_)
+    detail::liter<T> start_nd = nd_;
+    while (nd_ != detail::nulit<T> && nd_->key_ >= start_nd->key_)
       nd_ = nd_->parent_;
 
-    if (nd_ == nullptr)
+    if (nd_ == detail::nulit<T>)
       nd_ = start_nd;
   }
   return *this;
@@ -156,7 +156,7 @@ adset::Tree_it<T> & adset::Tree_it<T>::operator --( void )
 
 
 template <typename T>
-const adset::Tree_it<T> &adset::Tree_it<T>::operator --( int )
+const ad_set::Tree_it<T> &ad_set::Tree_it<T>::operator --( int )
 {
   Tree_it<T> tmp{*this};
   operator--();
@@ -165,7 +165,7 @@ const adset::Tree_it<T> &adset::Tree_it<T>::operator --( int )
 }
 
 template <typename T>
-const adset::Tree_it<T> &adset::Tree_it<T>::operator ++( int )
+const ad_set::Tree_it<T> &ad_set::Tree_it<T>::operator ++( int )
 {
   Tree_it<T> tmp{*this};
   operator++();
@@ -174,13 +174,13 @@ const adset::Tree_it<T> &adset::Tree_it<T>::operator ++( int )
 }
 
 template <typename T>
-T *adset::Tree_it<T>::operator ->( void )
+T *ad_set::Tree_it<T>::operator ->( void )
 {
   return &(nd_->key_);
 }
 
 template <typename T>
-const T *adset::Tree_it<T>::operator ->( void ) const
+const T *ad_set::Tree_it<T>::operator ->( void ) const
 {
   return &(nd_->key_);
 }

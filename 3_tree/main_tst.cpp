@@ -35,7 +35,7 @@ void Test( Tree &tr )
 int main( void )
 {
   size_t keynum = 0, req_amount = 0;
-  adset::Tree<int> tr;
+  ad_set::Tree<int> tr;
   std::set<int> set;
 
   std::cin >> keynum;

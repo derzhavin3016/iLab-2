@@ -7,7 +7,7 @@ using veccnt = std::vector<size_t>;
 
 
 
-void GetRequests( adset::Tree<int> &tr )
+void GetRequests( ad_set::Tree<int> &tr )
 {
   size_t req_amount = 0;
 
@@ -34,7 +34,7 @@ void GetRequests( adset::Tree<int> &tr )
   std::cout << "\n";
 }
 
-using trint = adset::Tree<int>;
+using trint = ad_set::Tree<int>;
 
 int main( void )
 {
@@ -58,7 +58,7 @@ int main( void )
 
   //GetRequests(tr);
 
-  //adset::Tree<int>::iterator It = tr.begin();
+  //ad_set::Tree<int>::iterator It = tr.begin();
 
   //tr.Erase(*It);
 
@@ -92,7 +92,7 @@ int main( void )
 (4) OK
 
 template <typename T>
-adset::Tree<T>::Tree( void )
+ad_set::Tree<T>::Tree( void )
 {
 }
 
@@ -104,7 +104,7 @@ adset::Tree<T>::Tree( void )
 
 К слову
 
-namespace adset
+namespace ad_set
 
 Отличное имя неймспейса...
 
