@@ -5,7 +5,6 @@
 #include "Tree_it.hpp"
 #include <fstream>
 #include <string>
-#include <stack>
 #include <list>
 
 namespace ad_set
@@ -20,7 +19,7 @@ namespace ad_set
 
     const lit nulit = detail::nulit<T>;
 
-    lit root_{}, min_{}, max_{};
+    lit root_{};
 
     // list with nodes
     ndlist nodes;
@@ -54,31 +53,23 @@ namespace ad_set
 
     size_t size( void ) { return nodes.size(); }
 
-    void Clear( void );
-
     void DotDump( const std::string &pngname = "dump.png",
                   const std::string &dotname = "dump.dot" );
 
-    ~Tree( void ) { Clear(); }
+    ~Tree( void ) = default;
 
     iterator lower_bound( const T &kmin ) const;
   private:
 
     iterator FindLower( detail::Node<T> *nd, const T &key ) const;
 
-    [[nodiscard]] detail::Node<T> *CreatNd( const T &key, detail::Node<T> *par, int depth = 1 );
-
     [[nodiscard]] lit Insert( lit nd, const T &key, iterator &ins_it );
 
-    [[nodiscard]] detail::Node<T> *Delete( detail::Node <T> *nd, const T &key );
+    [[nodiscard]] lit Delete( lit nd, const T &key );
 
     [[nodiscard]] detail::Node<T> *CopyNd( const detail::Node<T> *nd );
 
-    void TreeDel( void );
-
     static void LightSwap( Tree &lhs, Tree &rhs );
-
-    void MinMaxUpd( detail::Node<T> *nd );
   };
 
   template <typename T>
@@ -154,16 +145,16 @@ ad_set::Tree<T> &ad_set::Tree<T>::operator <<( const T &key )
 template <typename T>
 typename ad_set::Tree<T>::iterator ad_set::Tree<T>::Find( const T &key ) const
 {
-  detail::Node<T> *found = detail::Find(root_, key);
-  if (found == nullptr)
+  lit found = detail::Find(root_, key);
+  if (found == nulit)
     return end();
-  return iterator(found);
+  return iterator{found};
 }
 
 template <typename T>
 typename ad_set::Tree<T>::iterator ad_set::Tree<T>::lower_bound( const T &kmin ) const
 {
-  if (kmin == min_->key_)
+  if (kmin == nodes.front())
     return begin();
 
   return FindLower(root_, kmin);
@@ -172,36 +163,34 @@ typename ad_set::Tree<T>::iterator ad_set::Tree<T>::lower_bound( const T &kmin )
 template <typename T>
 typename ad_set::Tree<T>::iterator ad_set::Tree<T>::FindLower( detail::Node<T> *nd, const T &key ) const
 {
-  if (nd == nullptr)
+  if (nd == nulit)
     return iterator{};
   if (key < nd->key_)
   {
-    if (nd->left_ == nullptr)
-      return iterator(nd);
+    if (nd->left_ == nulit)
+      return iterator{nd};
     return FindLower(nd->left_, key);
   }
   if (key > nd->key_)
   {
-    if (nd->right_ == nullptr)
+    if (nd->right_ == nulit)
       return ++iterator{nd};
     return FindLower(nd->right_, key);
   }
 
-  return iterator(nd);
+  return iterator{nd};
 }
 
 template <typename T>
 typename ad_set::Tree<T>::iterator ad_set::Tree<T>::begin( void ) const
 {
-  return iterator(min_);
+  return iterator{nodes.begin()};
 }
 
 template <typename T>
 typename ad_set::Tree<T>::iterator ad_set::Tree<T>::end( void ) const
 {
-  if (max_ == nullptr)
-    return iterator(nullptr, true);
-  return iterator(max_, true);
+  return iterator{nodes.end()};
 }
 
 template <typename T>
@@ -214,56 +203,6 @@ template <typename T>
 void ad_set::Tree<T>::Erase( const T &key )
 {
   root_ = Delete(root_, key);
-}
-
-template <typename T>
-void ad_set::Tree<T>::TreeDel( void )
-{
-  auto nd = root_;
-  std::stack<detail::Node<T> *> stk{};
-
-  while (true)
-  {
-    if (nd == nullptr)
-    {
-      if (stk.empty())
-        return;
-      nd = stk.top();
-      stk.pop();
-    }
-
-    auto old_nd = nd;
-
-    if (nd->right_ != nullptr)
-    {
-      stk.push(nd);
-      nd = nd->right_;
-      old_nd->right_ = nullptr;
-      continue;
-    }
-
-    if (nd->left_ != nullptr)
-    {
-      stk.push(nd);
-      nd = nd->left_;
-      old_nd->left_ = nullptr;
-      continue;
-    }
-
-    delete nd;
-    nd = nullptr;
-  }
-}
-
-template <typename T>
-void ad_set::Tree<T>::Clear( void )
-{
-  if (root_ != nullptr)
-    TreeDel();
-
-  root_ = nullptr;
-  min_ = max_ = nullptr;
-  size_ = 0;
 }
 
 template <typename T>
@@ -289,24 +228,6 @@ void ad_set::Tree<T>::DotDump( const std::string &pngname /* = "dump.png" */,
   system(promt.c_str());
 }
 
-template <typename T>
-ad_set::detail::Node<T> *ad_set::Tree<T>::CreatNd( const T &key, detail::Node<T> *par, int depth /* = 1 */ )
-{
-  auto new_nd = new detail::Node<T>{key, par, depth};
-  MinMaxUpd(new_nd);
-  return new_nd; 
-}
-
-template <typename T>
-void ad_set::Tree<T>::MinMaxUpd( detail::Node<T> *nd )
-{
-  if (min_ == nullptr) // max is also nullptr
-    max_ = min_ = nd;
-  else if (nd->key_ > max_->key_)
-    max_ = nd;
-  else if (nd->key_ < min_->key_)
-    min_ = nd;
-}
 
 template <typename T>
 typename ad_set::Tree<T>::lit ad_set::Tree<T>::Insert( lit nd, const T &key, iterator &ins_it )
@@ -386,10 +307,10 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Insert( lit nd, const T &key, ite
 }
 
 template <typename T>
-ad_set::detail::Node<T> *ad_set::Tree<T>::Delete( detail::Node <T> *nd, const T &key )
+typename ad_set::Tree<T>::lit ad_set::Tree<T>::Delete( lit nd, const T &key )
 {
-  if (nd == nullptr)
-    return nullptr;
+  if (nd == nulit)
+    return nulit;
   if (key < nd->key_)
     nd->left_ = Delete(nd->left_, key);
   else if (key > nd->key_)
@@ -400,31 +321,10 @@ ad_set::detail::Node<T> *ad_set::Tree<T>::Delete( detail::Node <T> *nd, const T 
     auto right = nd->right_;
     auto parent = nd->parent_;
 
-    if (nd == max_)
-    {
-      if (left != nullptr)
-        max_ = left;
-      else if (parent != nullptr)
-        max_ = parent;
-      else
-        max_ = nullptr;
-    }
+    // deleting node
+    nodes.erase(nd);
 
-    if (nd == min_)
-    {
-      if (right != nullptr)
-        min_ = right;
-      else if (parent != nullptr)
-        min_ = parent;
-      else
-        min_ = nullptr;
-    }
-
-
-    delete nd; // deleting required node
-    --size_;
-
-    if (right == nullptr)
+    if (right == nulit)
       return left;
 
     auto min = detail::FindMin(right);
