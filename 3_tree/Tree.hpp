@@ -45,9 +45,6 @@ namespace ad_set
 
     iterator Find( const T &key ) const;
 
-    iterator begin( void );
-    iterator end  ( void );
-
     iterator begin( void ) const;
     iterator end  ( void ) const;
 
@@ -84,9 +81,10 @@ namespace ad_set
 
 
 template <typename T>
-ad_set::Tree<T>::Tree( const Tree &that ) : root_()
+ad_set::Tree<T>::Tree( const Tree &that )
 {
-  root_ = CopyNd(that.root_);
+  for (auto nd : that.nodes_)
+    insert(nd.key_);
 }
 
 template <typename T>
@@ -183,13 +181,13 @@ typename ad_set::Tree<T>::iterator ad_set::Tree<T>::FindLower( lit nd, const T &
 }
 
 template <typename T>
-typename ad_set::Tree<T>::iterator ad_set::Tree<T>::begin( void )
+typename ad_set::Tree<T>::iterator ad_set::Tree<T>::begin( void ) const
 {
   return iterator{nodes_.begin()};
 }
 
 template <typename T>
-typename ad_set::Tree<T>::iterator ad_set::Tree<T>::end( void )
+typename ad_set::Tree<T>::iterator ad_set::Tree<T>::end( void ) const
 {
   return iterator{nodes_.end()};
 }
@@ -233,36 +231,6 @@ void ad_set::Tree<T>::DotDump( const std::string &pngname /* = "dump.png" */,
 template <typename T>
 typename ad_set::Tree<T>::lit ad_set::Tree<T>::Insert( lit nd, const T &key, iterator &ins_it )
 {
-  // for future////////////////////
-  /*
-  detail::Node<T> *nd_p = nullptr;
-  detail::Node<T> *nd_old = nd;
-
-  while (1)
-  {
-    if (nd == nullptr)
-    {
-      nd = CreatNd(key, nd_p);
-      return nd_old;
-    }
-
-    if (key < nd->key_)
-    {
-      nd_p = nd;
-      nd = nd->left_;
-    }
-    else if (key > nd->key_)
-    {
-      nd_p = nd;
-      nd = nd->right_;
-    }
-    else
-      return nd_old;
-
-    nd = Balance(nd);
-  }*/
-  ////////////////////////////////
-
   if (nd == nulit)
   {
     // if tree is empty
@@ -304,7 +272,7 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Insert( lit nd, const T &key, ite
     return nd;
   }
 
-  return detail::Balance(nd);
+  return detail::Balance<T>(nd);
 }
 
 template <typename T>
@@ -333,10 +301,10 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Delete( lit nd, const T &key )
     min->left_ = left;
     min->parent_ = parent;
 
-    return detail::Balance(min);
+    return detail::Balance<T>(min);
   }
 
-  return detail::Balance(nd);
+  return detail::Balance<T>(nd);
 }
 
 template <typename T>

@@ -10,4 +10,4 @@ target_compile_features(tree.o PRIVATE cxx_std_20)
 target_compile_options(tree.o PRIVATE -Wall -Wextra -Wpedantic)
 
 target_compile_features(tree_tst.o PRIVATE cxx_std_20)
-target_compile_options(tree_tst.o PRIVATE -Wall -Wextra -Wpedantic)
+target_compile_options(tree_tst.o PRIVATE -Wall -Wextra -Wpedantic -O2)

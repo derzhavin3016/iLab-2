@@ -38,11 +38,13 @@ using trint = ad_set::Tree<int>;
 
 int main( void )
 {
-  /*
+
   trint tr;
   std::cin >> tr;
-*/
-  //tr.DotDump("tr.png");
+  trint t(tr);
+
+  tr.DotDump("tr.png");
+  t.DotDump("t.png");
  /* std::cout << tr.size();
 
   auto it = tr.begin();

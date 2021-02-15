@@ -13,11 +13,11 @@ namespace ad_set
   class Tree_it final : public std::iterator<std::bidirectional_iterator_tag, const T>
   {
   private:
-    detail::liter<T> nd_;
+    detail::csiter<T> nd_;
 
   public:
 
-    Tree_it( detail::liter<T> nd = {} );
+    Tree_it( detail::csiter<T> nd = {} );
 
     Tree_it( const Tree_it &tr_it ) = default;
     Tree_it &operator =( const Tree_it &that ) = default;
@@ -52,7 +52,7 @@ namespace ad_set
 
 
 template <typename T>
-ad_set::Tree_it<T>::Tree_it( detail::liter<T> nd /* = {} */ ) : nd_(nd)
+ad_set::Tree_it<T>::Tree_it( detail::csiter<T> nd /* = {} */ ) : nd_(nd)
 {
 }
 

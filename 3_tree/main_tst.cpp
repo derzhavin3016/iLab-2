@@ -27,9 +27,9 @@ void Test( Tree &tr )
 
     for (auto It = imin; It != itend && *It < elem.second; ++It, ++count);
 
-    std::cout << count << " ";
+    //std::cout << count << " ";
   }
-  std::cout << "\n";
+  //std::cout << "\n";
 }
 
 int main( void )

@@ -15,6 +15,8 @@ namespace ad_set::detail
 
   template <typename T>
   using liter = typename nodelist<T>::iterator;
+  template <typename T>
+  using csiter = typename nodelist<T>::const_iterator;
 
   template <typename T>
   const liter<T> nulit = liter<T>{};
@@ -144,9 +146,9 @@ ad_set::detail::liter<T> ad_set::detail::Node<T>::RotR( void )
 template <typename T>
 ad_set::detail::liter<T> ad_set::detail::Node<T>::RotL( void )
 {
-  Node<T> *rnd = right_;
+  liter<T> rnd = right_;
   right_ = rnd->left_;
-  if (right_ != nullptr && rnd->left_ != nullptr)
+  if (right_ != nulit<T> && rnd->left_ != nulit<T>)
     right_->parent_ = rnd->left_->parent_;
 
   rnd->left_ = rnd->parent_; //this
