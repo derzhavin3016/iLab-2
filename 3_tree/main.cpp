@@ -38,32 +38,10 @@ using trint = ad_set::Tree<int>;
 
 int main( void )
 {
-
   trint tr;
   std::cin >> tr;
-  trint t(tr);
 
-  tr.DotDump("tr.png");
-  t.DotDump("t.png");
- /* std::cout << tr.size();
-
-  auto it = tr.begin();
-
-  tr.Erase(it);
-  std::cout << tr.size();
-*/
-  //tr.DotDump("tr1.png");
-
-  //GetRequests(tr);
-
-  //tr.DotDump("a.png");
-
-  //GetRequests(tr);
-
-  //ad_set::Tree<int>::iterator It = tr.begin();
-
-  //tr.Erase(*It);
-
+  GetRequests(tr);
   // FOR DEBUG
   //tr.DotDump("b.png");
   return 0;
@@ -113,7 +91,7 @@ namespace ad_set
 (6) OK
 
     iterator Find( const T &key );
-    iterator Find( const T &key ) const;
+    iterator find( const T &key ) const;
 
 Зачем их два?
 

@@ -27,24 +27,13 @@ namespace ad_set::detail
     const T key_;
     int depth_;
 
-    liter<T> left_, right_, parent_;
+    liter<T> left_, right_;
 
-    Node( const T &key, liter<T> par = {}, int depth = 1, liter<T> l = {}, liter<T> r = {} );
+    Node( const T &key, int depth = 1, liter<T> l = {}, liter<T> r = {} );
 
     Node( const Node &nd ) = default;
 
-    int GetLDepth( void ) const;
-    int GetRDepth( void ) const;
-
-    int GetBFact( void ) const;
-
-    void UpdDepth( void );
-
     void RecDotPrint( std::ofstream &oft ) const;
-
-    // Nodes rotation functions
-    [[nodiscard]] liter<T> RotR( void );
-    [[nodiscard]] liter<T> RotL( void );
 
     ~Node( void ) = default;
   };
@@ -60,51 +49,69 @@ namespace ad_set::detail
 
   template <typename T>
   liter<T> Find( liter<T> nd, const T &key );
+
+  template <typename T>
+  int GetLDepth( liter<T> nd );
+
+  template <typename T>
+  int GetRDepth( liter<T> nd );
+
+  template <typename T>
+  int GetBFact( liter<T> nd );
+
+  template <typename T>
+  void UpdDepth( liter<T> nd );
+
+  // Nodes rotation functions
+  template <typename T>
+  [[nodiscard]] liter<T> RotR( liter<T> nd );
+
+  template <typename T>
+  [[nodiscard]] liter<T> RotL( liter<T> nd );
 }
 
 
 template <typename T>
-ad_set::detail::Node<T>::Node( const T &key, liter<T> par /* = {} */, int depth /* = 1 */,
+ad_set::detail::Node<T>::Node( const T &key, int depth /* = 1 */,
                                liter<T> l /* = {} */, liter<T> r /* = {} */ ) : key_(key),
                                                                                depth_(depth),
                                                                                left_(l),
-                                                                               right_(r),
-                                                                               parent_(par)
+                                                                               right_(r)
 {
 }
 
 
 template <typename T>
-int ad_set::detail::Node<T>::GetLDepth( void ) const
+int ad_set::detail::GetLDepth( liter<T> nd )
 {
-  if (left_ == nulit<T>)
+  if (nd->left_ == nulit<T>)
     return 0;
 
-  return left_->depth_;
+  return nd->left_->depth_;
 }
 
 template <typename T>
-int ad_set::detail::Node<T>::GetRDepth( void ) const
+int ad_set::detail::GetRDepth( liter<T> nd )
 {
-  if (right_ == nulit<T>)
+  if (nd->right_ == nulit<T>)
     return 0;
 
-  return right_->depth_;
+  return nd->right_->depth_;
 }
 
 template <typename T>
-int ad_set::detail::Node<T>::GetBFact( void ) const
+int ad_set::detail::GetBFact( liter<T> nd )
 {
-  return GetRDepth() - GetLDepth();
+  return GetRDepth<T>(nd) - GetLDepth<T>(nd);
 }
 
 template <typename T>
-void ad_set::detail::Node<T>::UpdDepth( void )
+void ad_set::detail::UpdDepth( liter<T> nd )
 {
-  int ldepth = GetLDepth();
-  int rdepth = GetRDepth();
+  int ldepth = GetLDepth<T>(nd);
+  int rdepth = GetRDepth<T>(nd);
 
-  depth_ = std::max(ldepth, rdepth) + 1;
+  nd->depth_ = std::max(ldepth, rdepth) + 1;
 }
 
 template <typename T>
@@ -124,40 +131,27 @@ void ad_set::detail::Node<T>::RecDotPrint( std::ofstream &oft ) const
 }
 
 template <typename T>
-ad_set::detail::liter<T> ad_set::detail::Node<T>::RotR( void )
+ad_set::detail::liter<T> ad_set::detail::RotR( liter<T> nd )
 {
-  liter<T> lnd = left_;
-  left_ = lnd->right_;
+  liter<T> lnd = nd->left_;
+  nd->left_ = lnd->right_;
+  lnd->right_ = nd;
 
-  if (left_ != nulit<T> && lnd->right_ != nulit<T>)
-    left_->parent_ = lnd->right_->parent_;
-
-  lnd->right_ = lnd->parent_; // this
-
-  lnd->parent_ = parent_;
-  parent_ = lnd;
-
-  UpdDepth();
-  lnd->UpdDepth();
+  UpdDepth<T>(nd);
+  UpdDepth<T>(lnd);
 
   return lnd;
 }
 
 template <typename T>
-ad_set::detail::liter<T> ad_set::detail::Node<T>::RotL( void )
+ad_set::detail::liter<T> ad_set::detail::RotL( liter<T> nd )
 {
-  liter<T> rnd = right_;
-  right_ = rnd->left_;
-  if (right_ != nulit<T> && rnd->left_ != nulit<T>)
-    right_->parent_ = rnd->left_->parent_;
+  liter<T> rnd = nd->right_;
+  nd->right_ = rnd->left_;
+  rnd->left_ = nd; //this
 
-  rnd->left_ = rnd->parent_; //this
-
-  rnd->parent_ = parent_;
-  parent_ = rnd;
-
-  UpdDepth();
-  rnd->UpdDepth();
+  UpdDepth<T>(nd);
+  UpdDepth<T>(rnd);
 
   return rnd;
 }
@@ -189,20 +183,20 @@ ad_set::detail::liter<T> ad_set::detail::Balance( detail::liter<T> nd )
   if (nd == nulit<T>)
     return nd;
 
-  nd->UpdDepth();
-  int bfact = nd->GetBFact();
+  UpdDepth<T>(nd);
+  int bfact = GetBFact<T>(nd);
 
   if (bfact >= 2)
   {
-    if (nd->right_->GetBFact() < 0)
-      nd->right_ = nd->right_->RotR();
-    return nd->RotL();
+    if (GetBFact<T>(nd->right_) < 0)
+      nd->right_ = RotR<T>(nd->right_);
+    return RotL<T>(nd);
   }
   if (bfact <= -2)
   {
-    if (nd->left_->GetBFact() > 0)
-      nd->left_ = nd->left_->RotL();
-    return nd->RotR();
+    if (GetBFact<T>(nd->left_) > 0)
+      nd->left_ = RotL<T>(nd->left_);
+    return RotR<T>(nd);
   }
   return nd;
 }

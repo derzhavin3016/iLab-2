@@ -10,6 +10,8 @@ using RQvec = vector<std::pair<int, int>>;
 vector<size_t> veckey;
 RQvec vecreq;
 
+bool IsQuiet = false;
+
 template <class Tree>
 void Test( Tree &tr )
 {
@@ -26,10 +28,7 @@ void Test( Tree &tr )
     size_t count = 0;
 
     for (auto It = imin; It != itend && *It < elem.second; ++It, ++count);
-
-    //std::cout << count << " ";
   }
-  //std::cout << "\n";
 }
 
 int main( void )
@@ -51,12 +50,10 @@ int main( void )
     std::cin >> elem.first >> elem.second;
 
   auto tr_t1 = std::chrono::high_resolution_clock::now();
-  std::cout << "Tree answer: ";
   Test(tr);
   auto tr_t2 = std::chrono::high_resolution_clock::now();
 
   auto set_t1 = std::chrono::high_resolution_clock::now();
-  std::cout << "std::set answer: ";
   Test(set);
   auto set_t2 = std::chrono::high_resolution_clock::now();
 

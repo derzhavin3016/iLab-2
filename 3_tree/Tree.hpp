@@ -16,15 +16,16 @@ namespace ad_set
     // useful aliases
     using ndlist = detail::nodelist<T>;
     using lit = detail::liter<T>;
-    using clit = typename ndlist::const_iterator;
+    using cslit = detail::csiter<T>;
 
     const lit nulit = detail::nulit<T>;
+
+    // list with nodes_
+    ndlist nodes_;
 
     // iterator to tree's root
     lit root_{};
 
-    // list with nodes_
-    ndlist nodes_;
     // using list for inserting/deleting data in/from any place by O(1)
 
 
@@ -43,16 +44,18 @@ namespace ad_set
     iter_n_bool insert( const T &key );
     Tree<T> &operator <<( const T &key );
 
-    iterator Find( const T &key ) const;
+    iterator find( const T &key ) const;
 
     iterator begin( void ) const;
     iterator end  ( void ) const;
 
-    void Erase( iterator it );
+    void erase( iterator it );
 
-    void Erase( const T &key );
+    void erase( const T &key );
 
-    bool Empty( void ) { return nodes_.size() == 0; }
+    bool empty( void ) { return nodes_.size() == 0; }
+
+    void clear( void ) { root_ = {}; nodes_.clear(); }
 
     size_t size( void ) { return nodes_.size(); }
 
@@ -70,9 +73,7 @@ namespace ad_set
 
     [[nodiscard]] lit Delete( lit nd, const T &key );
 
-    [[nodiscard]] detail::Node<T> *CopyNd( const detail::Node<T> *nd );
-
-    static void LightSwap( Tree &lhs, Tree &rhs );
+    [[nodiscard]] lit CopyNd( lit nd, lit parent );
   };
 
   template <typename T>
@@ -81,15 +82,13 @@ namespace ad_set
 
 
 template <typename T>
-ad_set::Tree<T>::Tree( const Tree &that )
-{
-  for (auto nd : that.nodes_)
-    insert(nd.key_);
-}
+ad_set::Tree<T>::Tree( const Tree &that ) : nodes_(),
+                                            root_(CopyNd(that.root_, lit{}))
+{}
 
 template <typename T>
-ad_set::Tree<T>::Tree( Tree &&that ) : root_(that.root_),
-                                       nodes_(std::move(that.nodes_))
+ad_set::Tree<T>::Tree( Tree &&that ) : nodes_(std::move(that.nodes_)),
+                                       root_(that.root_)
 {
 }
 
@@ -142,7 +141,7 @@ ad_set::Tree<T> &ad_set::Tree<T>::operator <<( const T &key )
 }
 
 template <typename T>
-typename ad_set::Tree<T>::iterator ad_set::Tree<T>::Find( const T &key ) const
+typename ad_set::Tree<T>::iterator ad_set::Tree<T>::find( const T &key ) const
 {
   lit found = detail::Find(root_, key);
   if (found == nulit)
@@ -193,13 +192,13 @@ typename ad_set::Tree<T>::iterator ad_set::Tree<T>::end( void ) const
 }
 
 template <typename T>
-void ad_set::Tree<T>::Erase( iterator it )
+void ad_set::Tree<T>::erase( iterator it )
 {
-  Erase(*it);
+  erase(*it);
 }
 
 template <typename T>
-void ad_set::Tree<T>::Erase( const T &key )
+void ad_set::Tree<T>::erase( const T &key )
 {
   root_ = Delete(root_, key);
 }
@@ -244,27 +243,21 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Insert( lit nd, const T &key, ite
   {
     if (nd->left_ == nulit)
     {
-      nd->left_ = nodes_.insert(nd, detail::Node<T>{key, nd});
+      nd->left_ = nodes_.insert(nd, detail::Node<T>{key});
       ins_it = iterator{nd->left_};
     }
     else
-    {
       nd->left_ = Insert(nd->left_, key, ins_it);
-      nd->left_->parent_ = nd;
-    }
   }
   else if (key > nd->key_)
   {
     if (nd->right_ == nulit)
     {
       lit nxt{nd};
-      nd->right_ = nodes_.insert(++nxt, detail::Node<T>{key, nd});
+      nd->right_ = nodes_.insert(++nxt, detail::Node<T>{key});
     }
     else
-    {
       nd->right_ = Insert(nd->right_, key, ins_it);
-      nd->right_->parent_ = nd;
-    }
   }
   else
   {
@@ -308,31 +301,29 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Delete( lit nd, const T &key )
 }
 
 template <typename T>
-ad_set::detail::Node<T> *ad_set::Tree<T>::CopyNd( const detail::Node<T> *nd )
+typename ad_set::Tree<T>::lit ad_set::Tree<T>::CopyNd( lit nd, lit parent )
 {
-  if (nd == nullptr)
-    return nullptr;
-/*
-  auto tmp_root =
+  if (nd == nulit)
+    return nulit;
 
-  while (true)
+  lit new_root;
+
+  if (nodes_.empty())
   {
-    if (nd->right_ != nullptr)
-    {
+    nodes_.push_front(nd->key_);
+    new_root = nodes_.begin();
+  }
+  else
+  {
+    if (parent->key_ < nd->key_)
+      ++parent;
+    new_root = nodes_.insert(parent, nd->key_);
+  }
 
-    }
+  new_root->left_  = CopyNd(nd->left_, new_root);
+  new_root->right_ = CopyNd(nd->right_, new_root);
 
-    if (nd->left_ != nullptr)
-    {
-
-    }
-  }*/
-  auto tmp = CreatNd(nd->key_, nd->parent_, nd->depth_);
-
-  tmp->right_ = CopyNd(nd->right_);
-  tmp->left_  = CopyNd(nd->left_);
-
-  return tmp;
+  return new_root;
 }
 template <typename T>
 std::istream &ad_set::operator >>( std::istream &ist, ad_set::Tree<T> &tr )
