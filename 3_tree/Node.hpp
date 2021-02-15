@@ -160,12 +160,12 @@ template <typename T>
 ad_set::detail::liter<T> ad_set::detail::FindMin( detail::liter<T> nd )
 {
   if (nd == nulit<T>)
-    return nullptr;
+    return nulit<T>;
 
   if (nd->left_ == nulit<T>)
     return nd;
   
-  return FindMin(nd->left_);
+  return FindMin<T>(nd->left_);
 }
 
 template <typename T>
@@ -173,8 +173,8 @@ ad_set::detail::liter<T> ad_set::detail::DelMin( detail::liter<T> nd )
 {
   if (nd->left_ == nulit<T>)
     return nd->right_;
-  nd->left_ = DelMin(nd->left_);
-  return Balance(nd);
+  nd->left_ = DelMin<T>(nd->left_);
+  return Balance<T>(nd);
 }
 
 template <typename T>

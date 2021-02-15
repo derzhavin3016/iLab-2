@@ -281,7 +281,6 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Delete( lit nd, const T &key )
   {
     auto left = nd->left_;
     auto right = nd->right_;
-    auto parent = nd->parent_;
 
     // deleting node
     nodes_.erase(nd);
@@ -289,10 +288,9 @@ typename ad_set::Tree<T>::lit ad_set::Tree<T>::Delete( lit nd, const T &key )
     if (right == nulit)
       return left;
 
-    auto min = detail::FindMin(right);
-    min->right_ = DelMin(right);
+    auto min = detail::FindMin<T>(right);
+    min->right_ = detail::DelMin<T>(right);
     min->left_ = left;
-    min->parent_ = parent;
 
     return detail::Balance<T>(min);
   }
